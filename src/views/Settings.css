@@ -1,10 +1,11 @@
 .settings {
-  padding: 24px;
+  padding: 16px;
   font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   font-feature-settings: "rlig" 1, "calt" 1;
   max-width: 600px;
   color: hsl(210 40% 88%);
+  background: #121921;
 }
 
 /* Sections */
@@ -74,7 +75,7 @@
 
 /* Buttons */
 .settings__button {
-  padding: 10px 16px;
+  padding: 4px 8px;
   font-size: 14px;
   font-weight: 500;
   border: none;
@@ -112,9 +113,9 @@
 }
 
 .settings__button--small {
-  padding: 4px 8px;
+  padding: 4px;
   font-size: 12px;
-  min-width: 32px;
+  min-width: 24px;
   background: hsl(212 24% 20%);
   color: hsl(210 40% 88%);
 }
@@ -134,8 +135,8 @@
 .settings__location-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 8px;
+  padding: 8px;
   background: hsl(212 28% 10%);
   border: 1px solid hsl(212 24% 20%);
   border-radius: 8px;
