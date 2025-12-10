@@ -33,10 +33,17 @@ html {
 
 /* Theme variables */
 :root {
+  /* Light theme (default) */
   --color-blue-start: #4d8dcd;
   --color-blue-end: #0055b3;
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.9);
+}
+
+/* Dark theme */
+.weather-app-container--dark {
+  --color-blue-start: #2d353e;
+  --color-blue-end: #040d19;
 }
 
 /* Base widget */

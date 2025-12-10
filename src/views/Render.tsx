@@ -30,6 +30,7 @@ export function Render() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
     ASPECT_RATIOS.FULL_SCREEN_16x9
   );
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Detect aspect ratio on mount and window resize
   useEffect(() => {
@@ -68,13 +69,17 @@ export function Render() {
     const handler = (newConfig?: WeatherConfig) => {
       if (newConfig) {
         setConfig(newConfig);
+        setTheme(newConfig.theme || "light");
       }
     };
 
     store()
       .instance.get<WeatherConfig>("config")
       .then((savedConfig) => {
-        if (savedConfig) setConfig(savedConfig);
+        if (savedConfig) {
+          setConfig(savedConfig);
+          setTheme(savedConfig.theme || "light");
+        }
       })
       .catch(console.error);
 
@@ -186,7 +191,9 @@ export function Render() {
   // Render the appropriate layout based on detected aspect ratio
   return (
     <div
-      className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState}`}
+      className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState} ${
+        theme === "dark" ? "weather-app-container--dark" : ""
+      }`}
     >
       {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
         <Layout16x9 currentWeather={currentWeather} forecast={forecast} />

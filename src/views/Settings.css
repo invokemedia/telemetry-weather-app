@@ -195,3 +195,39 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Theme toggle */
+.settings__theme-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.settings__theme-button {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid hsl(212 24% 25%);
+  border-radius: 6px;
+  background: hsl(212 28% 12%);
+  color: hsl(210 40% 88%);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.settings__theme-button:hover:not(:disabled) {
+  border-color: hsl(210 100% 60%);
+  background: hsl(212 28% 14%);
+}
+
+.settings__theme-button--active {
+  border-color: hsl(210 100% 60%);
+  background: hsl(210 100% 60%);
+  color: white;
+}
+
+.settings__theme-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

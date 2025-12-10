@@ -5,9 +5,10 @@ import { store } from "@telemetryos/sdk";
 import type { WeatherConfig, Location } from "@/types/weather";
 
 export function Settings() {
-  // State: List of weather locations, display duration, and input for adding new city
+  // State: List of weather locations, display duration, theme, and input for adding new city
   const [locations, setLocations] = useState<Location[]>([]);
   const [displayDuration, setDisplayDuration] = useState(10);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [newCity, setNewCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,6 +20,7 @@ export function Settings() {
         if (config?.locations && config.locations.length > 0) {
           setLocations(config.locations);
           setDisplayDuration(config.displayDuration || 10);
+          setTheme(config.theme || "light");
         } else {
           const defaultLocation: Location = {
             id: Date.now().toString(),
@@ -29,6 +31,7 @@ export function Settings() {
             locations: [defaultLocation],
             displayDuration: 10,
             showForecast: true,
+            theme: "light",
           };
           store().instance.set("config", defaultConfig).catch(console.error);
           setLocations([defaultLocation]);
@@ -39,11 +42,16 @@ export function Settings() {
   }, []);
 
   // Save config to instance storage (syncs to Render component)
-  const saveConfig = (newLocations: Location[], newDuration?: number) => {
+  const saveConfig = (
+    newLocations: Location[],
+    newDuration?: number,
+    newTheme?: "light" | "dark"
+  ) => {
     const config: WeatherConfig = {
       locations: newLocations,
       displayDuration: newDuration ?? displayDuration,
       showForecast: true,
+      theme: newTheme ?? theme,
     };
     store().instance.set("config", config).catch(console.error);
   };
@@ -84,6 +92,12 @@ export function Settings() {
   const handleDurationChange = (newDuration: number) => {
     setDisplayDuration(newDuration);
     saveConfig(locations, newDuration);
+  };
+
+  // Toggle between light and dark theme
+  const handleThemeChange = (newTheme: "light" | "dark") => {
+    setTheme(newTheme);
+    saveConfig(locations, displayDuration, newTheme);
   };
 
   // Reorder locations (controls rotation sequence on device)
@@ -194,6 +208,30 @@ export function Settings() {
             onChange={(e) => handleDurationChange(Number(e.target.value))}
             disabled={isLoading || locations.length <= 1}
           />
+        </div>
+
+        <div className="settings__field">
+          <div className="settings__label">Theme</div>
+          <div className="settings__theme-toggle">
+            <button
+              className={`settings__theme-button ${
+                theme === "light" ? "settings__theme-button--active" : ""
+              }`}
+              onClick={() => handleThemeChange("light")}
+              disabled={isLoading}
+            >
+              ☀️ Light
+            </button>
+            <button
+              className={`settings__theme-button ${
+                theme === "dark" ? "settings__theme-button--active" : ""
+              }`}
+              onClick={() => handleThemeChange("dark")}
+              disabled={isLoading}
+            >
+              🌙 Dark
+            </button>
+          </div>
         </div>
       </div>
     </div>

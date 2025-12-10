@@ -32,4 +32,5 @@ export interface WeatherConfig {
   locations: Location[];
   displayDuration: number; // seconds per location
   showForecast: boolean;
+  theme: "light" | "dark"; // Color theme for widget
 }
