@@ -34,3 +34,10 @@ export interface WeatherConfig {
   showForecast: boolean;
   theme: "light" | "dark"; // Color theme for widget
 }
+
+// Cached weather data with timestamp
+export interface CachedWeatherData {
+  currentWeather: WeatherConditions;
+  forecast: WeatherForecast[];
+  cachedAt: number; // Unix timestamp in milliseconds
+}

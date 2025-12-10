@@ -9,6 +9,7 @@ import type {
   WeatherForecast,
   WeatherConfig,
   Location,
+  CachedWeatherData,
 } from "@/types/weather";
 import { ASPECT_RATIOS, type AspectRatioType } from "@/types/layout";
 
@@ -92,6 +93,43 @@ export function Render() {
     };
   }, []);
 
+  // Load cached weather data on mount (for instant display)
+  useEffect(() => {
+    if (!config?.locations || config.locations.length === 0) return;
+
+    const loadCachedData = async () => {
+      for (const location of config.locations) {
+        try {
+          // Try to load cached data from device storage
+          const cached = await store().device.get<CachedWeatherData>(
+            `weather_${location.id}`
+          );
+
+          if (cached) {
+            console.log(`📦 [Render] Loaded cached data for ${location.city}`);
+            setWeatherData((prev) => {
+              const newData = new Map(prev);
+              newData.set(location.id, {
+                location,
+                currentWeather: cached.currentWeather,
+                forecast: cached.forecast,
+              });
+              return newData;
+            });
+          }
+        } catch (err) {
+          console.error(
+            `❌ [Render] Failed to load cache for ${location.city}:`,
+            err
+          );
+        }
+      }
+      setLoading(false);
+    };
+
+    loadCachedData();
+  }, [config]);
+
   // Fetch weather data for all locations
   useEffect(() => {
     if (!config?.locations || config.locations.length === 0) return;
@@ -117,6 +155,7 @@ export function Render() {
 
         console.log("✅ [Render] Forecast:", dailyForecast);
 
+        // Update state with fresh data
         setWeatherData((prev) => {
           const newData = new Map(prev);
           newData.set(location.id, {
@@ -127,22 +166,30 @@ export function Render() {
           return newData;
         });
 
+        // Cache the data to device storage
+        const cacheData: CachedWeatherData = {
+          currentWeather: currentConditions,
+          forecast: dailyForecast,
+          cachedAt: Date.now(),
+        };
+
+        await store().device.set(`weather_${location.id}`, cacheData);
+        console.log(`💾 [Render] Cached weather data for ${location.city}`);
+
         setError(null);
       } catch (err) {
         console.error("❌ [Render] Weather fetch error:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch weather"
-        );
+        // Don't update error state - keep showing cached data if available
+        console.log("📦 [Render] Keeping cached data due to fetch failure");
       }
     };
 
     // Fetch weather for all locations
     const fetchAllWeather = async () => {
-      setLoading(true);
       await Promise.all(config.locations.map(fetchWeatherForLocation));
-      setLoading(false);
     };
 
+    // Fetch immediately
     fetchAllWeather();
 
     // Refresh weather data every 10 minutes
