@@ -11,7 +11,7 @@ export function Layout1x1({ currentWeather }: Layout1x1Props) {
     <div className="weather-widget weather-widget--1x1">
       {/* Weather icon */}
       <div className="weather-widget__icon">
-        {getWeatherIcon(currentWeather?.WeatherCode || "")}
+        {getWeatherIcon(currentWeather?.WeatherText || "")}
       </div>
 
       {/* Temperature */}

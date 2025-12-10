@@ -1,64 +1,62 @@
 /**
- * Maps weather code to emoji icons
- * Uses WeatherCode (OpenWeatherMap standard codes)
+ * Maps weather description text to emoji icons
  *
- * Code ranges:
- * - 200-299: Thunderstorm
- * - 300-399: Drizzle
- * - 500-599: Rain
- * - 600-699: Snow
- * - 700-799: Atmosphere (fog, mist, haze, etc.)
- * - 800: Clear sky
- * - 801-804: Clouds
- *
- * Reference: https://openweathermap.org/weather-conditions
+ * Note: TelemetryOS uses custom weather codes. This function uses keyword matching
+ * as a fallback until official mapping is provided.
  */
-export function getWeatherIcon(weatherCode: string): string {
-  if (!weatherCode) return "—";
+export function getWeatherIcon(weatherText: string): string {
+  if (!weatherText) return "🌤️";
 
-  const code = parseInt(weatherCode, 10);
+  const text = weatherText.toLowerCase();
 
-  // Thunderstorm (200-299)
-  if (code >= 200 && code < 300) {
+  // Thunderstorm
+  if (text.includes("thunderstorm") || text.includes("thunder")) {
     return "⛈️";
   }
 
-  // Drizzle (300-399)
-  if (code >= 300 && code < 400) {
-    return "🌧️";
-  }
-
-  // Rain (500-599)
-  if (code >= 500 && code < 600) {
-    return "🌧️";
-  }
-
-  // Snow (600-699)
-  if (code >= 600 && code < 700) {
+  // Snow (check before rain, as some labels contain both)
+  if (text.includes("snow") || text.includes("sleet")) {
     return "❄️";
   }
 
-  // Atmosphere - Fog/Mist/Haze (700-799)
-  if (code >= 700 && code < 800) {
+  // Rain
+  if (
+    text.includes("rain") ||
+    text.includes("drizzle") ||
+    text.includes("shower")
+  ) {
+    return "🌧️";
+  }
+
+  // Fog/Mist/Haze
+  if (text.includes("fog") || text.includes("mist") || text.includes("haze")) {
     return "🌫️";
   }
 
-  // Clear sky (800)
-  if (code === 800) {
+  // Clear
+  if (text.includes("clear") || text.includes("sunny")) {
     return "☀️";
   }
 
-  // Clouds (801-804)
-  if (code === 801 || code === 802) {
-    // Few clouds, scattered clouds
+  // Clouds - scattered/few
+  if (text.includes("few clouds") || text.includes("scattered clouds")) {
     return "⛅";
   }
 
-  if (code === 803 || code === 804) {
-    // Broken clouds, overcast
+  // Clouds - overcast/broken
+  if (
+    text.includes("overcast") ||
+    text.includes("broken clouds") ||
+    text.includes("cloudy")
+  ) {
     return "☁️";
   }
 
-  // Default fallback if code doesn't match
-  return "—";
+  // Generic cloud fallback
+  if (text.includes("cloud")) {
+    return "☁️";
+  }
+
+  // Default fallback
+  return "🌤️";
 }

@@ -48,7 +48,7 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
               {currentWeather?.Temp ? Math.round(currentWeather.Temp) : "--"}°
             </div>
             <div className="weather-widget__icon">
-              {getWeatherIcon(currentWeather?.WeatherCode || "")}
+              {getWeatherIcon(currentWeather?.WeatherText || "")}
             </div>
           </div>
           <div className="weather-widget__col-details">
@@ -75,7 +75,7 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
           <WeatherForecastItem
             key={index}
             temperature={Math.round(day.Temp)}
-            icon={getWeatherIcon(day.WeatherCode)}
+            icon={getWeatherIcon(day.Label)}
             day={getDayLabel(day.Datetime)}
           />
         ))}
