@@ -20,6 +20,16 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 500ms ease-in-out;
+}
+
+/* Fade transitions for cycling */
+.weather-app--fade-in {
+  opacity: 1;
+}
+
+.weather-app--fade-out {
+  opacity: 0;
 }
 
 /* Theme variables */

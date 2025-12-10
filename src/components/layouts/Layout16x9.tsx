@@ -1,5 +1,6 @@
 import { WeatherForecastItem } from "@/components/weather/WeatherForecastItem";
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
+import { getWeatherIcon } from "@/utils/weatherIcons";
 
 interface Layout16x9Props {
   currentWeather: WeatherConditions | null;
@@ -7,6 +8,21 @@ interface Layout16x9Props {
 }
 
 export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
+  const getLastUpdatedTime = () => {
+    if (!currentWeather?.Timestamp) return "--:--";
+    const date = new Date(currentWeather.Timestamp * 1000);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
+  const getDayLabel = (datetime: string) => {
+    const date = new Date(datetime);
+    return date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 2);
+  };
+
   return (
     <div className="weather-widget weather-widget--16x9">
       {/* Top content section */}
@@ -15,11 +31,13 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
         <div className="weather-widget__row-header">
           <div className="weather-widget__col">
             <div className="weather-widget__location">
-              {currentWeather?.CityLocalized || "Coquitlam, BC"}
+              {currentWeather?.CityLocalized || "Loading..."}
             </div>
           </div>
           <div className="weather-widget__col--right">
-            <div className="weather-widget__feels-like">Feels Like -14°</div>
+            <div className="weather-widget__feels-like">
+              {currentWeather?.WeatherText || "Loading..."}
+            </div>
           </div>
         </div>
 
@@ -27,18 +45,24 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
         <div className="weather-widget__row-main">
           <div className="weather-widget__col-temp">
             <div className="weather-widget__temperature">
-              {currentWeather?.Temp || 18}°
+              {currentWeather?.Temp ? Math.round(currentWeather.Temp) : "--"}°
             </div>
-            <div className="weather-widget__icon">🌤️</div>
+            <div className="weather-widget__icon">
+              {getWeatherIcon(currentWeather?.WeatherCode || "")}
+            </div>
           </div>
           <div className="weather-widget__col-details">
             <div className="weather-widget__details-row">
-              <div className="weather-widget__detail-text">💧 76%</div>
-              <div className="weather-widget__detail-text">💨 5 km/h</div>
+              <div className="weather-widget__detail-text">
+                💧 {currentWeather?.RelativeHumidity || "--"}%
+              </div>
+              <div className="weather-widget__detail-text">
+                💨 {currentWeather?.WindSpeed || "--"} km/h
+              </div>
             </div>
             <div className="weather-widget__details-row">
               <div className="weather-widget__detail-text">
-                Last updated: 12:30
+                Last updated: {getLastUpdatedTime()}
               </div>
             </div>
           </div>
@@ -47,12 +71,14 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
 
       {/* Bottom forecast section */}
       <div className="weather-widget__content-bottom">
-        <WeatherForecastItem temperature={17} icon="🌧️" day="We" />
-        <WeatherForecastItem temperature={19} icon="☀️" day="Su" />
-        <WeatherForecastItem temperature={16} icon="☁️" day="Mo" />
-        <WeatherForecastItem temperature={15} icon="⛈️" day="Tu" />
-        <WeatherForecastItem temperature={16} icon="🌤️" day="Sa" />
-        <WeatherForecastItem temperature={14} icon="🌧️" day="Fr" />
+        {forecast.slice(0, 6).map((day, index) => (
+          <WeatherForecastItem
+            key={index}
+            temperature={Math.round(day.Temp)}
+            icon={getWeatherIcon(day.WeatherCode)}
+            day={getDayLabel(day.Datetime)}
+          />
+        ))}
       </div>
     </div>
   );

@@ -20,7 +20,16 @@ export interface WeatherForecast {
   MaxTemp: number;
 }
 
+// Location entry with display name
+export interface Location {
+  id: string;
+  city: string;
+  displayName?: string;
+}
+
 // Configuration from Settings
 export interface WeatherConfig {
-  city: string;
+  locations: Location[];
+  displayDuration: number; // seconds per location
+  showForecast: boolean;
 }

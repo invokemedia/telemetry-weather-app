@@ -8,14 +8,23 @@ import type {
   WeatherConditions,
   WeatherForecast,
   WeatherConfig,
+  Location,
 } from "@/types/weather";
 import { ASPECT_RATIOS, type AspectRatioType } from "@/types/layout";
 
+interface LocationWeatherData {
+  location: Location;
+  currentWeather: WeatherConditions | null;
+  forecast: WeatherForecast[];
+}
+
 export function Render() {
   const [config, setConfig] = useState<WeatherConfig | null>(null);
-  const [currentWeather, setCurrentWeather] =
-    useState<WeatherConditions | null>(null);
-  const [forecast, setForecast] = useState<WeatherForecast[]>([]);
+  const [weatherData, setWeatherData] = useState<
+    Map<string, LocationWeatherData>
+  >(new Map());
+  const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
+  const [fadeState, setFadeState] = useState<"in" | "out">("in");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
@@ -78,9 +87,107 @@ export function Render() {
     };
   }, []);
 
+  // Fetch weather data for all locations
+  useEffect(() => {
+    if (!config?.locations || config.locations.length === 0) return;
+
+    const fetchWeatherForLocation = async (location: Location) => {
+      try {
+        console.log("🌤️ [Render] Fetching weather for:", location.city);
+
+        // Fetch current weather conditions
+        const currentConditions = await weather().getConditions({
+          city: location.city,
+          units: "metric",
+        });
+
+        console.log("✅ [Render] Current weather:", currentConditions);
+
+        // Fetch 7-day forecast
+        const dailyForecast = await weather().getDailyForecast({
+          city: location.city,
+          units: "metric",
+          days: 7,
+        });
+
+        console.log("✅ [Render] Forecast:", dailyForecast);
+
+        setWeatherData((prev) => {
+          const newData = new Map(prev);
+          newData.set(location.id, {
+            location,
+            currentWeather: currentConditions,
+            forecast: dailyForecast,
+          });
+          return newData;
+        });
+
+        setError(null);
+      } catch (err) {
+        console.error("❌ [Render] Weather fetch error:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch weather"
+        );
+      }
+    };
+
+    // Fetch weather for all locations
+    const fetchAllWeather = async () => {
+      setLoading(true);
+      await Promise.all(config.locations.map(fetchWeatherForLocation));
+      setLoading(false);
+    };
+
+    fetchAllWeather();
+
+    // Refresh weather data every 10 minutes
+    const refreshInterval = setInterval(fetchAllWeather, 10 * 60 * 1000);
+
+    return () => clearInterval(refreshInterval);
+  }, [config]);
+
+  // Cycle through locations
+  useEffect(() => {
+    if (
+      !config?.locations ||
+      config.locations.length <= 1 ||
+      !config.displayDuration
+    )
+      return;
+
+    const cycleDuration = config.displayDuration * 1000; // Convert to ms
+    const fadeDuration = 500; // Fade transition duration in ms
+
+    const cycleTimer = setInterval(() => {
+      // Fade out
+      setFadeState("out");
+
+      // After fade out, change location and fade in
+      setTimeout(() => {
+        setCurrentLocationIndex((prev) =>
+          prev >= config.locations.length - 1 ? 0 : prev + 1
+        );
+        setFadeState("in");
+      }, fadeDuration);
+    }, cycleDuration);
+
+    return () => clearInterval(cycleTimer);
+  }, [config]);
+
+  // Get current location's weather data
+  const currentLocation = config?.locations?.[currentLocationIndex];
+  const currentData = currentLocation
+    ? weatherData.get(currentLocation.id)
+    : null;
+
+  const currentWeather = currentData?.currentWeather || null;
+  const forecast = currentData?.forecast || [];
+
   // Render the appropriate layout based on detected aspect ratio
   return (
-    <div className={`weather-app-container weather-app--${aspectRatio}`}>
+    <div
+      className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState}`}
+    >
       {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
         <Layout16x9 currentWeather={currentWeather} forecast={forecast} />
       )}
