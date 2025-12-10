@@ -33,6 +33,12 @@
   align-items: center;
 }
 
+.settings__input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .settings__label {
   font-size: 13px;
   margin-bottom: 8px;

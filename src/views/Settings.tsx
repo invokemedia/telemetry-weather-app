@@ -121,28 +121,31 @@ export function Settings() {
         <h3 className="settings__section-title">Locations</h3>
 
         {/* Add new location */}
-        <div className="settings__field settings__field--horizontal">
-          <input
-            className="settings__input"
-            type="text"
-            value={newCity}
-            onChange={(e) => setNewCity(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
-            placeholder="Enter city name (e.g., Vancouver)"
-            disabled={isLoading || locations.length >= 5}
-          />
-          <button
-            className="settings__button settings__button--add"
-            onClick={handleAddLocation}
-            disabled={isLoading || !newCity.trim() || locations.length >= 5}
-            title={
-              locations.length >= 5
-                ? "Maximum 5 locations allowed"
-                : "Add location"
-            }
-          >
-            +
-          </button>
+        <div className="settings__field">
+          <div className="settings__label">Add location (up to 5)</div>
+          <div className="settings__input-group">
+            <input
+              className="settings__input"
+              type="text"
+              value={newCity}
+              onChange={(e) => setNewCity(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
+              placeholder="Enter city name (e.g., Vancouver)"
+              disabled={isLoading || locations.length >= 5}
+            />
+            <button
+              className="settings__button settings__button--add"
+              onClick={handleAddLocation}
+              disabled={isLoading || !newCity.trim() || locations.length >= 5}
+              title={
+                locations.length >= 5
+                  ? "Maximum 5 locations allowed"
+                  : "Add location"
+              }
+            >
+              +
+            </button>
+          </div>
         </div>
         {locations.length >= 5 && (
           <div className="settings__info">Maximum of 5 locations reached</div>
