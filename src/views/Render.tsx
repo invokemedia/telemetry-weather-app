@@ -1,47 +1,95 @@
 import { useEffect, useState } from "react";
-import { store } from "@telemetryos/sdk";
+import { store, weather } from "@telemetryos/sdk";
 import "./Render.css";
-import wordMarkPath from "../../assets/telemetryos-wordmark.svg";
+import { Layout16x9 } from "@/components/layouts/Layout16x9";
+import { Layout1x1 } from "@/components/layouts/Layout1x1";
+import { Layout1x10 } from "@/components/layouts/Layout1x10";
+import type {
+  WeatherConditions,
+  WeatherForecast,
+  WeatherConfig,
+} from "@/types/weather";
+import { ASPECT_RATIOS, type AspectRatioType } from "@/types/layout";
 
 export function Render() {
-  const [subtitle, setSubtitle] = useState("");
+  const [config, setConfig] = useState<WeatherConfig | null>(null);
+  const [currentWeather, setCurrentWeather] =
+    useState<WeatherConditions | null>(null);
+  const [forecast, setForecast] = useState<WeatherForecast[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
+    ASPECT_RATIOS.FULL_SCREEN_16x9
+  );
 
+  // Detect aspect ratio on mount and window resize
   useEffect(() => {
-    const handler = (value?: string) => {
-      const fallbackSubtitle = "Change this line in settings ⚙️ ↗️";
-      setSubtitle(value ?? fallbackSubtitle);
+    const detectAspectRatio = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const ratio = width / height;
+
+      console.log(
+        `📐 [Render] Aspect ratio: ${ratio.toFixed(2)} (${width}x${height})`
+      );
+
+      // Determine layout type based on aspect ratio
+      if (ratio >= 1.5) {
+        // Landscape/wide (16:9 is ~1.78)
+        setAspectRatio(ASPECT_RATIOS.FULL_SCREEN_16x9);
+      } else if (ratio >= 0.7 && ratio < 1.3) {
+        // Square (1:1)
+        setAspectRatio(ASPECT_RATIOS.SQUARE_1x1);
+      } else if (ratio < 0.7) {
+        // Tall/portrait (1:10 is 0.1)
+        setAspectRatio(ASPECT_RATIOS.SUPER_TALL_1x10);
+      } else {
+        setAspectRatio(ASPECT_RATIOS.FULL_SCREEN_16x9);
+      }
     };
+
+    detectAspectRatio();
+    window.addEventListener("resize", detectAspectRatio);
+
+    return () => window.removeEventListener("resize", detectAspectRatio);
+  }, []);
+
+  // Subscribe to config changes from Settings
+  useEffect(() => {
+    const handler = (newConfig?: WeatherConfig) => {
+      if (newConfig) {
+        setConfig(newConfig);
+      }
+    };
+
     store()
-      .instance.subscribe<string>("subtitle", handler)
+      .instance.get<WeatherConfig>("config")
+      .then((savedConfig) => {
+        if (savedConfig) setConfig(savedConfig);
+      })
       .catch(console.error);
+
+    store()
+      .instance.subscribe<WeatherConfig>("config", handler)
+      .catch(console.error);
+
     return () => {
-      store().instance.unsubscribe("subtitle", handler).catch(console.error);
+      store().instance.unsubscribe("config", handler).catch(console.error);
     };
   }, []);
 
+  // Render the appropriate layout based on detected aspect ratio
   return (
-    <div className="render">
-      <img src={wordMarkPath} alt="TelemetryOS" className="render__logo" />
-      <div className="render__hero">
-        <div className="render__hero-title">Welcome to TelemetryOS SDK</div>
-        <div className="render__hero-subtitle">{subtitle}</div>
-      </div>
-      <div className="render__docs-information">
-        <div className="render__docs-information-title">
-          To get started, edit the Render.tsx and Settings.tsx files
-        </div>
-        <div className="render__docs-information-text">
-          Visit our documentation on building applications to learn more
-        </div>
-        <a
-          className="render__docs-information-button"
-          href="https://docs.telemetryos.com/docs/sdk-getting-started"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Documentation
-        </a>
-      </div>
+    <div className={`weather-app-container weather-app--${aspectRatio}`}>
+      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
+        <Layout16x9 currentWeather={currentWeather} forecast={forecast} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.SQUARE_1x1 && (
+        <Layout1x1 currentWeather={currentWeather} forecast={forecast} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.SUPER_TALL_1x10 && (
+        <Layout1x10 currentWeather={currentWeather} forecast={forecast} />
+      )}
     </div>
   );
 }
