@@ -23,7 +23,7 @@ export function Layout1x10({ currentWeather, forecast }: Layout1x10Props) {
       {/* Center section - Current icon and temp */}
       <div className="weather-widget__section-center">
         <div className="weather-widget__icon">
-          {getWeatherIcon(currentWeather?.WeatherText || "")}
+          {getWeatherIcon(currentWeather?.WeatherCode || "")}
         </div>
         <div className="weather-widget__temperature">
           {currentWeather?.Temp ? Math.round(currentWeather.Temp) : "--"}°
