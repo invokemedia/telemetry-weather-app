@@ -5,11 +5,13 @@ import { store } from "@telemetryos/sdk";
 import type { WeatherConfig, Location } from "@/types/weather";
 
 export function Settings() {
+  // State: List of weather locations, display duration, and input for adding new city
   const [locations, setLocations] = useState<Location[]>([]);
   const [displayDuration, setDisplayDuration] = useState(10);
   const [newCity, setNewCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load saved config from storage on mount, or create default config
   useEffect(() => {
     store()
       .instance.get<WeatherConfig>("config")
@@ -36,6 +38,7 @@ export function Settings() {
       .catch(console.error);
   }, []);
 
+  // Save config to instance storage (syncs to Render component)
   const saveConfig = (newLocations: Location[], newDuration?: number) => {
     const config: WeatherConfig = {
       locations: newLocations,
@@ -45,6 +48,7 @@ export function Settings() {
     store().instance.set("config", config).catch(console.error);
   };
 
+  // Add a new location to the list (max 5)
   const handleAddLocation = () => {
     if (!newCity.trim()) return;
 
@@ -60,12 +64,14 @@ export function Settings() {
     setNewCity("");
   };
 
+  // Remove a location from the list (min 1)
   const handleRemoveLocation = (id: string) => {
     const updatedLocations = locations.filter((loc) => loc.id !== id);
     setLocations(updatedLocations);
     saveConfig(updatedLocations);
   };
 
+  // Update the custom display name for a location
   const handleUpdateDisplayName = (id: string, newDisplayName: string) => {
     const updatedLocations = locations.map((loc) =>
       loc.id === id ? { ...loc, displayName: newDisplayName } : loc
@@ -74,11 +80,13 @@ export function Settings() {
     saveConfig(updatedLocations);
   };
 
+  // Update how long each location displays on screen (5-60 seconds)
   const handleDurationChange = (newDuration: number) => {
     setDisplayDuration(newDuration);
     saveConfig(locations, newDuration);
   };
 
+  // Reorder locations (controls rotation sequence on device)
   const moveLocation = (index: number, direction: "up" | "down") => {
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= locations.length) return;
@@ -107,16 +115,24 @@ export function Settings() {
             onChange={(e) => setNewCity(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
             placeholder="Enter city name (e.g., Vancouver)"
-            disabled={isLoading}
+            disabled={isLoading || locations.length >= 5}
           />
           <button
             className="settings__button settings__button--add"
             onClick={handleAddLocation}
-            disabled={isLoading || !newCity.trim()}
+            disabled={isLoading || !newCity.trim() || locations.length >= 5}
+            title={
+              locations.length >= 5
+                ? "Maximum 5 locations allowed"
+                : "Add location"
+            }
           >
             +
           </button>
         </div>
+        {locations.length >= 5 && (
+          <div className="settings__info">Maximum of 5 locations reached</div>
+        )}
 
         {/* Location list */}
         <div className="settings__locations">
