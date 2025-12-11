@@ -208,7 +208,7 @@ export function Render() {
       return;
 
     const cycleDuration = config.displayDuration * 1000; // Convert to ms
-    const fadeDuration = 500; // Fade transition duration in ms
+    const fadeDuration = 300; // Fade transition duration in ms
 
     const cycleTimer = setInterval(() => {
       // Fade out
