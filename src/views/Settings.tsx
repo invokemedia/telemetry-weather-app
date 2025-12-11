@@ -11,6 +11,7 @@ export function Settings() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [newCity, setNewCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [durationError, setDurationError] = useState("");
 
   // Load saved config from storage on mount, or create default config
   useEffect(() => {
@@ -91,6 +92,14 @@ export function Settings() {
   // Update how long each location displays on screen (5-60 seconds)
   const handleDurationChange = (newDuration: number) => {
     setDisplayDuration(newDuration);
+
+    // Validate range: 5-60 seconds
+    if (newDuration < 5 || newDuration > 60) {
+      setDurationError("Display duration must be between 5 and 60 seconds");
+      return;
+    }
+
+    setDurationError("");
     saveConfig(locations, newDuration);
   };
 
@@ -211,6 +220,9 @@ export function Settings() {
             onChange={(e) => handleDurationChange(Number(e.target.value))}
             disabled={isLoading || locations.length <= 1}
           />
+          {durationError && (
+            <div className="settings__error">{durationError}</div>
+          )}
         </div>
 
         <div className="settings__field">
