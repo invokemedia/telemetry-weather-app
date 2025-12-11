@@ -19,8 +19,29 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
   };
 
   const getDayLabel = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 2);
+    // Parse date in UTC to avoid timezone shifting
+    const date = new Date(datetime + "T00:00:00Z");
+    return date
+      .toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" })
+      .slice(0, 2);
+  };
+
+  // Determine if first forecast day is today or tomorrow
+  const getTomorrowForecast = () => {
+    if (!currentWeather?.Timestamp || forecast.length === 0) return forecast;
+
+    const currentDate = new Date(currentWeather.Timestamp * 1000);
+    const currentDateStr = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD
+
+    const firstForecastDate = forecast[0]?.Datetime?.split("T")[0]; // YYYY-MM-DD
+
+    // If first forecast is today, skip it and show from tomorrow
+    if (currentDateStr === firstForecastDate) {
+      return forecast.slice(1);
+    }
+
+    // If first forecast is already tomorrow (different timezone), show as is
+    return forecast;
   };
 
   return (
@@ -71,7 +92,7 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
 
       {/* Bottom forecast section */}
       <div className="weather-widget__content-bottom">
-        {forecast.slice(1, 7).map((day, index) => (
+        {getTomorrowForecast().map((day, index) => (
           <WeatherForecastItem
             key={index}
             temperature={Math.round(day.Temp)}
