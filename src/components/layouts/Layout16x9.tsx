@@ -71,7 +71,7 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
 
       {/* Bottom forecast section */}
       <div className="weather-widget__content-bottom">
-        {forecast.slice(0, 6).map((day, index) => (
+        {forecast.slice(1, 7).map((day, index) => (
           <WeatherForecastItem
             key={index}
             temperature={Math.round(day.Temp)}
