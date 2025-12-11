@@ -26,22 +26,10 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
       .slice(0, 2);
   };
 
-  // Determine if first forecast day is today or tomorrow
+  // Always skip first forecast day and show the next 6 days
   const getTomorrowForecast = () => {
-    if (!currentWeather?.Timestamp || forecast.length === 0) return forecast;
-
-    const currentDate = new Date(currentWeather.Timestamp * 1000);
-    const currentDateStr = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD
-
-    const firstForecastDate = forecast[0]?.Datetime?.split("T")[0]; // YYYY-MM-DD
-
-    // If first forecast is today, skip it and show from tomorrow
-    if (currentDateStr === firstForecastDate) {
-      return forecast.slice(1);
-    }
-
-    // If first forecast is already tomorrow (different timezone), show as is
-    return forecast;
+    // Skip index 0, show indices 1-6
+    return forecast.slice(1, 7);
   };
 
   return (

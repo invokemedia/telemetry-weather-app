@@ -7,8 +7,10 @@ interface Layout1x10Props {
 }
 
 export function Layout1x10({ currentWeather, forecast }: Layout1x10Props) {
-  const tomorrow = forecast[0];
-  const today = forecast.length > 0 ? forecast[0] : null;
+  // First item in forecast is always "today" for the location
+  // Second item is always "tomorrow" for the location
+  const today = forecast[0] || null;
+  const tomorrow = forecast[1] || null;
 
   return (
     <div className="weather-widget weather-widget--1x10">
