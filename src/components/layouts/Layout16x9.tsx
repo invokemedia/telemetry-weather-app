@@ -31,10 +31,10 @@ export function Layout16x9({
       .slice(0, 2);
   };
 
-  // Always skip first forecast day and show the next 6 days
+  // Always skip first forecast day and show the next 5 days
   const getTomorrowForecast = () => {
-    // Skip index 0, show indices 1-6
-    return forecast.slice(1, 7);
+    // Skip index 0, show indices 1-5
+    return forecast.slice(1, 6);
   };
 
   return (
