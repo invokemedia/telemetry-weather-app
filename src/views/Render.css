@@ -38,6 +38,8 @@ html {
   --color-blue-end: #0055b3;
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.9);
+  /* Custom text color (set dynamically from Settings) */
+  --custom-text-color: #ffffff;
 }
 
 /* Dark theme */
@@ -59,7 +61,7 @@ html {
     var(--color-blue-start) 0%,
     var(--color-blue-end) 100%
   );
-  color: var(--color-text-primary);
+  color: var(--custom-text-color, var(--color-text-primary));
   box-sizing: border-box;
   overflow: hidden;
   padding: 80px 40px;

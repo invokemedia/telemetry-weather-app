@@ -71,6 +71,16 @@ export function Render() {
       if (newConfig) {
         setConfig(newConfig);
         setTheme(newConfig.theme || "light");
+
+        // Apply custom text color via CSS custom property
+        if (newConfig.textColor) {
+          document.documentElement.style.setProperty(
+            "--custom-text-color",
+            newConfig.textColor
+          );
+        } else {
+          document.documentElement.style.removeProperty("--custom-text-color");
+        }
       }
     };
 
@@ -80,6 +90,18 @@ export function Render() {
         if (savedConfig) {
           setConfig(savedConfig);
           setTheme(savedConfig.theme || "light");
+
+          // Apply custom text color via CSS custom property
+          if (savedConfig.textColor) {
+            document.documentElement.style.setProperty(
+              "--custom-text-color",
+              savedConfig.textColor
+            );
+          } else {
+            document.documentElement.style.removeProperty(
+              "--custom-text-color"
+            );
+          }
         }
       })
       .catch(console.error);

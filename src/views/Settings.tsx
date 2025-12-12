@@ -5,10 +5,11 @@ import { store, weather } from "@telemetryos/sdk";
 import type { WeatherConfig, Location } from "@/types/weather";
 
 export function Settings() {
-  // State: List of weather locations, display duration, theme, and input for adding new city
+  // State: List of weather locations, display duration, theme, text color, and input for adding new city
   const [locations, setLocations] = useState<Location[]>([]);
   const [displayDuration, setDisplayDuration] = useState(10);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [textColor, setTextColor] = useState<string>("#ffffff");
   const [newCity, setNewCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [durationError, setDurationError] = useState("");
@@ -27,6 +28,7 @@ export function Settings() {
           setLocations(config.locations);
           setDisplayDuration(config.displayDuration || 10);
           setTheme(config.theme || "light");
+          setTextColor(config.textColor || "#ffffff");
         } else {
           const defaultLocation: Location = {
             id: Date.now().toString(),
@@ -51,13 +53,15 @@ export function Settings() {
   const saveConfig = (
     newLocations: Location[],
     newDuration?: number,
-    newTheme?: "light" | "dark"
+    newTheme?: "light" | "dark",
+    newTextColor?: string
   ) => {
     const config: WeatherConfig = {
       locations: newLocations,
       displayDuration: newDuration ?? displayDuration,
       showForecast: true,
       theme: newTheme ?? theme,
+      textColor: newTextColor ?? textColor,
     };
     store().instance.set("config", config).catch(console.error);
   };
@@ -164,6 +168,12 @@ export function Settings() {
   const handleThemeChange = (newTheme: "light" | "dark") => {
     setTheme(newTheme);
     saveConfig(locations, displayDuration, newTheme);
+  };
+
+  // Update text color
+  const handleTextColorChange = (newColor: string) => {
+    setTextColor(newColor);
+    saveConfig(locations, displayDuration, theme, newColor);
   };
 
   // Reorder locations (controls rotation sequence on device)
@@ -330,6 +340,27 @@ export function Settings() {
             >
               🌙 Dark
             </button>
+          </div>
+        </div>
+
+        <div className="settings__field">
+          <div className="settings__label">Text Color</div>
+          <div className="settings__color-picker-group">
+            <input
+              className="settings__color-picker"
+              type="color"
+              value={textColor}
+              onChange={(e) => handleTextColorChange(e.target.value)}
+              disabled={isLoading}
+            />
+            <input
+              className="settings__input settings__input--small"
+              type="text"
+              value={textColor}
+              onChange={(e) => handleTextColorChange(e.target.value)}
+              placeholder="#ffffff"
+              disabled={isLoading}
+            />
           </div>
         </div>
       </div>
