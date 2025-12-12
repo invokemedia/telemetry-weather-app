@@ -1,7 +1,7 @@
 import "./Settings.css";
 
 import { useEffect, useState } from "react";
-import { store } from "@telemetryos/sdk";
+import { store, weather } from "@telemetryos/sdk";
 import type { WeatherConfig, Location } from "@/types/weather";
 
 export function Settings() {
@@ -15,6 +15,8 @@ export function Settings() {
   const [displayNameErrors, setDisplayNameErrors] = useState<
     Record<string, string>
   >({});
+  const [addingLocation, setAddingLocation] = useState(false);
+  const [addLocationError, setAddLocationError] = useState("");
 
   // Load saved config from storage on mount, or create default config
   useEffect(() => {
@@ -60,20 +62,40 @@ export function Settings() {
     store().instance.set("config", config).catch(console.error);
   };
 
-  // Add a new location to the list (max 5)
-  const handleAddLocation = () => {
+  // Add a new location to the list (max 5) - validate city exists first
+  const handleAddLocation = async () => {
     if (!newCity.trim()) return;
 
-    const location: Location = {
-      id: Date.now().toString(),
-      city: newCity.trim(),
-      displayName: newCity.trim(),
-    };
+    setAddingLocation(true);
+    setAddLocationError("");
 
-    const updatedLocations = [...locations, location];
-    setLocations(updatedLocations);
-    saveConfig(updatedLocations);
-    setNewCity("");
+    try {
+      // Test if the city exists by fetching weather data
+      const cityName = newCity.trim();
+      await weather().getConditions({
+        city: cityName,
+        units: "metric",
+      });
+
+      // If successful, add the location
+      const location: Location = {
+        id: Date.now().toString(),
+        city: cityName,
+        displayName: cityName,
+      };
+
+      const updatedLocations = [...locations, location];
+      setLocations(updatedLocations);
+      saveConfig(updatedLocations);
+      setNewCity("");
+    } catch (error) {
+      // City not found or API error
+      setAddLocationError(
+        `Could not find weather data for "${newCity.trim()}". Please check the city name.`
+      );
+    } finally {
+      setAddingLocation(false);
+    }
   };
 
   // Remove a location from the list (min 1)
@@ -169,27 +191,42 @@ export function Settings() {
           <div className="settings__label">Add location (up to 5)</div>
           <div className="settings__input-group">
             <input
-              className="settings__input"
+              className={`settings__input ${
+                addLocationError ? "settings__input--error" : ""
+              }`}
               type="text"
               value={newCity}
-              onChange={(e) => setNewCity(e.target.value)}
+              onChange={(e) => {
+                setNewCity(e.target.value);
+                setAddLocationError(""); // Clear error when user types
+              }}
               onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
               placeholder="Enter city name (e.g., Vancouver)"
-              disabled={isLoading || locations.length >= 5}
+              disabled={isLoading || locations.length >= 5 || addingLocation}
             />
             <button
               className="settings__button settings__button--add"
               onClick={handleAddLocation}
-              disabled={isLoading || !newCity.trim() || locations.length >= 5}
+              disabled={
+                isLoading ||
+                !newCity.trim() ||
+                locations.length >= 5 ||
+                addingLocation
+              }
               title={
                 locations.length >= 5
                   ? "Maximum 5 locations allowed"
                   : "Add location"
               }
             >
-              +
+              {addingLocation ? "..." : "+"}
             </button>
           </div>
+          {addLocationError && (
+            <div className="settings__error settings__error--small">
+              {addLocationError}
+            </div>
+          )}
         </div>
         {locations.length >= 5 && (
           <div className="settings__info">Maximum of 5 locations reached</div>
