@@ -4,9 +4,10 @@ import { getWeatherIcon } from "@/utils/weatherIcons";
 interface Layout1x1Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
+  locationName?: string;
 }
 
-export function Layout1x1({ currentWeather }: Layout1x1Props) {
+export function Layout1x1({ currentWeather, locationName }: Layout1x1Props) {
   return (
     <div className="weather-widget weather-widget--1x1">
       {/* Weather icon */}
@@ -26,6 +27,11 @@ export function Layout1x1({ currentWeather }: Layout1x1Props) {
       <div className="weather-widget__condition-text">
         {currentWeather?.WeatherText || "Loading..."}
       </div>
+
+      {/* Location name */}
+      {locationName && (
+        <div className="weather-widget__location-label">{locationName}</div>
+      )}
     </div>
   );
 }

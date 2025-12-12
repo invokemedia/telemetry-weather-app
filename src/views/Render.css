@@ -114,6 +114,14 @@ html {
   line-height: 1;
 }
 
+.weather-widget--1x1 .weather-widget__location-label {
+  font-size: calc(100vw / 287 * 24);
+  line-height: 1.2;
+  opacity: 0.9;
+  text-align: center;
+  margin-top: calc(100vw / 287 * 8);
+}
+
 /* --------------------------------------------------
    16:9 LAYOUT
 -------------------------------------------------- */
@@ -286,6 +294,14 @@ html {
 .weather-widget--1x10 .weather-widget__temp-max,
 .weather-widget--1x10 .weather-widget__temp-min {
   font-size: calc(100vw / 128 * 28);
+}
+
+.weather-widget--1x10 .weather-widget__location-label-small {
+  font-size: calc(100vw / 128 * 20);
+  line-height: 1.2;
+  opacity: 0.8;
+  text-align: center;
+  margin-top: calc(100vw / 128 * 12);
 }
 
 /* --------------------------------------------------

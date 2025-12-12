@@ -12,6 +12,9 @@ export function Settings() {
   const [newCity, setNewCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [durationError, setDurationError] = useState("");
+  const [displayNameErrors, setDisplayNameErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Load saved config from storage on mount, or create default config
   useEffect(() => {
@@ -80,13 +83,45 @@ export function Settings() {
     saveConfig(updatedLocations);
   };
 
+  // Validate display name
+  const validateDisplayName = (name: string): string => {
+    const trimmedName = name.trim();
+    const MAX_LENGTH = 25;
+
+    if (trimmedName.length === 0) {
+      return "Display name cannot be empty";
+    }
+    if (trimmedName.length > MAX_LENGTH) {
+      return `Display name must be ${MAX_LENGTH} characters or less`;
+    }
+    return "";
+  };
+
   // Update the custom display name for a location
   const handleUpdateDisplayName = (id: string, newDisplayName: string) => {
+    // Validate the display name
+    const error = validateDisplayName(newDisplayName);
+
+    // Update error state
+    setDisplayNameErrors((prev) => {
+      if (error) {
+        return { ...prev, [id]: error };
+      } else {
+        const { [id]: _, ...rest } = prev;
+        return rest;
+      }
+    });
+
+    // Update location state regardless (allows user to type)
     const updatedLocations = locations.map((loc) =>
       loc.id === id ? { ...loc, displayName: newDisplayName } : loc
     );
     setLocations(updatedLocations);
-    saveConfig(updatedLocations);
+
+    // Only save to config if valid
+    if (!error) {
+      saveConfig(updatedLocations);
+    }
   };
 
   // Update how long each location displays on screen (5-60 seconds)
@@ -181,15 +216,27 @@ export function Settings() {
                 </button>
               </div>
               <div className="settings__location-info">
+                <div className="settings__location-city-label">
+                  {location.city}
+                </div>
                 <input
-                  className="settings__input settings__input--small"
+                  className={`settings__input settings__input--small ${
+                    displayNameErrors[location.id]
+                      ? "settings__input--error"
+                      : ""
+                  }`}
                   type="text"
-                  value={location.displayName || location.city}
+                  value={location.displayName || ""}
                   onChange={(e) =>
                     handleUpdateDisplayName(location.id, e.target.value)
                   }
                   placeholder="Display name"
                 />
+                {displayNameErrors[location.id] && (
+                  <div className="settings__error settings__error--small">
+                    {displayNameErrors[location.id]}
+                  </div>
+                )}
               </div>
               <button
                 className="settings__button settings__button--remove"

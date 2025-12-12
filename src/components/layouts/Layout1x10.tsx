@@ -4,9 +4,14 @@ import { getWeatherIcon } from "@/utils/weatherIcons";
 interface Layout1x10Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
+  locationName?: string;
 }
 
-export function Layout1x10({ currentWeather, forecast }: Layout1x10Props) {
+export function Layout1x10({
+  currentWeather,
+  forecast,
+  locationName,
+}: Layout1x10Props) {
   // First item in forecast is always "today" for the location
   // Second item is always "tomorrow" for the location
   const today = forecast[0] || null;
@@ -44,6 +49,13 @@ export function Layout1x10({ currentWeather, forecast }: Layout1x10Props) {
           ↓ {today?.MinTemp ? Math.round(today.MinTemp) : "--"}°
         </div>
       </div>
+
+      {/* Location name at bottom */}
+      {locationName && (
+        <div className="weather-widget__location-label-small">
+          {locationName}
+        </div>
+      )}
     </div>
   );
 }

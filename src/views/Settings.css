@@ -66,6 +66,12 @@
   border-radius: 6px;
 }
 
+.settings__error--small {
+  font-size: 11px;
+  padding: 4px 8px;
+  margin-top: 2px;
+}
+
 /* Inputs */
 .settings__input {
   flex: 1;
@@ -97,6 +103,16 @@
 .settings__input--small {
   font-size: 13px;
   padding: 6px 10px;
+}
+
+.settings__input--error {
+  border-color: hsl(0 65% 50%);
+  background: hsl(0 60% 8%);
+}
+
+.settings__input--error:focus {
+  border-color: hsl(0 65% 60%);
+  background: hsl(0 60% 10%);
 }
 
 /* Buttons */
@@ -183,7 +199,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+}
+
+.settings__location-city-label {
+  font-size: 11px;
+  color: hsl(210 40% 60%);
+  font-weight: 500;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
 }
 
 /* Checkbox */

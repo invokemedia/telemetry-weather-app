@@ -5,9 +5,14 @@ import { getWeatherIcon } from "@/utils/weatherIcons";
 interface Layout16x9Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
+  locationName?: string;
 }
 
-export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
+export function Layout16x9({
+  currentWeather,
+  forecast,
+  locationName,
+}: Layout16x9Props) {
   const getLastUpdatedTime = () => {
     if (!currentWeather?.Timestamp) return "--:--";
     const date = new Date(currentWeather.Timestamp * 1000);
@@ -40,7 +45,7 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
         <div className="weather-widget__row-header">
           <div className="weather-widget__col">
             <div className="weather-widget__location">
-              {currentWeather?.CityLocalized || "Loading..."}
+              {locationName || currentWeather?.CityLocalized || "Loading..."}
             </div>
           </div>
           <div className="weather-widget__col--right">

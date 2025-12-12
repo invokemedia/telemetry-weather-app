@@ -243,13 +243,25 @@ export function Render() {
       }`}
     >
       {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
-        <Layout16x9 currentWeather={currentWeather} forecast={forecast} />
+        <Layout16x9
+          currentWeather={currentWeather}
+          forecast={forecast}
+          locationName={currentLocation?.displayName || currentLocation?.city}
+        />
       )}
       {aspectRatio === ASPECT_RATIOS.SQUARE_1x1 && (
-        <Layout1x1 currentWeather={currentWeather} forecast={forecast} />
+        <Layout1x1
+          currentWeather={currentWeather}
+          forecast={forecast}
+          locationName={currentLocation?.displayName || currentLocation?.city}
+        />
       )}
       {aspectRatio === ASPECT_RATIOS.SUPER_TALL_1x10 && (
-        <Layout1x10 currentWeather={currentWeather} forecast={forecast} />
+        <Layout1x10
+          currentWeather={currentWeather}
+          forecast={forecast}
+          locationName={currentLocation?.displayName || currentLocation?.city}
+        />
       )}
     </div>
   );
