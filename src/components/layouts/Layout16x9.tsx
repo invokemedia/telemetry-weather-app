@@ -57,7 +57,10 @@ export function Layout16x9({ currentWeather, forecast }: Layout16x9Props) {
               {currentWeather?.Temp ? Math.round(currentWeather.Temp) : "--"}°
             </div>
             <div className="weather-widget__icon">
-              {getWeatherIcon(currentWeather?.WeatherCode || "")}
+              <img
+                src={getWeatherIcon(currentWeather?.WeatherCode || "")}
+                alt="Weather icon"
+              />
             </div>
           </div>
           <div className="weather-widget__col-details">
