@@ -32,6 +32,7 @@ export interface WeatherConfig {
   locations: Location[];
   displayDuration: number; // seconds per location
   showForecast: boolean;
+  forecastType?: "hourly" | "daily"; // Type of forecast to display
   theme: "light" | "dark"; // Color theme for widget
   textColor?: string; // Primary text color (hex format, e.g., "#ffffff")
   textOpacity?: number; // Primary text opacity (0-100)

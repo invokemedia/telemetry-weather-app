@@ -5,12 +5,14 @@ import { getWeatherIcon } from "@/utils/weatherIcons";
 interface Layout16x9Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
+  forecastType: "hourly" | "daily";
   locationName?: string;
 }
 
 export function Layout16x9({
   currentWeather,
   forecast,
+  forecastType,
   locationName,
 }: Layout16x9Props) {
   const getLastUpdatedTime = () => {
@@ -31,10 +33,36 @@ export function Layout16x9({
       .slice(0, 2);
   };
 
-  // Always skip first forecast day and show the next 5 days
-  const getTomorrowForecast = () => {
-    // Skip index 0, show indices 1-5
-    return forecast.slice(1, 6);
+  const getHourLabel = (datetime: string) => {
+    // Hourly forecast datetime format: "2025-12-16:13" (YYYY-MM-DD:HH)
+    // Split by the last colon to separate date and hour
+    const lastColonIndex = datetime.lastIndexOf(":");
+    if (lastColonIndex !== -1) {
+      const datePart = datetime.substring(0, lastColonIndex); // "2025-12-16"
+      const hourPart = datetime.substring(lastColonIndex + 1); // "13"
+      // Create valid ISO string: "2025-12-16T13:00:00"
+      const isoString = `${datePart}T${hourPart}:00:00`;
+      const date = new Date(isoString);
+
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          hour12: true,
+        });
+      }
+    }
+    return "--";
+  };
+
+  // Get forecast items to display based on type
+  const getForecastItems = () => {
+    if (forecastType === "hourly") {
+      // Show hourly forecast - pick every 2 hours to fit 6 items
+      return forecast.filter((_, index) => index % 2 === 0).slice(0, 6);
+    } else {
+      // Show daily forecast - skip index 0 (today), show next 5 days (indices 1-5)
+      return forecast.slice(1, 6);
+    }
   };
 
   return (
@@ -88,12 +116,16 @@ export function Layout16x9({
 
       {/* Bottom forecast section */}
       <div className="weather-widget__content-bottom">
-        {getTomorrowForecast().map((day, index) => (
+        {getForecastItems().map((item, index) => (
           <WeatherForecastItem
             key={index}
-            temperature={Math.round(day.Temp)}
-            icon={getWeatherIcon(day.WeatherCode)}
-            day={getDayLabel(day.Datetime)}
+            temperature={Math.round(item.Temp)}
+            icon={getWeatherIcon(item.WeatherCode)}
+            day={
+              forecastType === "hourly"
+                ? getHourLabel(item.Datetime)
+                : getDayLabel(item.Datetime)
+            }
           />
         ))}
       </div>

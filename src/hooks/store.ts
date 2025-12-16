@@ -18,6 +18,7 @@ export const useWeatherConfigStoreState = createUseStoreState<WeatherConfig>(
     ],
     displayDuration: 10,
     showForecast: true,
+    forecastType: "daily",
     theme: "light",
     textColor: "#ffffff",
     textOpacity: 100,

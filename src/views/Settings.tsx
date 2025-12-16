@@ -33,6 +33,7 @@ export function Settings() {
 
   const locations = config.locations || [];
   const displayDuration = config.displayDuration || 10;
+  const forecastType = config.forecastType || "daily";
   const theme = config.theme || "light";
   const textColor = config.textColor || "#ffffff";
   const textOpacity = config.textOpacity ?? 100;
@@ -342,6 +343,40 @@ export function Settings() {
             />
             <span>{displayDuration}s</span>
           </SettingsSliderFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Forecast Type</SettingsLabel>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="forecastType"
+              value="daily"
+              checked={forecastType === "daily"}
+              onChange={(e) =>
+                updateConfig({
+                  forecastType: e.target.value as "hourly" | "daily",
+                })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>📅 Daily (5 days)</SettingsRadioLabel>
+          </SettingsRadioFrame>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="forecastType"
+              value="hourly"
+              checked={forecastType === "hourly"}
+              onChange={(e) =>
+                updateConfig({
+                  forecastType: e.target.value as "hourly" | "daily",
+                })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>🕐 Hourly (today)</SettingsRadioLabel>
+          </SettingsRadioFrame>
         </SettingsField>
 
         <SettingsField>

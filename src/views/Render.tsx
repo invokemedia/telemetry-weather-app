@@ -159,11 +159,14 @@ export function Render() {
   useEffect(() => {
     if (!locations || locations.length === 0) return;
 
-    // Only fetch if location IDs have actually changed
-    if (locationIdsRef.current === currentLocationIds) {
+    // Create a key that includes both location IDs and forecast type
+    const fetchKey = `${currentLocationIds}_${config.forecastType || "daily"}`;
+
+    // Only fetch if location IDs or forecast type have changed
+    if (locationIdsRef.current === fetchKey) {
       return;
     }
-    locationIdsRef.current = currentLocationIds;
+    locationIdsRef.current = fetchKey;
 
     const fetchWeatherForLocation = async (location: Location) => {
       try {
@@ -177,14 +180,26 @@ export function Render() {
 
         console.log("✅ [Render] Current weather:", currentConditions);
 
-        // Fetch 7-day forecast
-        const dailyForecast = await weather().getDailyForecast({
-          city: location.city,
-          units: "metric",
-          days: 7,
-        });
+        // Fetch forecast based on user preference
+        let forecast: WeatherForecast[];
 
-        console.log("✅ [Render] Forecast:", dailyForecast);
+        if (config.forecastType === "hourly") {
+          // Fetch hourly forecast for today
+          forecast = await weather().getHourlyForecast({
+            city: location.city,
+            units: "metric",
+            hours: 24,
+          });
+          console.log("✅ [Render] Hourly forecast:", forecast);
+        } else {
+          // Fetch daily forecast (default)
+          forecast = await weather().getDailyForecast({
+            city: location.city,
+            units: "metric",
+            days: 7,
+          });
+          console.log("✅ [Render] Daily forecast:", forecast);
+        }
 
         // Update state with fresh data
         setWeatherData((prev) => {
@@ -192,7 +207,7 @@ export function Render() {
           newData.set(location.id, {
             location,
             currentWeather: currentConditions,
-            forecast: dailyForecast,
+            forecast: forecast,
           });
           return newData;
         });
@@ -200,7 +215,7 @@ export function Render() {
         // Cache the data to device storage
         const cacheData: CachedWeatherData = {
           currentWeather: currentConditions,
-          forecast: dailyForecast,
+          forecast: forecast,
           cachedAt: Date.now(),
         };
 
@@ -227,7 +242,7 @@ export function Render() {
     const refreshInterval = setInterval(fetchAllWeather, 10 * 60 * 1000);
 
     return () => clearInterval(refreshInterval);
-  }, [currentLocationIds, locations]);
+  }, [currentLocationIds, locations, config.forecastType]);
 
   // Cycle through locations
   useEffect(() => {
@@ -272,6 +287,7 @@ export function Render() {
         <Layout16x9
           currentWeather={currentWeather}
           forecast={forecast}
+          forecastType={config.forecastType || "daily"}
           locationName={currentLocation?.displayName || currentLocation?.city}
         />
       )}
