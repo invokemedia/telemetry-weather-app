@@ -82,6 +82,14 @@ html {
   line-height: normal;
 }
 
+/* Weather icon images */
+.weather-widget__icon img,
+.weather-widget__forecast-icon img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* --------------------------------------------------
    1:1 LAYOUT
 -------------------------------------------------- */
@@ -112,8 +120,8 @@ html {
 }
 
 .weather-widget--1x1 .weather-widget__icon {
-  font-size: calc(100vw / 287 * 70);
-  line-height: 1;
+  width: 100px;
+  height: auto;
 }
 
 .weather-widget--1x1 .weather-widget__location-label {
@@ -147,7 +155,8 @@ html {
 }
 
 .weather-widget--16x9 .weather-widget__icon {
-  font-size: calc(100vw / 1280 * 120);
+  width: 100px;
+  height: auto;
 }
 
 .weather-widget--16x9 .weather-widget__detail-text {
@@ -160,7 +169,8 @@ html {
 }
 
 .weather-widget--16x9 .weather-widget__forecast-icon {
-  font-size: calc(100vw / 1280 * 80);
+  width: 100px;
+  height: auto;
 }
 
 .weather-widget--16x9 .weather-widget__forecast-day {
@@ -282,8 +292,8 @@ html {
 }
 
 .weather-widget--1x10 .weather-widget__icon {
-  font-size: calc(100vw / 128 * 48);
-  line-height: 1;
+  width: 100px;
+  height: auto;
 }
 
 .weather-widget--1x10 .weather-widget__section-bottom {

@@ -42,7 +42,8 @@ project-root/
     │   ├── Settings.tsx        # /settings mount point
     │   └── Render.tsx          # /render mount point
     ├── components/             # Reusable components
-    ├── hooks/                  # Custom React hooks
+    ├── hooks/
+    │   └── store.ts            # Store state hooks (createUseStoreState)
     ├── types/                  # TypeScript interfaces
     └── utils/                  # Helper functions
 ```
@@ -58,6 +59,12 @@ project-root/
   "mountPoints": {
     "render": "/render",
     "settings": "/settings"
+  },
+  "backgroundWorkers": {
+    "background": "workers/background.js"
+  },
+  "serverWorkers": {
+    "api": "workers/api.js"
   },
   "devServer": {
     "runCommand": "vite --port 3000",
@@ -128,79 +135,66 @@ export default function App() {
 }
 ```
 
+### src/hooks/store.ts (Store Hooks)
+
+```typescript
+import { createUseStoreState } from "@telemetryos/sdk/react";
+
+// Create typed hooks for each store key
+export const useTeamStoreState = createUseStoreState<string>("team", "");
+export const useLeagueStoreState = createUseStoreState<string>("league", "nfl");
+```
+
 ### src/views/Settings.tsx (Complete Reference)
 
 ```typescript
-import { useEffect, useState, FormEvent } from "react";
 import { store } from "@telemetryos/sdk";
-
-interface Config {
-  city: string;
-  units: "celsius" | "fahrenheit";
-}
+import {
+  SettingsContainer,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+  SettingsSelectFrame,
+} from "@telemetryos/sdk/react";
+import { useTeamStoreState, useLeagueStoreState } from "../hooks/store";
 
 export default function Settings() {
-  const [config, setConfig] = useState<Config>({ city: "", units: "celsius" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Load existing config on mount
-  useEffect(() => {
-    store()
-      .instance.get<Config>("config")
-      .then((saved) => {
-        if (saved) setConfig(saved);
-      })
-      .catch((err) => setError(err.message));
-  }, []);
-
-  const handleSave = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const success = await store().instance.set("config", config);
-      if (!success) throw new Error("Storage operation failed");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isLoadingTeam, team, setTeam] = useTeamStoreState(store().instance);
+  const [isLoadingLeague, league, setLeague] = useLeagueStoreState(
+    store().instance
+  );
 
   return (
-    <div>
-      <h2>Settings</h2>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      <form onSubmit={handleSave}>
-        <div>
-          <label htmlFor="city">City:</label>
+    <SettingsContainer>
+      <SettingsField>
+        <SettingsLabel>Team Name</SettingsLabel>
+        <SettingsInputFrame>
           <input
-            id="city"
-            value={config.city}
-            onChange={(e) => setConfig({ ...config, city: e.target.value })}
-            required
+            type="text"
+            placeholder="Enter team name..."
+            disabled={isLoadingTeam}
+            value={team}
+            onChange={(e) => setTeam(e.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor="units">Units:</label>
+        </SettingsInputFrame>
+      </SettingsField>
+
+      <SettingsField>
+        <SettingsLabel>League</SettingsLabel>
+        <SettingsSelectFrame>
           <select
-            id="units"
-            value={config.units}
-            onChange={(e) =>
-              setConfig({ ...config, units: e.target.value as Config["units"] })
-            }
+            disabled={isLoadingLeague}
+            value={league}
+            onChange={(e) => setLeague(e.target.value)}
           >
-            <option value="celsius">Celsius</option>
-            <option value="fahrenheit">Fahrenheit</option>
+            <option value="nfl">NFL</option>
+            <option value="nba">NBA</option>
+            <option value="mlb">MLB</option>
+            <option value="nhl">NHL</option>
           </select>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save"}
-        </button>
-      </form>
-    </div>
+        </SettingsSelectFrame>
+      </SettingsField>
+    </SettingsContainer>
   );
 }
 ```
@@ -209,85 +203,86 @@ export default function Settings() {
 
 ```typescript
 import { useEffect, useState } from "react";
-import { store, proxy } from "@telemetryos/sdk";
+import { proxy } from "@telemetryos/sdk";
+import { store } from "@telemetryos/sdk";
+import { useTeamStoreState, useLeagueStoreState } from "../hooks/store";
 
-interface Config {
-  city: string;
-  units: "celsius" | "fahrenheit";
-}
-
-interface WeatherData {
-  temperature: number;
-  conditions: string;
+interface GameScore {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+  status: string;
 }
 
 export default function Render() {
-  const [config, setConfig] = useState<Config | null>(null);
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  // Use same hooks as Settings - automatically syncs when Settings changes
+  const [isLoadingTeam, team] = useTeamStoreState(store().instance);
+  const [isLoadingLeague, league] = useLeagueStoreState(store().instance);
+
+  const [score, setScore] = useState<GameScore | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to config changes from Settings
+  // Fetch scores when config changes
   useEffect(() => {
-    store().instance.get<Config>("config").then(setConfig);
+    if (!team) return;
 
-    const handler = (newConfig: Config | undefined) => {
-      if (newConfig) setConfig(newConfig);
-    };
-    store().instance.subscribe("config", handler);
-
-    return () => {
-      store().instance.unsubscribe("config", handler);
-    };
-  }, []);
-
-  // Fetch weather when config changes
-  useEffect(() => {
-    if (!config?.city) return;
-
-    const fetchWeather = async () => {
+    const fetchScore = async () => {
       setLoading(true);
       setError(null);
 
       try {
+        // Platform handles caching automatically - no manual cache needed
         const response = await proxy().fetch(
-          `https://api.example.com/weather?city=${config.city}&units=${config.units}`
+          `https://api.sportsdata.io/v3/${league}/scores/json/GamesByTeam/${team}`
         );
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);
 
         const data = await response.json();
-        setWeather({ temperature: data.temp, conditions: data.conditions });
-
-        // Cache for offline
-        await store().device.set("cached", { data, timestamp: Date.now() });
+        if (data.length > 0) {
+          const game = data[0];
+          setScore({
+            homeTeam: game.HomeTeam,
+            awayTeam: game.AwayTeam,
+            homeScore: game.HomeScore,
+            awayScore: game.AwayScore,
+            status: game.Status,
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
-
-        // Try cached data
-        const cached = await store().device.get<any>("cached");
-        if (cached) setWeather(cached.data);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWeather();
-  }, [config]);
+    fetchScore();
+  }, [team, league]);
 
-  // States
-  if (!config) return <div>Configure in Settings</div>;
-  if (loading && !weather) return <div>Loading...</div>;
-  if (error && !weather) return <div>Error: {error}</div>;
+  // Loading state
+  if (isLoadingTeam || isLoadingLeague) return <div>Loading config...</div>;
+  if (!team) return <div>Configure team in Settings</div>;
+  if (loading && !score) return <div>Loading scores...</div>;
+  if (error && !score) return <div>Error: {error}</div>;
 
   return (
     <div>
-      <h1>{config.city}</h1>
-      <div>
-        {weather?.temperature}°{config.units === "celsius" ? "C" : "F"}
-      </div>
-      <div>{weather?.conditions}</div>
-      {error && <div style={{ color: "orange" }}>Showing cached data</div>}
+      <h1>
+        {team} - {league.toUpperCase()}
+      </h1>
+      {score && (
+        <div>
+          <div>
+            {score.awayTeam} @ {score.homeTeam}
+          </div>
+          <div>
+            {score.awayScore} - {score.homeScore}
+          </div>
+          <div>{score.status}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -379,9 +374,9 @@ proxy().fetch(url: string, options?: RequestInit): Promise<Response>
 ```
 
 - Same interface as standard fetch()
-- Use for ALL external API calls to avoid CORS errors
+- Use when external APIs don't include CORS headers
 - Returns standard Response object
-- Handles CORS server-side
+- Regular `fetch()` works fine when CORS is not an issue (and has advanced caching in the player)
 
 **Example:**
 
@@ -557,6 +552,374 @@ if (result.ready.includes("app-specifier-hash")) {
 }
 ```
 
+## React Hooks for Store
+
+Import from `@telemetryos/sdk/react`. These hooks simplify store interactions by handling subscriptions, loading states, and cleanup automatically.
+
+### useStoreState
+
+Syncs React state with a store key. Handles subscription/unsubscription automatically.
+
+```typescript
+import { useStoreState } from "@telemetryos/sdk/react";
+import { store } from "@telemetryos/sdk";
+
+function MyComponent() {
+  const [isLoading, value, setValue] = useStoreState<string>(
+    store().instance, // Store slice
+    "myKey", // Key name
+    "default value", // Initial state (optional)
+    300 // Debounce delay in ms (optional)
+  );
+
+  return (
+    <input
+      disabled={isLoading}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+```
+
+**Returns:** `[isLoading: boolean, value: T, setValue: Dispatch<SetStateAction<T>>]`
+
+- `isLoading` - `true` until first value received from store
+- `value` - Current value (from store or local optimistic update)
+- `setValue` - Updates both local state and store (with optional debounce)
+
+### createUseStoreState
+
+Factory function to create reusable, typed hooks for specific store keys. **This is the recommended pattern.**
+
+```typescript
+// hooks/store.ts
+import { createUseStoreState } from "@telemetryos/sdk/react";
+
+// Create typed hooks for each store key
+export const useTeamStoreState = createUseStoreState<string>("team", "");
+export const useLeagueStoreState = createUseStoreState<string>("league", "nfl");
+export const useRefreshIntervalStoreState = createUseStoreState<number>(
+  "refreshInterval",
+  30
+);
+```
+
+```typescript
+// views/Settings.tsx
+import { store } from "@telemetryos/sdk";
+import { useTeamStoreState, useLeagueStoreState } from "../hooks/store";
+
+function Settings() {
+  const [isLoadingTeam, team, setTeam] = useTeamStoreState(store().instance);
+  const [isLoadingLeague, league, setLeague] = useLeagueStoreState(
+    store().instance
+  );
+  // ... use in components
+}
+```
+
+**Benefits:**
+
+- Type-safe: TypeScript knows the exact type of each store key
+- Reusable: Same hook works in Settings and Render
+- Automatic cleanup: No manual subscribe/unsubscribe needed
+- Immediate sync: Changes sync to store automatically (no save button needed)
+
+### Store Data Patterns
+
+**Recommended: Separate store entry per field**
+
+```typescript
+// hooks/store.ts
+export const useTeamStoreState = createUseStoreState<string>("team", "");
+export const useLeagueStoreState = createUseStoreState<string>("league", "nfl");
+export const useShowScoresStoreState = createUseStoreState<boolean>(
+  "showScores",
+  true
+);
+```
+
+**Alternative: Rich data object** (for tightly related data like slideshow items)
+
+```typescript
+// hooks/store.ts
+interface SportsSlide {
+  team: string;
+  league: string;
+  displaySeconds: number;
+}
+
+export const useSlidesStoreState = createUseStoreState<SportsSlide[]>(
+  "slides",
+  []
+);
+```
+
+## Settings Components
+
+Import from `@telemetryos/sdk/react`. These components ensure your Settings UI matches the Studio design system.
+
+**Important:** Always use these components for Settings. Raw HTML won't look correct in Studio.
+
+### Container & Layout
+
+#### SettingsContainer
+
+Root wrapper for all Settings content. Handles color scheme synchronization with Studio.
+
+```typescript
+import { SettingsContainer } from "@telemetryos/sdk/react";
+
+function Settings() {
+  return (
+    <SettingsContainer>
+      {/* All settings content goes here */}
+    </SettingsContainer>
+  );
+}
+```
+
+#### SettingsBox
+
+Container with border for grouping related settings.
+
+```typescript
+import { SettingsBox } from "@telemetryos/sdk/react";
+
+<SettingsBox>{/* Group of related fields */}</SettingsBox>;
+```
+
+#### SettingsDivider
+
+Horizontal rule separator between sections.
+
+```typescript
+import { SettingsDivider } from "@telemetryos/sdk/react";
+
+<SettingsDivider />;
+```
+
+### Field Structure
+
+#### SettingsField, SettingsLabel
+
+Wrapper for each form field with its label.
+
+```typescript
+import { SettingsField, SettingsLabel } from "@telemetryos/sdk/react";
+
+<SettingsField>
+  <SettingsLabel>Field Label</SettingsLabel>
+  {/* Input component goes here */}
+</SettingsField>;
+```
+
+### Text Inputs
+
+#### SettingsInputFrame (Text Input)
+
+```typescript
+import { store } from "@telemetryos/sdk";
+import {
+  SettingsContainer,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+} from "@telemetryos/sdk/react";
+import { useTeamStoreState } from "../hooks/store";
+
+function Settings() {
+  const [isLoading, team, setTeam] = useTeamStoreState(store().instance);
+
+  return (
+    <SettingsContainer>
+      <SettingsField>
+        <SettingsLabel>Team Name</SettingsLabel>
+        <SettingsInputFrame>
+          <input
+            type="text"
+            placeholder="Enter team name..."
+            disabled={isLoading}
+            value={team}
+            onChange={(e) => setTeam(e.target.value)}
+          />
+        </SettingsInputFrame>
+      </SettingsField>
+    </SettingsContainer>
+  );
+}
+```
+
+#### SettingsTextAreaFrame (Multiline Text)
+
+```typescript
+import { SettingsTextAreaFrame } from '@telemetryos/sdk/react'
+import { useDescriptionStoreState } from '../hooks/store'
+
+const [isLoading, description, setDescription] = useDescriptionStoreState(store().instance)
+
+<SettingsField>
+  <SettingsLabel>Description</SettingsLabel>
+  <SettingsTextAreaFrame>
+    <textarea
+      placeholder="Enter description..."
+      disabled={isLoading}
+      value={description}
+      onChange={(e) => setDescription(e.target.value)}
+      rows={4}
+    />
+  </SettingsTextAreaFrame>
+</SettingsField>
+```
+
+### Selection Inputs
+
+#### SettingsSelectFrame (Dropdown)
+
+```typescript
+import { SettingsSelectFrame } from '@telemetryos/sdk/react'
+import { useLeagueStoreState } from '../hooks/store'
+
+const [isLoading, league, setLeague] = useLeagueStoreState(store().instance)
+
+<SettingsField>
+  <SettingsLabel>League</SettingsLabel>
+  <SettingsSelectFrame>
+    <select
+      disabled={isLoading}
+      value={league}
+      onChange={(e) => setLeague(e.target.value)}
+    >
+      <option value="nfl">NFL</option>
+      <option value="nba">NBA</option>
+      <option value="mlb">MLB</option>
+      <option value="nhl">NHL</option>
+    </select>
+  </SettingsSelectFrame>
+</SettingsField>
+```
+
+#### SettingsSliderFrame (Range Slider)
+
+```typescript
+import { SettingsSliderFrame } from '@telemetryos/sdk/react'
+import { useVolumeStoreState } from '../hooks/store'
+
+const [isLoading, volume, setVolume] = useVolumeStoreState(store().instance)
+
+<SettingsField>
+  <SettingsLabel>Volume</SettingsLabel>
+  <SettingsSliderFrame>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      disabled={isLoading}
+      value={volume}
+      onChange={(e) => setVolume(Number(e.target.value))}
+    />
+    <span>{volume}%</span>  {/* Optional value label */}
+  </SettingsSliderFrame>
+</SettingsField>
+```
+
+The frame uses flexbox layout, so you can optionally add a `<span>` after the input to display the current value.
+
+### Toggle Inputs
+
+#### SettingsSwitchFrame, SettingsSwitchLabel (Toggle Switch)
+
+```typescript
+import { SettingsSwitchFrame, SettingsSwitchLabel } from '@telemetryos/sdk/react'
+import { useShowScoresStoreState } from '../hooks/store'
+
+const [isLoading, showScores, setShowScores] = useShowScoresStoreState(store().instance)
+
+<SettingsField>
+  <SettingsSwitchFrame>
+    <input
+      type="checkbox"
+      role="switch"
+      disabled={isLoading}
+      checked={showScores}
+      onChange={(e) => setShowScores(e.target.checked)}
+    />
+    <SettingsSwitchLabel>Show Live Scores</SettingsSwitchLabel>
+  </SettingsSwitchFrame>
+</SettingsField>
+```
+
+#### SettingsCheckboxFrame, SettingsCheckboxLabel (Checkbox)
+
+```typescript
+import { SettingsCheckboxFrame, SettingsCheckboxLabel } from '@telemetryos/sdk/react'
+import { useAutoRefreshStoreState } from '../hooks/store'
+
+const [isLoading, autoRefresh, setAutoRefresh] = useAutoRefreshStoreState(store().instance)
+
+<SettingsField>
+  <SettingsCheckboxFrame>
+    <input
+      type="checkbox"
+      disabled={isLoading}
+      checked={autoRefresh}
+      onChange={(e) => setAutoRefresh(e.target.checked)}
+    />
+    <SettingsCheckboxLabel>Enable Auto-Refresh</SettingsCheckboxLabel>
+  </SettingsCheckboxFrame>
+</SettingsField>
+```
+
+#### SettingsRadioFrame, SettingsRadioLabel (Radio Buttons)
+
+```typescript
+import { SettingsRadioFrame, SettingsRadioLabel } from '@telemetryos/sdk/react'
+import { useDisplayModeStoreState } from '../hooks/store'
+
+const [isLoading, displayMode, setDisplayMode] = useDisplayModeStoreState(store().instance)
+
+<SettingsField>
+  <SettingsLabel>Display Mode</SettingsLabel>
+  <SettingsRadioFrame>
+    <input
+      type="radio"
+      name="displayMode"
+      value="compact"
+      disabled={isLoading}
+      checked={displayMode === 'compact'}
+      onChange={(e) => setDisplayMode(e.target.value)}
+    />
+    <SettingsRadioLabel>Compact</SettingsRadioLabel>
+  </SettingsRadioFrame>
+  <SettingsRadioFrame>
+    <input
+      type="radio"
+      name="displayMode"
+      value="expanded"
+      disabled={isLoading}
+      checked={displayMode === 'expanded'}
+      onChange={(e) => setDisplayMode(e.target.value)}
+    />
+    <SettingsRadioLabel>Expanded</SettingsRadioLabel>
+  </SettingsRadioFrame>
+</SettingsField>
+```
+
+### Actions
+
+#### SettingsButtonFrame
+
+```typescript
+import { SettingsButtonFrame } from "@telemetryos/sdk/react";
+
+<SettingsField>
+  <SettingsButtonFrame>
+    <button onClick={handleReset}>Reset to Defaults</button>
+  </SettingsButtonFrame>
+</SettingsField>;
+```
+
 ## Hard Constraints
 
 **These cause runtime errors:**
@@ -567,10 +930,11 @@ if (result.ready.includes("app-specifier-hash")) {
    - `store().device.*` throws Error in Settings
    - Use `store().instance` or `store().application` instead
 
-2. **External API without proxy**
+2. **CORS errors on external APIs**
 
-   - Direct `fetch()` to external domains fails with CORS error
-   - Must use `proxy().fetch()` for all external requests
+   - Some external APIs don't include CORS headers
+   - Use `proxy().fetch()` when you encounter CORS errors
+   - Regular `fetch()` is fine when CORS is not an issue (and has advanced caching in the player)
 
 3. **Missing configure()**
 
@@ -620,6 +984,53 @@ export default function WeatherCard({ data, onRefresh }: Props) {
 
 ## React Patterns
 
+**Prefer SDK hooks over manual store operations:**
+
+```typescript
+// RECOMMENDED: Use SDK hooks
+import { useTeamStoreState } from "../hooks/store";
+const [isLoading, team, setTeam] = useTeamStoreState(store().instance);
+
+// AVOID: Manual subscription (only for special cases)
+const [team, setTeam] = useState("");
+useEffect(() => {
+  const handler = (value) => setTeam(value);
+  store().instance.subscribe("team", handler);
+  return () => store().instance.unsubscribe("team", handler);
+}, []);
+```
+
+**Subscription behavior:**
+When you call `subscribe()`, the handler is immediately called with the current value. No separate `get()` call is needed:
+
+```typescript
+// WRONG - unnecessary get() call
+useEffect(() => {
+  store().instance.get("config").then(setConfig); // Not needed!
+  store().instance.subscribe("config", handler);
+  // ...
+}, []);
+
+// CORRECT - subscribe handles initial value
+useEffect(() => {
+  const handler = (value) => setConfig(value);
+  store().instance.subscribe("config", handler); // Immediately receives current value
+  return () => store().instance.unsubscribe("config", handler);
+}, []);
+```
+
+**No manual caching needed:**
+The platform automatically caches SDK API calls, `fetch()`, and `proxy().fetch()` requests. Don't implement your own cache:
+
+```typescript
+// WRONG - manual caching
+const response = await fetch(url);
+await store().device.set("cached", data); // Don't do this!
+
+// CORRECT - just fetch, platform handles caching
+const response = await fetch(url);
+```
+
 **Error handling:**
 
 ```typescript
@@ -647,28 +1058,139 @@ const handleAction = async () => {
 };
 ```
 
-**Subscription cleanup:**
+## Low-Level Store API (Alternative)
+
+For special cases where SDK hooks don't fit, you can use the store API directly. This requires manual subscription management.
+
+**Manual subscription pattern:**
 
 ```typescript
-useEffect(() => {
-  const handler = (value) => {
-    /* handle value */
+import { useEffect, useState } from "react";
+import { store } from "@telemetryos/sdk";
+import {
+  SettingsContainer,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+} from "@telemetryos/sdk/react";
+
+interface Config {
+  team: string;
+  league: string;
+}
+
+export default function Settings() {
+  const [config, setConfig] = useState<Config>({ team: "", league: "nfl" });
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Subscribe on mount - subscribe() immediately sends current value
+  useEffect(() => {
+    const handler = (value: Config | undefined) => {
+      if (value) setConfig(value);
+      setIsLoading(false);
+    };
+    store().instance.subscribe<Config>("config", handler);
+
+    return () => {
+      store().instance.unsubscribe("config", handler);
+    };
+  }, []);
+
+  // Update store on change
+  const updateConfig = (updates: Partial<Config>) => {
+    const newConfig = { ...config, ...updates };
+    setConfig(newConfig);
+    store().instance.set("config", newConfig);
   };
-  store().instance.subscribe("key", handler);
-  return () => {
-    store().instance.unsubscribe("key", handler);
-  };
-}, []);
+
+  return (
+    <SettingsContainer>
+      <SettingsField>
+        <SettingsLabel>Team Name</SettingsLabel>
+        <SettingsInputFrame>
+          <input
+            type="text"
+            value={config.team}
+            onChange={(e) => updateConfig({ team: e.target.value })}
+            disabled={isLoading}
+          />
+        </SettingsInputFrame>
+      </SettingsField>
+    </SettingsContainer>
+  );
+}
 ```
 
-**Empty deps for mount-only effects:**
+**Form submission pattern** (for cases requiring validation before save):
 
 ```typescript
-useEffect(() => {
-  // Runs once on mount
-  store().instance.get("config").then(setConfig);
-}, []); // Empty deps array
+import { useState, FormEvent } from "react";
+import { store } from "@telemetryos/sdk";
+import {
+  SettingsContainer,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+} from "@telemetryos/sdk/react";
+
+export default function Settings() {
+  const [team, setTeam] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    try {
+      // Validate before saving
+      if (team.length < 2) throw new Error("Team name too short");
+
+      const success = await store().instance.set("team", team);
+      if (!success) throw new Error("Storage operation failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SettingsContainer>
+      <form onSubmit={handleSubmit}>
+        {error && <div style={{ color: "red" }}>{error}</div>}
+        <SettingsField>
+          <SettingsLabel>Team Name</SettingsLabel>
+          <SettingsInputFrame>
+            <input
+              type="text"
+              value={team}
+              onChange={(e) => setTeam(e.target.value)}
+            />
+          </SettingsInputFrame>
+        </SettingsField>
+        <button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </button>
+      </form>
+    </SettingsContainer>
+  );
+}
 ```
+
+**When to use low-level API:**
+
+- Complex validation logic before saving
+- Batching multiple store operations
+- Custom debouncing behavior
+- Integration with form libraries
+
+**When to use SDK hooks (recommended):**
+
+- Most Settings components
+- Simple form fields
+- Real-time sync between Settings and Render
 
 ## Code Style
 
@@ -684,13 +1206,20 @@ useEffect(() => {
 ```typescript
 // 1. SDK imports
 import { configure, store, proxy } from "@telemetryos/sdk";
+import {
+  SettingsContainer,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+} from "@telemetryos/sdk/react";
 
 // 2. React imports
 import { useEffect, useState } from "react";
 
-// 3. Local imports
-import WeatherCard from "@/components/WeatherCard";
-import type { WeatherData } from "@/types";
+// 3. Local imports (hooks, components, types)
+import { useTeamStoreState } from "../hooks/store";
+import ScoreCard from "@/components/ScoreCard";
+import type { GameScore } from "@/types";
 ```
 
 **TypeScript:**
@@ -747,7 +1276,7 @@ git push origin main
 → Using `store().device` in Settings - use `store().instance` instead
 
 **CORS error**
-→ Using direct `fetch()` - use `proxy().fetch()` instead
+→ External API doesn't include CORS headers - use `proxy().fetch()` for that API
 
 **"Request timeout"**
 → SDK operation exceeded 30 seconds - handle with try/catch

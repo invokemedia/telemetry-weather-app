@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { store, weather } from "@telemetryos/sdk";
 import "./Render.css";
 import { Layout16x9 } from "@/components/layouts/Layout16x9";
 import { Layout1x1 } from "@/components/layouts/Layout1x1";
 import { Layout1x10 } from "@/components/layouts/Layout1x10";
+import { useWeatherConfigStoreState } from "@/hooks/store";
 import type {
   WeatherConditions,
   WeatherForecast,
-  WeatherConfig,
   Location,
   CachedWeatherData,
 } from "@/types/weather";
@@ -20,7 +20,11 @@ interface LocationWeatherData {
 }
 
 export function Render() {
-  const [config, setConfig] = useState<WeatherConfig | null>(null);
+  // Use SDK hook for config state - automatically syncs with Settings
+  const [isLoadingConfig, config] = useWeatherConfigStoreState(
+    store().instance
+  );
+
   const [weatherData, setWeatherData] = useState<
     Map<string, LocationWeatherData>
   >(new Map());
@@ -31,7 +35,19 @@ export function Render() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
     ASPECT_RATIOS.FULL_SCREEN_16x9
   );
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const theme = config.theme || "light";
+
+  // Memoize locations to prevent infinite loops in useEffect dependencies
+  const locations = useMemo(() => config.locations || [], [config.locations]);
+
+  // Track location IDs to detect actual changes (not just reference changes)
+  const locationIdsRef = useRef<string>("");
+  const cacheLoadedForIdsRef = useRef<string>("");
+  const currentLocationIds = useMemo(
+    () => locations.map((loc: Location) => loc.id).join(","),
+    [locations]
+  );
 
   // Detect aspect ratio on mount and window resize
   useEffect(() => {
@@ -65,62 +81,30 @@ export function Render() {
     return () => window.removeEventListener("resize", detectAspectRatio);
   }, []);
 
-  // Subscribe to config changes from Settings
+  // Apply custom text color via CSS custom property
   useEffect(() => {
-    const handler = (newConfig?: WeatherConfig) => {
-      if (newConfig) {
-        setConfig(newConfig);
-        setTheme(newConfig.theme || "light");
-
-        // Apply custom text color via CSS custom property
-        if (newConfig.textColor) {
-          document.documentElement.style.setProperty(
-            "--custom-text-color",
-            newConfig.textColor
-          );
-        } else {
-          document.documentElement.style.removeProperty("--custom-text-color");
-        }
-      }
-    };
-
-    store()
-      .instance.get<WeatherConfig>("config")
-      .then((savedConfig) => {
-        if (savedConfig) {
-          setConfig(savedConfig);
-          setTheme(savedConfig.theme || "light");
-
-          // Apply custom text color via CSS custom property
-          if (savedConfig.textColor) {
-            document.documentElement.style.setProperty(
-              "--custom-text-color",
-              savedConfig.textColor
-            );
-          } else {
-            document.documentElement.style.removeProperty(
-              "--custom-text-color"
-            );
-          }
-        }
-      })
-      .catch(console.error);
-
-    store()
-      .instance.subscribe<WeatherConfig>("config", handler)
-      .catch(console.error);
-
-    return () => {
-      store().instance.unsubscribe("config", handler).catch(console.error);
-    };
-  }, []);
+    if (config.textColor) {
+      document.documentElement.style.setProperty(
+        "--custom-text-color",
+        config.textColor
+      );
+    } else {
+      document.documentElement.style.removeProperty("--custom-text-color");
+    }
+  }, [config.textColor]);
 
   // Load cached weather data on mount (for instant display)
   useEffect(() => {
-    if (!config?.locations || config.locations.length === 0) return;
+    if (!locations || locations.length === 0) return;
+
+    // Only load cache if location IDs have actually changed
+    if (cacheLoadedForIdsRef.current === currentLocationIds) {
+      return;
+    }
+    cacheLoadedForIdsRef.current = currentLocationIds;
 
     const loadCachedData = async () => {
-      for (const location of config.locations) {
+      for (const location of locations) {
         try {
           // Try to load cached data from device storage
           const cached = await store().device.get<CachedWeatherData>(
@@ -150,11 +134,17 @@ export function Render() {
     };
 
     loadCachedData();
-  }, [config]);
+  }, [currentLocationIds, locations]);
 
   // Fetch weather data for all locations
   useEffect(() => {
-    if (!config?.locations || config.locations.length === 0) return;
+    if (!locations || locations.length === 0) return;
+
+    // Only fetch if location IDs have actually changed
+    if (locationIdsRef.current === currentLocationIds) {
+      return;
+    }
+    locationIdsRef.current = currentLocationIds;
 
     const fetchWeatherForLocation = async (location: Location) => {
       try {
@@ -208,7 +198,7 @@ export function Render() {
 
     // Fetch weather for all locations
     const fetchAllWeather = async () => {
-      await Promise.all(config.locations.map(fetchWeatherForLocation));
+      await Promise.all(locations.map(fetchWeatherForLocation));
     };
 
     // Fetch immediately
@@ -218,16 +208,11 @@ export function Render() {
     const refreshInterval = setInterval(fetchAllWeather, 10 * 60 * 1000);
 
     return () => clearInterval(refreshInterval);
-  }, [config]);
+  }, [currentLocationIds, locations]);
 
   // Cycle through locations
   useEffect(() => {
-    if (
-      !config?.locations ||
-      config.locations.length <= 1 ||
-      !config.displayDuration
-    )
-      return;
+    if (!locations || locations.length <= 1 || !config.displayDuration) return;
 
     const cycleDuration = config.displayDuration * 1000; // Convert to ms
     const fadeDuration = 300; // Fade transition duration in ms
@@ -239,17 +224,17 @@ export function Render() {
       // After fade out, change location and fade in
       setTimeout(() => {
         setCurrentLocationIndex((prev) =>
-          prev >= config.locations.length - 1 ? 0 : prev + 1
+          prev >= locations.length - 1 ? 0 : prev + 1
         );
         setFadeState("in");
       }, fadeDuration);
     }, cycleDuration);
 
     return () => clearInterval(cycleTimer);
-  }, [config]);
+  }, [locations, config.displayDuration]);
 
   // Get current location's weather data
-  const currentLocation = config?.locations?.[currentLocationIndex];
+  const currentLocation = locations?.[currentLocationIndex];
   const currentData = currentLocation
     ? weatherData.get(currentLocation.id)
     : null;

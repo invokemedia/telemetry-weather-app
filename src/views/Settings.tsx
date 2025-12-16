@@ -1,69 +1,42 @@
-import "./Settings.css";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { store, weather } from "@telemetryos/sdk";
-import type { WeatherConfig, Location } from "@/types/weather";
+import {
+  SettingsContainer,
+  SettingsBox,
+  SettingsDivider,
+  SettingsField,
+  SettingsLabel,
+  SettingsInputFrame,
+  SettingsButtonFrame,
+  SettingsSliderFrame,
+  SettingsRadioFrame,
+  SettingsRadioLabel,
+} from "@telemetryos/sdk/react";
+import { useWeatherConfigStoreState } from "@/hooks/store";
+import type { Location } from "@/types/weather";
 
 export function Settings() {
-  // State: List of weather locations, display duration, theme, text color, and input for adding new city
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [displayDuration, setDisplayDuration] = useState(10);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [textColor, setTextColor] = useState<string>("#ffffff");
+  // Use SDK hook for config state - automatically syncs with Render
+  const [isLoadingConfig, config, setConfig] = useWeatherConfigStoreState(
+    store().instance
+  );
+
+  // Local state for form inputs and validation
   const [newCity, setNewCity] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [durationError, setDurationError] = useState("");
   const [displayNameErrors, setDisplayNameErrors] = useState<
     Record<string, string>
   >({});
   const [addingLocation, setAddingLocation] = useState(false);
   const [addLocationError, setAddLocationError] = useState("");
 
-  // Load saved config from storage on mount, or create default config
-  useEffect(() => {
-    store()
-      .instance.get<WeatherConfig>("config")
-      .then((config) => {
-        if (config?.locations && config.locations.length > 0) {
-          setLocations(config.locations);
-          setDisplayDuration(config.displayDuration || 10);
-          setTheme(config.theme || "light");
-          setTextColor(config.textColor || "#ffffff");
-        } else {
-          const defaultLocation: Location = {
-            id: Date.now().toString(),
-            city: "Vancouver",
-            displayName: "Vancouver",
-          };
-          const defaultConfig: WeatherConfig = {
-            locations: [defaultLocation],
-            displayDuration: 10,
-            showForecast: true,
-            theme: "light",
-          };
-          store().instance.set("config", defaultConfig).catch(console.error);
-          setLocations([defaultLocation]);
-        }
-        setIsLoading(false);
-      })
-      .catch(console.error);
-  }, []);
+  const locations = config.locations || [];
+  const displayDuration = config.displayDuration || 10;
+  const theme = config.theme || "light";
+  const textColor = config.textColor || "#ffffff";
 
-  // Save config to instance storage (syncs to Render component)
-  const saveConfig = (
-    newLocations: Location[],
-    newDuration?: number,
-    newTheme?: "light" | "dark",
-    newTextColor?: string
-  ) => {
-    const config: WeatherConfig = {
-      locations: newLocations,
-      displayDuration: newDuration ?? displayDuration,
-      showForecast: true,
-      theme: newTheme ?? theme,
-      textColor: newTextColor ?? textColor,
-    };
-    store().instance.set("config", config).catch(console.error);
+  // Update config helper
+  const updateConfig = (updates: Partial<typeof config>) => {
+    setConfig({ ...config, ...updates });
   };
 
   // Add a new location to the list (max 5) - validate city exists first
@@ -89,8 +62,7 @@ export function Settings() {
       };
 
       const updatedLocations = [...locations, location];
-      setLocations(updatedLocations);
-      saveConfig(updatedLocations);
+      updateConfig({ locations: updatedLocations });
       setNewCity("");
     } catch (error) {
       // City not found or API error
@@ -104,9 +76,8 @@ export function Settings() {
 
   // Remove a location from the list (min 1)
   const handleRemoveLocation = (id: string) => {
-    const updatedLocations = locations.filter((loc) => loc.id !== id);
-    setLocations(updatedLocations);
-    saveConfig(updatedLocations);
+    const updatedLocations = locations.filter((loc: Location) => loc.id !== id);
+    updateConfig({ locations: updatedLocations });
   };
 
   // Validate display name
@@ -139,41 +110,27 @@ export function Settings() {
     });
 
     // Update location state regardless (allows user to type)
-    const updatedLocations = locations.map((loc) =>
+    const updatedLocations = locations.map((loc: Location) =>
       loc.id === id ? { ...loc, displayName: newDisplayName } : loc
     );
-    setLocations(updatedLocations);
 
     // Only save to config if valid
     if (!error) {
-      saveConfig(updatedLocations);
+      updateConfig({ locations: updatedLocations });
+    } else {
+      // Still update local state for immediate feedback
+      setConfig({ ...config, locations: updatedLocations });
     }
-  };
-
-  // Update how long each location displays on screen (5-60 seconds)
-  const handleDurationChange = (newDuration: number) => {
-    setDisplayDuration(newDuration);
-
-    // Validate range: 5-60 seconds
-    if (newDuration < 5 || newDuration > 60) {
-      setDurationError("Display duration must be between 5 and 60 seconds");
-      return;
-    }
-
-    setDurationError("");
-    saveConfig(locations, newDuration);
   };
 
   // Toggle between light and dark theme
   const handleThemeChange = (newTheme: "light" | "dark") => {
-    setTheme(newTheme);
-    saveConfig(locations, displayDuration, newTheme);
+    updateConfig({ theme: newTheme });
   };
 
   // Update text color
   const handleTextColorChange = (newColor: string) => {
-    setTextColor(newColor);
-    saveConfig(locations, displayDuration, theme, newColor);
+    updateConfig({ textColor: newColor });
   };
 
   // Reorder locations (controls rotation sequence on device)
@@ -187,183 +144,250 @@ export function Settings() {
       updatedLocations[index],
     ];
 
-    setLocations(updatedLocations);
-    saveConfig(updatedLocations);
+    updateConfig({ locations: updatedLocations });
   };
 
   return (
-    <div className="settings">
-      <div className="settings__section">
-        <h3 className="settings__section-title">Locations</h3>
+    <SettingsContainer>
+      <SettingsBox>
+        <h3 style={{ margin: "0 0 1rem 0" }}>Locations</h3>
 
         {/* Add new location */}
-        <div className="settings__field">
-          <div className="settings__label">Add location (up to 5)</div>
-          <div className="settings__input-group">
-            <input
-              className={`settings__input ${
-                addLocationError ? "settings__input--error" : ""
-              }`}
-              type="text"
-              value={newCity}
-              onChange={(e) => {
-                setNewCity(e.target.value);
-                setAddLocationError(""); // Clear error when user types
-              }}
-              onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
-              placeholder="Enter city name (e.g., Vancouver)"
-              disabled={isLoading || locations.length >= 5 || addingLocation}
-            />
-            <button
-              className="settings__button settings__button--add"
-              onClick={handleAddLocation}
-              disabled={
-                isLoading ||
-                !newCity.trim() ||
-                locations.length >= 5 ||
-                addingLocation
-              }
-              title={
-                locations.length >= 5
-                  ? "Maximum 5 locations allowed"
-                  : "Add location"
-              }
-            >
-              {addingLocation ? "..." : "+"}
-            </button>
+        <SettingsField>
+          <SettingsLabel>Add location (up to 5)</SettingsLabel>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <div style={{ flex: 1 }}>
+              <SettingsInputFrame>
+                <input
+                  type="text"
+                  value={newCity}
+                  onChange={(e) => {
+                    setNewCity(e.target.value);
+                    setAddLocationError(""); // Clear error when user types
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
+                  placeholder="Enter city name (e.g., Vancouver)"
+                  disabled={
+                    isLoadingConfig || locations.length >= 5 || addingLocation
+                  }
+                  style={{
+                    border: addLocationError ? "1px solid #ff4444" : undefined,
+                  }}
+                />
+              </SettingsInputFrame>
+            </div>
+            <SettingsButtonFrame>
+              <button
+                onClick={handleAddLocation}
+                disabled={
+                  isLoadingConfig ||
+                  !newCity.trim() ||
+                  locations.length >= 5 ||
+                  addingLocation
+                }
+                title={
+                  locations.length >= 5
+                    ? "Maximum 5 locations allowed"
+                    : "Add location"
+                }
+              >
+                {addingLocation ? "..." : "+"}
+              </button>
+            </SettingsButtonFrame>
           </div>
           {addLocationError && (
-            <div className="settings__error settings__error--small">
+            <div
+              style={{
+                color: "#ff4444",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+              }}
+            >
               {addLocationError}
             </div>
           )}
-        </div>
-        {locations.length >= 5 && (
-          <div className="settings__info">Maximum of 5 locations reached</div>
-        )}
+          {locations.length >= 5 && (
+            <div
+              style={{
+                color: "#666",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+              }}
+            >
+              Maximum of 5 locations reached
+            </div>
+          )}
+        </SettingsField>
 
         {/* Location list */}
-        <div className="settings__locations">
-          {locations.map((location, index) => (
-            <div key={location.id} className="settings__location-item">
-              <div className="settings__location-controls">
+        {locations.map((location: Location, index: number) => (
+          <div
+            key={location.id}
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              alignItems: "flex-start",
+              padding: "0.75rem",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+              }}
+            >
+              <SettingsButtonFrame>
                 <button
-                  className="settings__button settings__button--small"
                   onClick={() => moveLocation(index, "up")}
                   disabled={index === 0}
+                  style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
                 >
                   ↑
                 </button>
+              </SettingsButtonFrame>
+              <SettingsButtonFrame>
                 <button
-                  className="settings__button settings__button--small"
                   onClick={() => moveLocation(index, "down")}
                   disabled={index === locations.length - 1}
+                  style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
                 >
                   ↓
                 </button>
+              </SettingsButtonFrame>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: "500", marginBottom: "0.5rem" }}>
+                {location.city}
               </div>
-              <div className="settings__location-info">
-                <div className="settings__location-city-label">
-                  {location.city}
-                </div>
+              <SettingsInputFrame>
                 <input
-                  className={`settings__input settings__input--small ${
-                    displayNameErrors[location.id]
-                      ? "settings__input--error"
-                      : ""
-                  }`}
                   type="text"
                   value={location.displayName || ""}
                   onChange={(e) =>
                     handleUpdateDisplayName(location.id, e.target.value)
                   }
                   placeholder="Display name"
+                  style={{
+                    border: displayNameErrors[location.id]
+                      ? "1px solid #ff4444"
+                      : undefined,
+                  }}
                 />
-                {displayNameErrors[location.id] && (
-                  <div className="settings__error settings__error--small">
-                    {displayNameErrors[location.id]}
-                  </div>
-                )}
-              </div>
+              </SettingsInputFrame>
+              {displayNameErrors[location.id] && (
+                <div
+                  style={{
+                    color: "#ff4444",
+                    fontSize: "0.75rem",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {displayNameErrors[location.id]}
+                </div>
+              )}
+            </div>
+            <SettingsButtonFrame>
               <button
-                className="settings__button settings__button--remove"
                 onClick={() => handleRemoveLocation(location.id)}
                 disabled={locations.length === 1}
                 title="Remove location"
+                style={{ padding: "0.5rem 0.75rem" }}
               >
                 ×
               </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="settings__section">
-        <h3 className="settings__section-title">Display Options</h3>
-
-        <div className="settings__field">
-          <div className="settings__label">
-            Display Duration (5-60 seconds per location)
+            </SettingsButtonFrame>
           </div>
-          <input
-            className="settings__input"
-            type="number"
-            min="5"
-            max="60"
-            value={displayDuration}
-            onChange={(e) => handleDurationChange(Number(e.target.value))}
-            disabled={isLoading || locations.length <= 1}
-          />
-          {durationError && (
-            <div className="settings__error">{durationError}</div>
-          )}
-        </div>
+        ))}
+      </SettingsBox>
 
-        <div className="settings__field">
-          <div className="settings__label">Theme</div>
-          <div className="settings__theme-toggle">
-            <button
-              className={`settings__theme-button ${
-                theme === "light" ? "settings__theme-button--active" : ""
-              }`}
-              onClick={() => handleThemeChange("light")}
-              disabled={isLoading}
-            >
-              ☀️ Light
-            </button>
-            <button
-              className={`settings__theme-button ${
-                theme === "dark" ? "settings__theme-button--active" : ""
-              }`}
-              onClick={() => handleThemeChange("dark")}
-              disabled={isLoading}
-            >
-              🌙 Dark
-            </button>
-          </div>
-        </div>
+      <SettingsDivider />
 
-        <div className="settings__field">
-          <div className="settings__label">Text Color</div>
-          <div className="settings__color-picker-group">
+      <SettingsBox>
+        <h3 style={{ margin: "0 0 1rem 0" }}>Display Options</h3>
+
+        <SettingsField>
+          <SettingsLabel>
+            Display Duration: {displayDuration} seconds
+          </SettingsLabel>
+          <SettingsSliderFrame>
             <input
-              className="settings__color-picker"
+              type="range"
+              min="5"
+              max="60"
+              step="1"
+              value={displayDuration}
+              onChange={(e) =>
+                updateConfig({ displayDuration: Number(e.target.value) })
+              }
+              disabled={isLoadingConfig || locations.length <= 1}
+              style={{
+                pointerEvents:
+                  isLoadingConfig || locations.length <= 1 ? "none" : "auto",
+                opacity: isLoadingConfig || locations.length <= 1 ? 0.5 : 1,
+              }}
+            />
+            <span>{displayDuration}s</span>
+          </SettingsSliderFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Theme</SettingsLabel>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="theme"
+              value="light"
+              checked={theme === "light"}
+              onChange={(e) =>
+                handleThemeChange(e.target.value as "light" | "dark")
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>☀️ Light</SettingsRadioLabel>
+          </SettingsRadioFrame>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="theme"
+              value="dark"
+              checked={theme === "dark"}
+              onChange={(e) =>
+                handleThemeChange(e.target.value as "light" | "dark")
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>🌙 Dark</SettingsRadioLabel>
+          </SettingsRadioFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Text Color</SettingsLabel>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <input
               type="color"
               value={textColor}
               onChange={(e) => handleTextColorChange(e.target.value)}
-              disabled={isLoading}
+              disabled={isLoadingConfig}
+              style={{ width: "60px", height: "38px", cursor: "pointer" }}
             />
-            <input
-              className="settings__input settings__input--small"
-              type="text"
-              value={textColor}
-              onChange={(e) => handleTextColorChange(e.target.value)}
-              placeholder="#ffffff"
-              disabled={isLoading}
-            />
+            <div style={{ flex: 1 }}>
+              <SettingsInputFrame>
+                <input
+                  type="text"
+                  value={textColor}
+                  onChange={(e) => handleTextColorChange(e.target.value)}
+                  placeholder="#ffffff"
+                  disabled={isLoadingConfig}
+                />
+              </SettingsInputFrame>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </SettingsField>
+      </SettingsBox>
+    </SettingsContainer>
   );
 }
