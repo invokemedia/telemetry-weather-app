@@ -38,8 +38,9 @@ html {
   --color-blue-end: #0055b3;
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.9);
-  /* Custom text color (set dynamically from Settings) */
-  --custom-text-color: #ffffff;
+  /* Custom colors (set dynamically from Settings) */
+  --custom-text-color: rgba(255, 255, 255, 1);
+  --custom-accent-color: rgba(255, 255, 255, 0.68);
 }
 
 /* Dark theme */
@@ -67,6 +68,15 @@ html {
   padding: 80px 40px;
   gap: 32px;
   border-radius: 24px;
+}
+
+/* Accent color elements */
+.weather-widget__feels-like,
+.weather-widget__detail-text,
+.weather-widget__forecast-day,
+.weather-widget__location-label,
+.weather-widget__location-label-small {
+  color: var(--custom-accent-color);
 }
 
 /* Base fallback text sizes */

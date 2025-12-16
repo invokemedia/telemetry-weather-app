@@ -20,6 +20,9 @@ export const useWeatherConfigStoreState = createUseStoreState<WeatherConfig>(
     showForecast: true,
     theme: "light",
     textColor: "#ffffff",
+    textOpacity: 100,
+    accentColor: "#ffffff",
+    accentOpacity: 68,
   }
 );
 

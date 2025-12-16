@@ -33,7 +33,10 @@ export interface WeatherConfig {
   displayDuration: number; // seconds per location
   showForecast: boolean;
   theme: "light" | "dark"; // Color theme for widget
-  textColor?: string; // Custom text color (hex format, e.g., "#ffffff")
+  textColor?: string; // Primary text color (hex format, e.g., "#ffffff")
+  textOpacity?: number; // Primary text opacity (0-100)
+  accentColor?: string; // Accent text color (hex format, e.g., "#ffffff")
+  accentOpacity?: number; // Accent text opacity (0-100)
 }
 
 // Cached weather data with timestamp

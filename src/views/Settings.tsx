@@ -33,6 +33,9 @@ export function Settings() {
   const displayDuration = config.displayDuration || 10;
   const theme = config.theme || "light";
   const textColor = config.textColor || "#ffffff";
+  const textOpacity = config.textOpacity ?? 100;
+  const accentColor = config.accentColor || "#ffffff";
+  const accentOpacity = config.accentOpacity ?? 68;
 
   // Update config helper
   const updateConfig = (updates: Partial<typeof config>) => {
@@ -131,6 +134,11 @@ export function Settings() {
   // Update text color
   const handleTextColorChange = (newColor: string) => {
     updateConfig({ textColor: newColor });
+  };
+
+  // Update accent color
+  const handleAccentColorChange = (newColor: string) => {
+    updateConfig({ accentColor: newColor });
   };
 
   // Reorder locations (controls rotation sequence on device)
@@ -386,6 +394,66 @@ export function Settings() {
               </SettingsInputFrame>
             </div>
           </div>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Text Opacity: {textOpacity}%</SettingsLabel>
+          <SettingsSliderFrame>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={textOpacity}
+              onChange={(e) =>
+                updateConfig({ textOpacity: Number(e.target.value) })
+              }
+              disabled={isLoadingConfig}
+            />
+            <span>{textOpacity}%</span>
+          </SettingsSliderFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Accent Color</SettingsLabel>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <input
+              type="color"
+              value={accentColor}
+              onChange={(e) => handleAccentColorChange(e.target.value)}
+              disabled={isLoadingConfig}
+              style={{ width: "60px", height: "38px", cursor: "pointer" }}
+            />
+            <div style={{ flex: 1 }}>
+              <SettingsInputFrame>
+                <input
+                  type="text"
+                  value={accentColor}
+                  onChange={(e) => handleAccentColorChange(e.target.value)}
+                  placeholder="#ffffff"
+                  disabled={isLoadingConfig}
+                />
+              </SettingsInputFrame>
+            </div>
+          </div>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Accent Opacity: {accentOpacity}%</SettingsLabel>
+          <SettingsSliderFrame>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={accentOpacity}
+              onChange={(e) =>
+                updateConfig({ accentOpacity: Number(e.target.value) })
+              }
+              disabled={isLoadingConfig}
+            />
+            <span>{accentOpacity}%</span>
+          </SettingsSliderFrame>
         </SettingsField>
       </SettingsBox>
     </SettingsContainer>

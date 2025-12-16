@@ -81,17 +81,35 @@ export function Render() {
     return () => window.removeEventListener("resize", detectAspectRatio);
   }, []);
 
-  // Apply custom text color via CSS custom property
+  // Apply custom text color and accent color via CSS custom properties
   useEffect(() => {
-    if (config.textColor) {
-      document.documentElement.style.setProperty(
-        "--custom-text-color",
-        config.textColor
-      );
-    } else {
-      document.documentElement.style.removeProperty("--custom-text-color");
-    }
-  }, [config.textColor]);
+    const textColor = config.textColor || "#ffffff";
+    const textOpacity = config.textOpacity ?? 100;
+    const accentColor = config.accentColor || "#ffffff";
+    const accentOpacity = config.accentOpacity ?? 68;
+
+    // Convert hex to rgba with opacity
+    const hexToRgba = (hex: string, opacity: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+    };
+
+    document.documentElement.style.setProperty(
+      "--custom-text-color",
+      hexToRgba(textColor, textOpacity)
+    );
+    document.documentElement.style.setProperty(
+      "--custom-accent-color",
+      hexToRgba(accentColor, accentOpacity)
+    );
+  }, [
+    config.textColor,
+    config.textOpacity,
+    config.accentColor,
+    config.accentOpacity,
+  ]);
 
   // Load cached weather data on mount (for instant display)
   useEffect(() => {
