@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { store, weather } from "@telemetryos/sdk";
 import {
   SettingsContainer,
@@ -16,10 +16,12 @@ import { useWeatherConfigStoreState } from "@/hooks/store";
 import type { Location } from "@/types/weather";
 
 export function Settings() {
+  // TEMP FIX: Memoize store instance to prevent infinite loops
+  const instanceStore = useMemo(() => store().instance, []);
+
   // Use SDK hook for config state - automatically syncs with Render
-  const [isLoadingConfig, config, setConfig] = useWeatherConfigStoreState(
-    store().instance
-  );
+  const [isLoadingConfig, config, setConfig] =
+    useWeatherConfigStoreState(instanceStore);
 
   // Local state for form inputs and validation
   const [newCity, setNewCity] = useState("");

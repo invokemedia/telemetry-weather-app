@@ -20,10 +20,11 @@ interface LocationWeatherData {
 }
 
 export function Render() {
+  // TEMP FIX: Memoize store instance to prevent infinite loops
+  const instanceStore = useMemo(() => store().instance, []);
+
   // Use SDK hook for config state - automatically syncs with Settings
-  const [isLoadingConfig, config] = useWeatherConfigStoreState(
-    store().instance
-  );
+  const [isLoadingConfig, config] = useWeatherConfigStoreState(instanceStore);
 
   const [weatherData, setWeatherData] = useState<
     Map<string, LocationWeatherData>
