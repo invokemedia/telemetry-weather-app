@@ -76,7 +76,18 @@ export function Settings() {
       };
 
       const updatedLocations = [...locations, location];
-      updateConfig({ locations: updatedLocations });
+
+      // If adding a second location and current variant is "current-condition-label",
+      // force it back to "location" since the label variant doesn't show location names
+      const updates: Partial<typeof config> = { locations: updatedLocations };
+      if (
+        updatedLocations.length > 1 &&
+        layout1x1Variant === "current-condition-label"
+      ) {
+        updates.layout1x1Variant = "location";
+      }
+
+      updateConfig(updates);
       setNewCity("");
     } catch (error) {
       // City not found or API error
@@ -484,12 +495,25 @@ export function Settings() {
                       | "current-condition-label",
                   })
                 }
-                disabled={isLoadingConfig}
+                disabled={isLoadingConfig || locations.length > 1}
               />
               <SettingsRadioLabel>
                 🌤️ Current Condition Label
               </SettingsRadioLabel>
             </SettingsRadioFrame>
+            {locations.length > 1 && (
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "0.875rem",
+                  marginTop: "0.5rem",
+                  fontStyle: "italic",
+                }}
+              >
+                Note: Current Condition Label style is only available with a
+                single location since it doesn't display the location name.
+              </div>
+            )}
           </SettingsField>
         )}
 
