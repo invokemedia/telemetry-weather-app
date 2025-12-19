@@ -103,7 +103,7 @@ export const LAYOUT_FEATURES: Record<
     showsForecast: true,
     showsMultipleLocations: true,
     showsSunriseSunset: false,
-    showsTimeFormat: true,
+    showsTimeFormat: false, // Always uses 24h format
   },
   "1x10": {
     showsForecast: true,
