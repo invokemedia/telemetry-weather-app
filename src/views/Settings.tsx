@@ -362,6 +362,19 @@ export function Settings() {
             />
             <span>{displayDuration}s</span>
           </SettingsSliderFrame>
+          {locations.length <= 1 && (
+            <div
+              style={{
+                color: "#666",
+                fontSize: "0.875rem",
+                marginTop: "0.5rem",
+                fontStyle: "italic",
+              }}
+            >
+              Note: Display duration only applies when multiple locations are
+              configured.
+            </div>
+          )}
         </SettingsField>
 
         {showsForecast && (
