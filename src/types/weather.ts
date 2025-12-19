@@ -43,6 +43,7 @@ export interface WeatherConfig {
   accentOpacity?: number; // Accent text opacity (0-100)
   timeFormat?: "12h" | "24h"; // 12-hour or 24-hour time format
   layoutPattern?: string; // Selected layout pattern for current aspect ratio
+  currentAspectRatio?: string; // Current detected aspect ratio from device
 }
 
 // Cached weather data with timestamp

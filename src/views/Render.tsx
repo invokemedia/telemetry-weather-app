@@ -30,7 +30,7 @@ interface LocationWeatherData {
 
 export function Render() {
   // Use SDK hook for config state - automatically syncs with Settings
-  const [isLoadingConfig, config] = useWeatherConfigState();
+  const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
 
   const [weatherData, setWeatherData] = useState<
     Map<string, LocationWeatherData>
@@ -81,13 +81,18 @@ export function Render() {
 
       console.log(`📐 [Render] Selected layout: ${closestRatio}`);
       setAspectRatio(closestRatio);
+
+      // Save current aspect ratio to config so Settings can read it
+      if (config.currentAspectRatio !== closestRatio) {
+        setConfig({ ...config, currentAspectRatio: closestRatio });
+      }
     };
 
     detectAspectRatio();
     window.addEventListener("resize", detectAspectRatio);
 
     return () => window.removeEventListener("resize", detectAspectRatio);
-  }, []);
+  }, [config, setConfig]);
 
   // Apply custom text color and accent color via CSS custom properties
   useEffect(() => {

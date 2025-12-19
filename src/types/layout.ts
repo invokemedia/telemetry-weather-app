@@ -52,3 +52,63 @@ export type LayoutPattern<T extends AspectRatioType> =
   T extends keyof typeof LAYOUT_PATTERNS
     ? (typeof LAYOUT_PATTERNS)[T][number]
     : string;
+
+// Layout feature flags - determines which settings are relevant for each layout
+export const LAYOUT_FEATURES: Record<
+  AspectRatioType,
+  {
+    showsForecast: boolean;
+    showsMultipleLocations: boolean;
+    showsSunriseSunset: boolean;
+    showsTimeFormat: boolean;
+  }
+> = {
+  "1x1": {
+    showsForecast: false, // Only shows current weather
+    showsMultipleLocations: true, // Can cycle locations
+    showsSunriseSunset: false,
+    showsTimeFormat: false, // Always uses 24h format
+  },
+  "16x9": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: true,
+    showsTimeFormat: true, // For forecast times
+  },
+  "9x16": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+  "3x1": {
+    showsForecast: false,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+  "1x3": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+  "4x5": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+  "10x1": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+  "1x10": {
+    showsForecast: true,
+    showsMultipleLocations: true,
+    showsSunriseSunset: false,
+    showsTimeFormat: true,
+  },
+};

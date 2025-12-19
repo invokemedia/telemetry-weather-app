@@ -49,8 +49,7 @@ export function Layout16x9({
             {locationName}
           </div>
           <Clock
-            key={timeFormat}
-            format={timeFormat}
+            format="24h"
             className="weather-widget__time weather-widget__text-color"
           />
         </div>
