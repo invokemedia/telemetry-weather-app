@@ -2,16 +2,25 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { store, weather } from "@telemetryos/sdk";
 import "./Render.css";
 import { Layout16x9 } from "@/components/layouts/Layout16x9";
+import { Layout9x16 } from "@/components/layouts/Layout9x16";
 import { Layout1x1 } from "@/components/layouts/Layout1x1";
+import { Layout1x3 } from "@/components/layouts/Layout1x3";
+import { Layout3x1 } from "@/components/layouts/Layout3x1";
+import { Layout4x5 } from "@/components/layouts/Layout4x5";
 import { Layout1x10 } from "@/components/layouts/Layout1x10";
-import { useWeatherConfigStoreState } from "@/hooks/store";
+import { Layout10x1 } from "@/components/layouts/Layout10x1";
+import { useWeatherConfigState } from "@/hooks/store";
 import type {
   WeatherConditions,
   WeatherForecast,
   Location,
   CachedWeatherData,
 } from "@/types/weather";
-import { ASPECT_RATIOS, type AspectRatioType } from "@/types/layout";
+import {
+  ASPECT_RATIOS,
+  ASPECT_RATIO_VALUES,
+  type AspectRatioType,
+} from "@/types/layout";
 
 interface LocationWeatherData {
   location: Location;
@@ -20,11 +29,8 @@ interface LocationWeatherData {
 }
 
 export function Render() {
-  // TEMP FIX: Memoize store instance to prevent infinite loops
-  const instanceStore = useMemo(() => store().instance, []);
-
   // Use SDK hook for config state - automatically syncs with Settings
-  const [isLoadingConfig, config] = useWeatherConfigStoreState(instanceStore);
+  const [isLoadingConfig, config] = useWeatherConfigState();
 
   const [weatherData, setWeatherData] = useState<
     Map<string, LocationWeatherData>
@@ -61,19 +67,20 @@ export function Render() {
         `📐 [Render] Aspect ratio: ${ratio.toFixed(2)} (${width}x${height})`
       );
 
-      // Determine layout type based on aspect ratio
-      if (ratio >= 1.5) {
-        // Landscape/wide (16:9 is ~1.78)
-        setAspectRatio(ASPECT_RATIOS.FULL_SCREEN_16x9);
-      } else if (ratio >= 0.7 && ratio < 1.3) {
-        // Square (1:1)
-        setAspectRatio(ASPECT_RATIOS.SQUARE_1x1);
-      } else if (ratio < 0.7) {
-        // Tall/portrait (1:10 is 0.1)
-        setAspectRatio(ASPECT_RATIOS.SUPER_TALL_1x10);
-      } else {
-        setAspectRatio(ASPECT_RATIOS.FULL_SCREEN_16x9);
-      }
+      // Find closest matching aspect ratio
+      let closestRatio: AspectRatioType = ASPECT_RATIOS.FULL_SCREEN_16x9;
+      let smallestDiff = Infinity;
+
+      Object.entries(ASPECT_RATIO_VALUES).forEach(([key, value]) => {
+        const diff = Math.abs(ratio - value);
+        if (diff < smallestDiff) {
+          smallestDiff = diff;
+          closestRatio = key as AspectRatioType;
+        }
+      });
+
+      console.log(`📐 [Render] Selected layout: ${closestRatio}`);
+      setAspectRatio(closestRatio);
     };
 
     detectAspectRatio();
@@ -277,6 +284,14 @@ export function Render() {
   const forecast = currentData?.forecast || [];
 
   // Render the appropriate layout based on detected aspect ratio
+  const commonProps = {
+    currentWeather,
+    forecast,
+    locationName: currentLocation?.displayName || currentLocation?.city,
+    timeFormat: (config.timeFormat || "12h") as "12h" | "24h",
+    forecastType: (config.forecastType || "daily") as "hourly" | "daily",
+  };
+
   return (
     <div
       className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState} ${
@@ -284,26 +299,28 @@ export function Render() {
       }`}
     >
       {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
-        <Layout16x9
-          currentWeather={currentWeather}
-          forecast={forecast}
-          forecastType={config.forecastType || "daily"}
-          locationName={currentLocation?.displayName || currentLocation?.city}
-        />
+        <Layout16x9 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_9x16 && (
+        <Layout9x16 {...commonProps} />
       )}
       {aspectRatio === ASPECT_RATIOS.SQUARE_1x1 && (
-        <Layout1x1
-          currentWeather={currentWeather}
-          forecast={forecast}
-          locationName={currentLocation?.displayName || currentLocation?.city}
-        />
+        <Layout1x1 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.SHORT_LONG_3x1 && (
+        <Layout3x1 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.TALL_SHORT_1x3 && (
+        <Layout1x3 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.LARGE_4x5 && (
+        <Layout4x5 {...commonProps} />
       )}
       {aspectRatio === ASPECT_RATIOS.SUPER_TALL_1x10 && (
-        <Layout1x10
-          currentWeather={currentWeather}
-          forecast={forecast}
-          locationName={currentLocation?.displayName || currentLocation?.city}
-        />
+        <Layout1x10 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.SUPER_WIDE_10x1 && (
+        <Layout10x1 {...commonProps} />
       )}
     </div>
   );

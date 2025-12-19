@@ -1,58 +1,28 @@
-import { WeatherForecastItem } from "@/components/weather/WeatherForecastItem";
+import { Clock } from "../common/Clock";
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
 import { getWeatherIcon } from "@/utils/weatherIcons";
+import { formatForecastTime, formatDayLabel } from "@/utils/timeFormat";
 
 interface Layout16x9Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
-  forecastType: "hourly" | "daily";
+  forecastType?: "hourly" | "daily";
   locationName?: string;
+  timeFormat?: "12h" | "24h";
 }
 
 export function Layout16x9({
   currentWeather,
   forecast,
-  forecastType,
+  forecastType = "hourly",
   locationName,
+  timeFormat = "12h",
 }: Layout16x9Props) {
-  const getLastUpdatedTime = () => {
-    if (!currentWeather?.Timestamp) return "--:--";
-    const date = new Date(currentWeather.Timestamp * 1000);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
+  if (!currentWeather) {
+    return <div>Loading...</div>;
+  }
 
-  const getDayLabel = (datetime: string) => {
-    // Parse date in UTC to avoid timezone shifting
-    const date = new Date(datetime + "T00:00:00Z");
-    return date
-      .toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" })
-      .slice(0, 2);
-  };
-
-  const getHourLabel = (datetime: string) => {
-    // Hourly forecast datetime format: "2025-12-16:13" (YYYY-MM-DD:HH)
-    // Split by the last colon to separate date and hour
-    const lastColonIndex = datetime.lastIndexOf(":");
-    if (lastColonIndex !== -1) {
-      const datePart = datetime.substring(0, lastColonIndex); // "2025-12-16"
-      const hourPart = datetime.substring(lastColonIndex + 1); // "13"
-      // Create valid ISO string: "2025-12-16T13:00:00"
-      const isoString = `${datePart}T${hourPart}:00:00`;
-      const date = new Date(isoString);
-
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          hour12: true,
-        });
-      }
-    }
-    return "--";
-  };
+  const weatherIconUrl = getWeatherIcon(currentWeather.WeatherCode);
 
   // Get forecast items to display based on type
   const getForecastItems = () => {
@@ -60,73 +30,76 @@ export function Layout16x9({
       // Show hourly forecast - pick every 2 hours to fit 6 items
       return forecast.filter((_, index) => index % 2 === 0).slice(0, 6);
     } else {
-      // Show daily forecast - skip index 0 (today), show next 5 days (indices 1-5)
+      // Show daily forecast - skip index 0 (today), show next 5 days
       return forecast.slice(1, 6);
     }
   };
 
+  // Hardcoded sunrise/sunset times for now (API doesn't support yet)
+  const hardcodedSunrise = "06:30";
+  const hardcodedSunset = "18:45";
+
   return (
     <div className="weather-widget weather-widget--16x9">
-      {/* Top content section */}
-      <div className="weather-widget__content-top">
-        {/* Row 1: Location and Feels Like */}
-        <div className="weather-widget__row-header">
-          <div className="weather-widget__col">
-            <div className="weather-widget__location">
-              {locationName || currentWeather?.CityLocalized || "Loading..."}
-            </div>
+      {/* Top section */}
+      <div className="weather-widget__top-section">
+        {/* Left: Location + Time */}
+        <div className="weather-widget__left-group">
+          <div className="weather-widget__location weather-widget__accent-text">
+            {locationName}
           </div>
-          <div className="weather-widget__col--right">
-            <div className="weather-widget__feels-like">
-              {currentWeather?.WeatherText || "Loading..."}
-            </div>
-          </div>
+          <Clock
+            key={timeFormat}
+            format={timeFormat}
+            className="weather-widget__time weather-widget__text-color"
+          />
         </div>
 
-        {/* Row 2: Temperature/Icon and Details */}
-        <div className="weather-widget__row-main">
-          <div className="weather-widget__col-temp">
-            <div className="weather-widget__temperature">
-              {currentWeather?.Temp ? Math.round(currentWeather.Temp) : "--"}°
-            </div>
+        {/* Right: Icon + Temperature */}
+        <div className="weather-widget__right-group">
+          <div className="weather-widget__icon-temp-group">
             <div className="weather-widget__icon">
-              <img
-                src={getWeatherIcon(currentWeather?.WeatherCode || "")}
-                alt="Weather icon"
-              />
+              <img src={weatherIconUrl} alt="Weather icon" />
+            </div>
+            <div className="weather-widget__temperature weather-widget__text-color">
+              {Math.round(currentWeather.Temp)}°
             </div>
           </div>
-          <div className="weather-widget__col-details">
-            <div className="weather-widget__details-row">
-              <div className="weather-widget__detail-text">
-                💧 {currentWeather?.RelativeHumidity || "--"}%
-              </div>
-              <div className="weather-widget__detail-text">
-                💨 {currentWeather?.WindSpeed || "--"} km/h
-              </div>
+
+          {/* Sunrise / Sunset */}
+          <div className="weather-widget__sun-group">
+            <div className="weather-widget__sun-item">
+              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunrise"></div>
+              <span className="weather-widget__sun-time weather-widget__text-color">
+                {hardcodedSunrise}
+              </span>
             </div>
-            <div className="weather-widget__details-row">
-              <div className="weather-widget__detail-text">
-                Last updated: {getLastUpdatedTime()}
-              </div>
+            <div className="weather-widget__sun-item">
+              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunset"></div>
+              <span className="weather-widget__sun-time weather-widget__text-color">
+                {hardcodedSunset}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom forecast section */}
-      <div className="weather-widget__content-bottom">
+      {/* Forecast section */}
+      <div className="weather-widget__forecast-section">
         {getForecastItems().map((item, index) => (
-          <WeatherForecastItem
-            key={index}
-            temperature={Math.round(item.Temp)}
-            icon={getWeatherIcon(item.WeatherCode)}
-            day={
-              forecastType === "hourly"
-                ? getHourLabel(item.Datetime)
-                : getDayLabel(item.Datetime)
-            }
-          />
+          <div key={index} className="weather-widget__forecast-item">
+            <div className="weather-widget__forecast-temp weather-widget__text-color">
+              {Math.round(item.Temp)}°
+            </div>
+            <div className="weather-widget__forecast-icon">
+              <img src={getWeatherIcon(item.WeatherCode)} alt="Forecast icon" />
+            </div>
+            <div className="weather-widget__forecast-day weather-widget__accent-text">
+              {forecastType === "hourly"
+                ? formatForecastTime(item.Datetime, timeFormat)
+                : formatDayLabel(item.Datetime)}
+            </div>
+          </div>
         ))}
       </div>
     </div>

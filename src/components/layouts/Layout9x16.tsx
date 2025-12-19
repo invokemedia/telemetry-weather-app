@@ -1,6 +1,6 @@
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
 
-interface Layout1x1Props {
+interface Layout9x16Props {
   currentWeather: WeatherConditions | null;
   forecast: WeatherForecast[];
   locationName?: string;
@@ -8,6 +8,6 @@ interface Layout1x1Props {
   timeFormat?: "12h" | "24h";
 }
 
-export function Layout1x1({}: Layout1x1Props) {
-  return <div>Layout 1x1 - Not implemented</div>;
+export function Layout9x16({}: Layout9x16Props) {
+  return <div>Layout 9x16 - Not implemented</div>;
 }

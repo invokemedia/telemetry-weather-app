@@ -19,7 +19,7 @@ export const ASPECT_RATIOS = {
 export type AspectRatioType =
   (typeof ASPECT_RATIOS)[keyof typeof ASPECT_RATIOS];
 
-// Aspect ratio numerical values (for future auto-detection)
+// Aspect ratio numerical values (for auto-detection)
 export const ASPECT_RATIO_VALUES: Record<AspectRatioType, number> = {
   // Square layout
   "1x1": 1 / 1,
@@ -35,3 +35,20 @@ export const ASPECT_RATIO_VALUES: Record<AspectRatioType, number> = {
   "1x3": 1 / 3,
   "1x10": 1 / 10,
 };
+
+// Layout patterns available for each aspect ratio
+export const LAYOUT_PATTERNS = {
+  "16x9": ["full", "with-forecast"],
+  "9x16": ["centered", "with-forecast"],
+  "10x1": ["time-weather", "time-weather-forecast"],
+  "1x10": ["vertical-stack", "vertical-forecast"],
+  "1x1": ["with-location", "minimal"],
+  "3x1": ["time-left", "time-left-high-low"],
+  "1x3": ["vertical-list"],
+  "4x5": ["centered-large"],
+} as const;
+
+export type LayoutPattern<T extends AspectRatioType> =
+  T extends keyof typeof LAYOUT_PATTERNS
+    ? (typeof LAYOUT_PATTERNS)[T][number]
+    : string;

@@ -2,12 +2,15 @@
 export interface WeatherConditions {
   CityLocalized: string;
   Temp: number;
+  FeelsLike?: number;
   RelativeHumidity: number;
   WindSpeed: number;
   WindDirectionEnglish: string;
   WeatherText: string;
   WeatherCode: string;
   Timestamp: number;
+  Sunrise?: number;
+  Sunset?: number;
 }
 
 export interface WeatherForecast {
@@ -38,6 +41,8 @@ export interface WeatherConfig {
   textOpacity?: number; // Primary text opacity (0-100)
   accentColor?: string; // Accent text color (hex format, e.g., "#ffffff")
   accentOpacity?: number; // Accent text opacity (0-100)
+  timeFormat?: "12h" | "24h"; // 12-hour or 24-hour time format
+  layoutPattern?: string; // Selected layout pattern for current aspect ratio
 }
 
 // Cached weather data with timestamp

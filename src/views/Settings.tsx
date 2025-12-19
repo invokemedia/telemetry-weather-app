@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { store, weather } from "@telemetryos/sdk";
+import { useState } from "react";
+import { weather } from "@telemetryos/sdk";
 import {
   SettingsContainer,
   SettingsBox,
@@ -11,17 +11,17 @@ import {
   SettingsSliderFrame,
   SettingsRadioFrame,
   SettingsRadioLabel,
+  SettingsCheckboxFrame,
+  SettingsCheckboxLabel,
+  SettingsSelectFrame,
 } from "@telemetryos/sdk/react";
-import { useWeatherConfigStoreState } from "@/hooks/store";
+import { useWeatherConfigState } from "@/hooks/store";
 import type { Location } from "@/types/weather";
+import { LAYOUT_PATTERNS } from "@/types/layout";
 
 export function Settings() {
-  // TEMP FIX: Memoize store instance to prevent infinite loops
-  const instanceStore = useMemo(() => store().instance, []);
-
   // Use SDK hook for config state - automatically syncs with Render
-  const [isLoadingConfig, config, setConfig] =
-    useWeatherConfigStoreState(instanceStore);
+  const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
 
   // Local state for form inputs and validation
   const [newCity, setNewCity] = useState("");
@@ -360,7 +360,7 @@ export function Settings() {
               }
               disabled={isLoadingConfig}
             />
-            <SettingsRadioLabel>📅 Daily (5 days)</SettingsRadioLabel>
+            <SettingsRadioLabel>📅 Daily (6 days)</SettingsRadioLabel>
           </SettingsRadioFrame>
           <SettingsRadioFrame>
             <input
@@ -376,6 +376,36 @@ export function Settings() {
               disabled={isLoadingConfig}
             />
             <SettingsRadioLabel>🕐 Hourly (today)</SettingsRadioLabel>
+          </SettingsRadioFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Time Format</SettingsLabel>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="timeFormat"
+              value="12h"
+              checked={(config.timeFormat || "12h") === "12h"}
+              onChange={(e) =>
+                updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>12-hour (AM/PM)</SettingsRadioLabel>
+          </SettingsRadioFrame>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="timeFormat"
+              value="24h"
+              checked={config.timeFormat === "24h"}
+              onChange={(e) =>
+                updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>24-hour</SettingsRadioLabel>
           </SettingsRadioFrame>
         </SettingsField>
 

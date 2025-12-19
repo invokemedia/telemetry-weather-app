@@ -1,4 +1,4 @@
-import { createUseStoreState } from "@telemetryos/sdk/react";
+import { createUseInstanceStoreState } from "@telemetryos/sdk/react";
 import type { WeatherConfig, Location } from "@/types/weather";
 
 // Create typed hooks for each store key
@@ -6,7 +6,7 @@ import type { WeatherConfig, Location } from "@/types/weather";
 // and provide loading states out of the box
 
 // Main config object (contains all settings)
-export const useWeatherConfigStoreState = createUseStoreState<WeatherConfig>(
+export const useWeatherConfigState = createUseInstanceStoreState<WeatherConfig>(
   "config",
   {
     locations: [
@@ -24,11 +24,13 @@ export const useWeatherConfigStoreState = createUseStoreState<WeatherConfig>(
     textOpacity: 100,
     accentColor: "#ffffff",
     accentOpacity: 68,
+    timeFormat: "12h",
+    layoutPattern: "full",
   }
 );
 
 // Individual config fields (alternative pattern for granular control)
-export const useLocationsStoreState = createUseStoreState<Location[]>(
+export const useLocationsState = createUseInstanceStoreState<Location[]>(
   "locations",
   [
     {
@@ -39,17 +41,17 @@ export const useLocationsStoreState = createUseStoreState<Location[]>(
   ]
 );
 
-export const useDisplayDurationStoreState = createUseStoreState<number>(
+export const useDisplayDurationState = createUseInstanceStoreState<number>(
   "displayDuration",
   10
 );
 
-export const useThemeStoreState = createUseStoreState<"light" | "dark">(
+export const useThemeState = createUseInstanceStoreState<"light" | "dark">(
   "theme",
   "light"
 );
 
-export const useTextColorStoreState = createUseStoreState<string>(
+export const useTextColorState = createUseInstanceStoreState<string>(
   "textColor",
   "#ffffff"
 );
