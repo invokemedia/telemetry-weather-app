@@ -94,10 +94,10 @@ export const LAYOUT_FEATURES: Record<
     showsTimeFormat: true,
   },
   "4x5": {
-    showsForecast: true,
+    showsForecast: false, // Only shows current weather
     showsMultipleLocations: true,
     showsSunriseSunset: false,
-    showsTimeFormat: true,
+    showsTimeFormat: false, // Always uses 24h format
   },
   "10x1": {
     showsForecast: true,
