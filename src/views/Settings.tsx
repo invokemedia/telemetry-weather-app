@@ -89,6 +89,16 @@ export function Settings() {
         updates.layout1x1Variant = "location";
       }
 
+      // If adding a second location for 10x1 layout, force "current-condition-location"
+      // since it's the only variant that shows location names
+      if (
+        updatedLocations.length > 1 &&
+        (layout10x1Variant === "current-condition-only" ||
+          layout10x1Variant === "current-condition-forecast")
+      ) {
+        updates.layout10x1Variant = "current-condition-location";
+      }
+
       updateConfig(updates);
       setNewCity("");
     } catch (error) {
@@ -551,7 +561,7 @@ export function Settings() {
                       | "current-condition-forecast",
                   })
                 }
-                disabled={isLoadingConfig}
+                disabled={isLoadingConfig || locations.length > 1}
               />
               <SettingsRadioLabel>Current Condition Only</SettingsRadioLabel>
             </SettingsRadioFrame>
@@ -589,12 +599,26 @@ export function Settings() {
                       | "current-condition-forecast",
                   })
                 }
-                disabled={isLoadingConfig}
+                disabled={isLoadingConfig || locations.length > 1}
               />
               <SettingsRadioLabel>
                 Current Condition + Forecast
               </SettingsRadioLabel>
             </SettingsRadioFrame>
+            {locations.length > 1 && (
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "0.875rem",
+                  marginTop: "0.5rem",
+                  fontStyle: "italic",
+                }}
+              >
+                Note: Only the Current Condition + Location variant is available
+                with multiple locations since it's the only one that displays
+                location names.
+              </div>
+            )}
           </SettingsField>
         )}
 
