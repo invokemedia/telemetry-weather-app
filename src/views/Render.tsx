@@ -310,7 +310,10 @@ export function Render() {
         <Layout9x16 {...commonProps} />
       )}
       {aspectRatio === ASPECT_RATIOS.SQUARE_1x1 && (
-        <Layout1x1 {...commonProps} />
+        <Layout1x1
+          {...commonProps}
+          variant={config.layout1x1Variant || "location"}
+        />
       )}
       {aspectRatio === ASPECT_RATIOS.SHORT_LONG_3x1 && (
         <Layout3x1 {...commonProps} />

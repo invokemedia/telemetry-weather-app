@@ -26,6 +26,7 @@ export const useWeatherConfigState = createUseInstanceStoreState<WeatherConfig>(
     accentOpacity: 68,
     timeFormat: "12h",
     layoutPattern: "full",
+    layout1x1Variant: "location",
   }
 );
 

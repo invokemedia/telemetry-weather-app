@@ -39,6 +39,7 @@ export function Settings() {
   const textOpacity = config.textOpacity ?? 100;
   const accentColor = config.accentColor || "#ffffff";
   const accentOpacity = config.accentOpacity ?? 68;
+  const layout1x1Variant = config.layout1x1Variant || "location";
 
   // Get current layout features (what settings are relevant)
   const currentAspectRatio = (config.currentAspectRatio ||
@@ -449,6 +450,48 @@ export function Settings() {
             <SettingsRadioLabel>🌙 Dark</SettingsRadioLabel>
           </SettingsRadioFrame>
         </SettingsField>
+
+        {currentAspectRatio === "1x1" && (
+          <SettingsField>
+            <SettingsLabel>1×1 Layout Style</SettingsLabel>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout1x1Variant"
+                value="location"
+                checked={layout1x1Variant === "location"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout1x1Variant: e.target.value as
+                      | "location"
+                      | "current-condition-label",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>📍 Location</SettingsRadioLabel>
+            </SettingsRadioFrame>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout1x1Variant"
+                value="current-condition-label"
+                checked={layout1x1Variant === "current-condition-label"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout1x1Variant: e.target.value as
+                      | "location"
+                      | "current-condition-label",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>
+                🌤️ Current Condition Label
+              </SettingsRadioLabel>
+            </SettingsRadioFrame>
+          </SettingsField>
+        )}
 
         <SettingsField>
           <SettingsLabel>Text Color</SettingsLabel>
