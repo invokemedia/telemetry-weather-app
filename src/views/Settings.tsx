@@ -40,6 +40,8 @@ export function Settings() {
   const accentColor = config.accentColor || "#ffffff";
   const accentOpacity = config.accentOpacity ?? 68;
   const layout1x1Variant = config.layout1x1Variant || "location";
+  const layout10x1Variant =
+    config.layout10x1Variant || "current-condition-only";
 
   // Get current layout features (what settings are relevant)
   const currentAspectRatio = (config.currentAspectRatio ||
@@ -377,7 +379,9 @@ export function Settings() {
           )}
         </SettingsField>
 
-        {showsForecast && (
+        {(showsForecast ||
+          (currentAspectRatio === "10x1" &&
+            layout10x1Variant === "current-condition-forecast")) && (
           <SettingsField>
             <SettingsLabel>Forecast Type</SettingsLabel>
             <SettingsRadioFrame>
@@ -393,7 +397,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>📅 Daily (6 days)</SettingsRadioLabel>
+              <SettingsRadioLabel>📅 Daily</SettingsRadioLabel>
             </SettingsRadioFrame>
             <SettingsRadioFrame>
               <input
@@ -408,7 +412,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>🕐 Hourly (today)</SettingsRadioLabel>
+              <SettingsRadioLabel>🕐 Hourly</SettingsRadioLabel>
             </SettingsRadioFrame>
           </SettingsField>
         )}
@@ -527,6 +531,70 @@ export function Settings() {
                 single location since it doesn't display the location name.
               </div>
             )}
+          </SettingsField>
+        )}
+
+        {currentAspectRatio === "10x1" && (
+          <SettingsField>
+            <SettingsLabel>10×1 Layout Variant</SettingsLabel>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout10x1Variant"
+                value="current-condition-only"
+                checked={layout10x1Variant === "current-condition-only"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout10x1Variant: e.target.value as
+                      | "current-condition-only"
+                      | "current-condition-location"
+                      | "current-condition-forecast",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>Current Condition Only</SettingsRadioLabel>
+            </SettingsRadioFrame>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout10x1Variant"
+                value="current-condition-location"
+                checked={layout10x1Variant === "current-condition-location"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout10x1Variant: e.target.value as
+                      | "current-condition-only"
+                      | "current-condition-location"
+                      | "current-condition-forecast",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>
+                Current Condition + Location
+              </SettingsRadioLabel>
+            </SettingsRadioFrame>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout10x1Variant"
+                value="current-condition-forecast"
+                checked={layout10x1Variant === "current-condition-forecast"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout10x1Variant: e.target.value as
+                      | "current-condition-only"
+                      | "current-condition-location"
+                      | "current-condition-forecast",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>
+                Current Condition + Forecast
+              </SettingsRadioLabel>
+            </SettingsRadioFrame>
           </SettingsField>
         )}
 

@@ -192,7 +192,7 @@ export function Render() {
 
         console.log("✅ [Render] Current weather:", currentConditions);
 
-        // Fetch forecast based on user preference
+        // Fetch forecast based on user preference and layout
         let forecast: WeatherForecast[];
 
         if (config.forecastType === "hourly") {
@@ -328,7 +328,12 @@ export function Render() {
         <Layout1x10 {...commonProps} />
       )}
       {aspectRatio === ASPECT_RATIOS.SUPER_WIDE_10x1 && (
-        <Layout10x1 {...commonProps} />
+        <Layout10x1
+          {...commonProps}
+          variant={config.layout10x1Variant || "current-condition-only"}
+          timeFormat={config.timeFormat || "12h"}
+          forecastType={config.forecastType || "daily"}
+        />
       )}
     </div>
   );

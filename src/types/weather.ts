@@ -45,6 +45,10 @@ export interface WeatherConfig {
   layoutPattern?: string; // Selected layout pattern for current aspect ratio
   currentAspectRatio?: string; // Current detected aspect ratio from device
   layout1x1Variant?: "location" | "current-condition-label"; // Layout variant for 1x1 aspect ratio
+  layout10x1Variant?:
+    | "current-condition-only"
+    | "current-condition-location"
+    | "current-condition-forecast"; // Layout variant for 10x1 aspect ratio
 }
 
 // Cached weather data with timestamp
