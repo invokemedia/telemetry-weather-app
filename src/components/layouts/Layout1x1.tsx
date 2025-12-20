@@ -1,5 +1,15 @@
+// Types
 import type { WeatherConditions } from "@/types/weather";
+
+// Common UI components
 import { Clock } from "@/components/common/Clock";
+import { LocationName } from "@/components/common/LocationName";
+import { Temperature } from "@/components/common/Temperature";
+import { WeatherIcon } from "@/components/common/WeatherIcon";
+import { WeatherText } from "@/components/common/WeatherText";
+
+// Utils / selectors
+import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 
 interface Layout1x1Props {
@@ -13,62 +23,54 @@ export function Layout1x1({
   locationName,
   variant = "location",
 }: Layout1x1Props) {
-  const temp = currentWeather?.Temp
-    ? Math.round(currentWeather.Temp)
-    : undefined;
+  const temp = getRoundedTemp(currentWeather);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
-  const weatherText = currentWeather?.WeatherText || "";
+  const weatherText = currentWeather?.WeatherText;
 
-  // Current condition label variant - shows weather text at bottom
+  // Layout variant: with current condition label
   if (variant === "current-condition-label") {
     return (
       <div className="weather-widget weather-widget--1x1 weather-widget--1x1-with-weather-text">
-        <Clock
-          format="24h"
-          className="weather-widget__time weather-widget__text-color"
-        />
+        {/* Current time */}
+        <Clock />
+
         <div className="weather-widget__bottom-group">
           <div className="weather-widget__temp-icon-group">
-            <div className="weather-widget__temperature weather-widget__text-color">
-              {temp !== undefined ? `${temp}°` : "--°"}
-            </div>
-            <div className="weather-widget__icon">
-              <img
-                src={weatherIcon}
-                alt="Weather icon"
-                className="weather-widget__icon-img"
-              />
-            </div>
+            {/* Current temperature */}
+            <Temperature value={temp} className="weather-widget__text-color" />
+
+            {/* Current weather icon */}
+            <WeatherIcon icon={weatherIcon} />
           </div>
-          <div className="weather-widget__weather-text weather-widget__accent-text">
-            {weatherText}
-          </div>
+
+          {/* Current condition label */}
+          <WeatherText
+            text={weatherText}
+            className="weather-widget__accent-text"
+          />
         </div>
       </div>
     );
   }
 
-  // Default variant with location at top
+  // Layout variant: with location
   return (
     <div className="weather-widget weather-widget--1x1">
-      <div className="weather-widget__location weather-widget__accent-text">
-        {locationName || "Loading..."}
-      </div>
-      <Clock
-        format="24h"
-        className="weather-widget__time weather-widget__text-color"
+      {/* Location name */}
+      <LocationName
+        name={locationName}
+        className="weather-widget__accent-text"
       />
+
+      {/* Current time */}
+      <Clock />
+
       <div className="weather-widget__temp-icon-group">
-        <div className="weather-widget__temperature weather-widget__text-color">
-          {temp !== undefined ? `${temp}°` : "--°"}
-        </div>
-        <div className="weather-widget__icon">
-          <img
-            src={weatherIcon}
-            alt="Weather icon"
-            className="weather-widget__icon-img"
-          />
-        </div>
+        {/* Current temperature */}
+        <Temperature value={temp} className="weather-widget__text-color" />
+
+        {/* Current weather icon */}
+        <WeatherIcon icon={weatherIcon} />
       </div>
     </div>
   );

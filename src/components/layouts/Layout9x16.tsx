@@ -35,10 +35,7 @@ export function Layout9x16({
         {locationName || "Loading..."}
       </div>
 
-      <Clock
-        format="24h"
-        className="weather-widget__clock weather-widget__text-color"
-      />
+      <Clock />
 
       <div className="weather-widget__icon">
         <img

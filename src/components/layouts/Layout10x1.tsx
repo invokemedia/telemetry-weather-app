@@ -76,7 +76,7 @@ export function Layout10x1({
       <div className="weather-widget weather-widget--10x1 weather-widget--10x1-forecast">
         {/* Left group: Time + Icon + Temperature */}
         <div className="weather-widget__left-group">
-          <Clock format="24h" className="weather-widget__time" />
+          <Clock />
           <div className="weather-widget__icon">
             <img
               src={weatherIcon}
@@ -120,7 +120,7 @@ export function Layout10x1({
   return (
     <div className="weather-widget weather-widget--10x1">
       {/* Time - Always use 24h format */}
-      <Clock format="24h" className="weather-widget__time" />
+      <Clock />
 
       {/* Center group: Temperature + Icon + Weather Text */}
       <div className="weather-widget__center-group">

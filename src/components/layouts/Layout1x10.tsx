@@ -29,10 +29,7 @@ export function Layout1x10({
   return (
     <div className="weather-widget weather-widget--1x10">
       <div className="weather-widget__top-group">
-        <Clock
-          format="24h"
-          className="weather-widget__clock weather-widget__text-color"
-        />
+        <Clock />
 
         <div className="weather-widget__current-section">
           <div className="weather-widget__icon">

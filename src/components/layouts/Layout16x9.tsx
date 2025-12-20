@@ -1,5 +1,14 @@
-import { Clock } from "../common/Clock";
+// Types
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
+
+// Common UI components
+import { Clock } from "@/components/common/Clock";
+import { LocationName } from "@/components/common/LocationName";
+import { Temperature } from "@/components/common/Temperature";
+import { WeatherIcon } from "@/components/common/WeatherIcon";
+
+// Utils / selectors
+import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 import { formatForecastTime, formatDayLabel } from "@/utils/timeFormat";
 
@@ -8,7 +17,6 @@ interface Layout16x9Props {
   forecast: WeatherForecast[];
   forecastType?: "hourly" | "daily";
   locationName?: string;
-  timeFormat?: "12h" | "24h";
 }
 
 export function Layout16x9({
@@ -16,67 +24,52 @@ export function Layout16x9({
   forecast,
   forecastType = "hourly",
   locationName,
-  timeFormat = "12h",
 }: Layout16x9Props) {
-  if (!currentWeather) {
-    return <div>Loading...</div>;
-  }
+  const temp = getRoundedTemp(currentWeather);
+  const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
 
-  const weatherIconUrl = getWeatherIcon(currentWeather.WeatherCode);
+  const forecastItems =
+    forecastType === "hourly"
+      ? forecast.filter((_, index) => index % 2 === 0).slice(0, 6)
+      : forecast.slice(1, 6);
 
-  // Get forecast items to display based on type
-  const getForecastItems = () => {
-    if (forecastType === "hourly") {
-      // Show hourly forecast - pick every 2 hours to fit 6 items
-      return forecast.filter((_, index) => index % 2 === 0).slice(0, 6);
-    } else {
-      // Show daily forecast - skip index 0 (today), show next 5 days
-      return forecast.slice(1, 6);
-    }
-  };
-
-  // Hardcoded sunrise/sunset times for now (API doesn't support yet)
-  const hardcodedSunrise = "06:30";
-  const hardcodedSunset = "18:45";
+  // Temporary placeholder (API not ready)
+  const sunrise = "06:30";
+  const sunset = "18:45";
 
   return (
     <div className="weather-widget weather-widget--16x9">
       {/* Top section */}
       <div className="weather-widget__top-section">
-        {/* Left: Location + Time */}
+        {/* Left group: location + time */}
         <div className="weather-widget__left-group">
-          <div className="weather-widget__location weather-widget__accent-text">
-            {locationName}
-          </div>
-          <Clock
-            format="24h"
-            className="weather-widget__time weather-widget__text-color"
+          <LocationName
+            name={locationName}
+            className="weather-widget__accent-text"
           />
+          <Clock />
         </div>
 
-        {/* Right: Icon + Temperature */}
+        {/* Right group: current condition */}
         <div className="weather-widget__right-group">
           <div className="weather-widget__icon-temp-group">
-            <div className="weather-widget__icon">
-              <img src={weatherIconUrl} alt="Weather icon" />
-            </div>
-            <div className="weather-widget__temperature weather-widget__text-color">
-              {Math.round(currentWeather.Temp)}°
-            </div>
+            <WeatherIcon icon={weatherIcon} />
+            <Temperature value={temp} className="weather-widget__text-color" />
           </div>
 
-          {/* Sunrise / Sunset */}
+          {/* Sunrise / sunset */}
           <div className="weather-widget__sun-group">
             <div className="weather-widget__sun-item">
-              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunrise"></div>
+              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunrise" />
               <span className="weather-widget__sun-time weather-widget__text-color">
-                {hardcodedSunrise}
+                {sunrise}
               </span>
             </div>
+
             <div className="weather-widget__sun-item">
-              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunset"></div>
+              <div className="weather-widget__sun-icon weather-widget__sun-icon--sunset" />
               <span className="weather-widget__sun-time weather-widget__text-color">
-                {hardcodedSunset}
+                {sunset}
               </span>
             </div>
           </div>
@@ -85,17 +78,21 @@ export function Layout16x9({
 
       {/* Forecast section */}
       <div className="weather-widget__forecast-section">
-        {getForecastItems().map((item, index) => (
+        {forecastItems.map((item, index) => (
           <div key={index} className="weather-widget__forecast-item">
-            <div className="weather-widget__forecast-temp weather-widget__text-color">
-              {Math.round(item.Temp)}°
-            </div>
-            <div className="weather-widget__forecast-icon">
-              <img src={getWeatherIcon(item.WeatherCode)} alt="Forecast icon" />
-            </div>
+            <Temperature
+              value={Math.round(item.Temp)}
+              className="weather-widget__text-color weather-widget__forecast-temp"
+            />
+
+            <WeatherIcon
+              icon={getWeatherIcon(item.WeatherCode)}
+              className="weather-widget__forecast-icon"
+            />
+
             <div className="weather-widget__forecast-day weather-widget__accent-text">
               {forecastType === "hourly"
-                ? formatForecastTime(item.Datetime, timeFormat)
+                ? formatForecastTime(item.Datetime)
                 : formatDayLabel(item.Datetime)}
             </div>
           </div>

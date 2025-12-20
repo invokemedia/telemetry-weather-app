@@ -1,0 +1,86 @@
+/* --------------------------------------------------
+   4:5 LAYOUT 
+-------------------------------------------------- */
+.weather-widget--4x5 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(100vw / var(--layout-1x1-design-width) * 10);
+  padding: calc(100vw / var(--layout-1x1-design-width) * 32);
+  border-radius: calc(100vw / var(--layout-1x1-design-width) * 24);
+  background: linear-gradient(
+    270deg,
+    var(--color-blue-start) 0%,
+    var(--color-blue-end) 100%
+  );
+}
+
+.weather-widget--4x5 .weather-widget__top-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(100vw / var(--layout-4x5-design-width) * 8);
+
+  /* DEBUG */
+  border: 2px solid rgba(120, 0, 255, 0.6);
+}
+
+.weather-widget--4x5 .weather-widget__location {
+  font-size: calc(100vw / var(--layout-4x5-design-width) * 32);
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+
+  /* DEBUG */
+  border: 2px solid rgba(0, 120, 255, 0.85);
+}
+
+.weather-widget--4x5 .weather-widget__temp-icon-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(100vw / var(--layout-4x5-design-width) * 8);
+
+  /* DEBUG */
+  border: 2px solid rgba(255, 165, 0, 0.85);
+}
+
+.weather-widget--4x5 .weather-widget__time {
+  font-size: calc(100vw / var(--layout-4x5-design-width) * 124);
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+
+  /* DEBUG */
+  border: 2px solid rgba(0, 200, 100, 0.85);
+}
+
+.weather-widget--4x5 .weather-widget__icon {
+  width: auto;
+  width: calc(100vw / var(--layout-4x5-design-width) * 164);
+  height: calc(100vw / var(--layout-4x5-design-width) * 110);
+
+  /* DEBUG */
+  border: 2px solid rgba(0, 0, 0, 0.8);
+}
+
+.weather-widget--4x5 .weather-widget__temperature {
+  font-size: calc(100vw / var(--layout-4x5-design-width) * 110);
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+
+  /* DEBUG */
+  border: 2px solid rgba(255, 165, 0, 0.85);
+}
+
+.weather-widget--4x5 .weather-widget__weather-text {
+  font-size: calc(100vw / var(--layout-4x5-design-width) * 40);
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+
+  /* DEBUG */
+  border: 2px solid rgba(0, 0, 0, 0.8);
+}
