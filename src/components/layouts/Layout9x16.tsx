@@ -21,9 +21,7 @@ export function Layout9x16({
   const temp = currentWeather?.Temp
     ? Math.round(currentWeather.Temp)
     : undefined;
-  const feelsLike = currentWeather?.FeelsLike
-    ? Math.round(currentWeather.FeelsLike)
-    : undefined;
+  const feelsLike = "feels like";
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
 
   // Get first 3 forecast items for daily forecast
@@ -35,7 +33,7 @@ export function Layout9x16({
         {locationName || "Loading..."}
       </div>
 
-      <Clock />
+      {/* <Clock /> */}
 
       <div className="weather-widget__icon">
         <img

@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
+import { formatTimeInTimezone } from "@/utils/formatTimeInTimezone";
 
-function formatTime(date: Date): string {
-  const h = date.getHours().toString().padStart(2, "0");
-  const m = date.getMinutes().toString().padStart(2, "0");
-  return `${h}:${m}`;
+interface ClockProps {
+  timezone: string;
 }
 
-export function Clock() {
-  const [time, setTime] = useState(() => formatTime(new Date()));
+export function Clock({ timezone }: ClockProps) {
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(formatTime(new Date()));
+      setNow(new Date());
     }, 60000);
+
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="weather-widget__time weather-widget__text-color">
-      {time}
+      {formatTimeInTimezone(now, timezone)}
     </div>
   );
 }

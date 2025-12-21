@@ -34,7 +34,7 @@ export function Layout1x3({
         <div className="weather-widget__location weather-widget__accent-text">
           {locationName || "Loading..."}
         </div>
-        <Clock />
+        {/* <Clock /> */}
       </div>
 
       <div className="weather-widget__current-group">

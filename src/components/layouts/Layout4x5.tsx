@@ -13,7 +13,7 @@ import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 
 interface Layout4x5Props {
-  currentWeather: WeatherConditions | null;
+  currentWeather: WeatherConditions;
   locationName?: string;
 }
 
@@ -30,7 +30,8 @@ export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
           name={locationName}
           className="weather-widget__accent-text"
         />
-        <Clock />
+        {/* Current time */}
+        <Clock timezone={currentWeather.Timezone} />
       </div>
 
       {/* Middle group: icon + temperature */}

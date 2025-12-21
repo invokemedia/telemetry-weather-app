@@ -12,8 +12,8 @@ export const useWeatherConfigState = createUseInstanceStoreState<WeatherConfig>(
     locations: [
       {
         id: Date.now().toString(),
-        city: "Vancouver",
-        displayName: "Vancouver",
+        city: "New York",
+        displayName: "New York",
       },
     ],
     displayDuration: 10,
@@ -36,8 +36,8 @@ export const useLocationsState = createUseInstanceStoreState<Location[]>(
   [
     {
       id: Date.now().toString(),
-      city: "Vancouver",
-      displayName: "Vancouver",
+      city: "New York",
+      displayName: "New York",
     },
   ]
 );

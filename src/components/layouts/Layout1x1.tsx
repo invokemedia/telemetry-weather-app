@@ -13,7 +13,7 @@ import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 
 interface Layout1x1Props {
-  currentWeather: WeatherConditions | null;
+  currentWeather: WeatherConditions;
   locationName?: string;
   variant?: "location" | "current-condition-label";
 }
@@ -24,15 +24,15 @@ export function Layout1x1({
   variant = "location",
 }: Layout1x1Props) {
   const temp = getRoundedTemp(currentWeather);
-  const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
-  const weatherText = currentWeather?.WeatherText;
+  const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
+  const weatherText = currentWeather.WeatherText;
 
   // Layout variant: with current condition label
   if (variant === "current-condition-label") {
     return (
       <div className="weather-widget weather-widget--1x1 weather-widget--1x1-with-weather-text">
         {/* Current time */}
-        <Clock />
+        <Clock timezone={currentWeather.Timezone} />
 
         <div className="weather-widget__bottom-group">
           <div className="weather-widget__temp-icon-group">
@@ -63,7 +63,7 @@ export function Layout1x1({
       />
 
       {/* Current time */}
-      <Clock />
+      <Clock timezone={currentWeather.Timezone} />
 
       <div className="weather-widget__temp-icon-group">
         {/* Current temperature */}

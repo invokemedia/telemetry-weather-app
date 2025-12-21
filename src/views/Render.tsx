@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { store, weather } from "@telemetryos/sdk";
 import "./Render.css";
+
+// Layouts
 import { Layout16x9 } from "@/components/layouts/Layout16x9";
 import { Layout9x16 } from "@/components/layouts/Layout9x16";
 import { Layout1x1 } from "@/components/layouts/Layout1x1";
@@ -9,6 +11,8 @@ import { Layout3x1 } from "@/components/layouts/Layout3x1";
 import { Layout4x5 } from "@/components/layouts/Layout4x5";
 import { Layout1x10 } from "@/components/layouts/Layout1x10";
 import { Layout10x1 } from "@/components/layouts/Layout10x1";
+
+// State / types
 import { useWeatherConfigState } from "@/hooks/store";
 import type {
   WeatherConditions,
@@ -22,6 +26,9 @@ import {
   type AspectRatioType,
 } from "@/types/layout";
 
+/**
+ * Weather data associated with a single configured location
+ */
 interface LocationWeatherData {
   location: Location;
   currentWeather: WeatherConditions | null;
@@ -29,45 +36,69 @@ interface LocationWeatherData {
 }
 
 export function Render() {
-  // Use SDK hook for config state - automatically syncs with Settings
+  /**
+   * App configuration shared with Settings
+   */
   const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
 
+  /**
+   * Weather data indexed by location ID
+   * Map is used to preserve order stability and fast lookups
+   */
   const [weatherData, setWeatherData] = useState<
     Map<string, LocationWeatherData>
   >(new Map());
+
+  /**
+   * Rotation / transition state
+   */
   const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
-  const [loading, setLoading] = useState<boolean>(true);
+
+  /**
+   * Global render state
+   */
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Detected screen aspect ratio
+   */
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
     ASPECT_RATIOS.FULL_SCREEN_16x9
   );
 
   const theme = config.theme || "light";
 
-  // Memoize locations to prevent infinite loops in useEffect dependencies
+  /**
+   * Memoized locations to prevent unnecessary effect re-runs
+   */
   const locations = useMemo(() => config.locations || [], [config.locations]);
 
-  // Track location IDs to detect actual changes (not just reference changes)
+  /**
+   * Refs used to prevent duplicate cache loads and fetch loops
+   */
   const locationIdsRef = useRef<string>("");
   const cacheLoadedForIdsRef = useRef<string>("");
+
+  /**
+   * Stable string representing the current set of locations
+   */
   const currentLocationIds = useMemo(
     () => locations.map((loc: Location) => loc.id).join(","),
     [locations]
   );
 
-  // Detect aspect ratio on mount and window resize
+  /**
+   * Detect screen aspect ratio on mount and resize
+   * This controls which layout component is rendered
+   */
   useEffect(() => {
     const detectAspectRatio = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       const ratio = width / height;
 
-      console.log(
-        `📐 [Render] Aspect ratio: ${ratio.toFixed(2)} (${width}x${height})`
-      );
-
-      // Find closest matching aspect ratio
       let closestRatio: AspectRatioType = ASPECT_RATIOS.FULL_SCREEN_16x9;
       let smallestDiff = Infinity;
 
@@ -79,10 +110,14 @@ export function Render() {
         }
       });
 
+      console.log(
+        `📐 [Render] Aspect ratio: ${ratio.toFixed(2)} (${width}x${height})`
+      );
       console.log(`📐 [Render] Selected layout: ${closestRatio}`);
+
       setAspectRatio(closestRatio);
 
-      // Save current aspect ratio to config so Settings can read it
+      // Persist detected ratio so Settings UI can react to it
       if (config.currentAspectRatio !== closestRatio) {
         setConfig({ ...config, currentAspectRatio: closestRatio });
       }
@@ -90,18 +125,13 @@ export function Render() {
 
     detectAspectRatio();
     window.addEventListener("resize", detectAspectRatio);
-
     return () => window.removeEventListener("resize", detectAspectRatio);
   }, [config, setConfig]);
 
-  // Apply custom text color and accent color via CSS custom properties
+  /**
+   * Apply user-defined colors via CSS variables
+   */
   useEffect(() => {
-    const textColor = config.textColor || "#ffffff";
-    const textOpacity = config.textOpacity ?? 100;
-    const accentColor = config.accentColor || "#ffffff";
-    const accentOpacity = config.accentOpacity ?? 68;
-
-    // Convert hex to rgba with opacity
     const hexToRgba = (hex: string, opacity: number) => {
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
@@ -111,11 +141,12 @@ export function Render() {
 
     document.documentElement.style.setProperty(
       "--custom-text-color",
-      hexToRgba(textColor, textOpacity)
+      hexToRgba(config.textColor || "#ffffff", config.textOpacity ?? 100)
     );
+
     document.documentElement.style.setProperty(
       "--custom-accent-color",
-      hexToRgba(accentColor, accentOpacity)
+      hexToRgba(config.accentColor || "#ffffff", config.accentOpacity ?? 68)
     );
   }, [
     config.textColor,
@@ -124,20 +155,19 @@ export function Render() {
     config.accentOpacity,
   ]);
 
-  // Load cached weather data on mount (for instant display)
+  /**
+   * Load cached weather data from device storage
+   * Allows instant display while fresh data is fetched
+   */
   useEffect(() => {
-    if (!locations || locations.length === 0) return;
+    if (locations.length === 0) return;
+    if (cacheLoadedForIdsRef.current === currentLocationIds) return;
 
-    // Only load cache if location IDs have actually changed
-    if (cacheLoadedForIdsRef.current === currentLocationIds) {
-      return;
-    }
     cacheLoadedForIdsRef.current = currentLocationIds;
 
     const loadCachedData = async () => {
       for (const location of locations) {
         try {
-          // Try to load cached data from device storage
           const cached = await store().device.get<CachedWeatherData>(
             `weather_${location.id}`
           );
@@ -145,13 +175,13 @@ export function Render() {
           if (cached) {
             console.log(`📦 [Render] Loaded cached data for ${location.city}`);
             setWeatherData((prev) => {
-              const newData = new Map(prev);
-              newData.set(location.id, {
+              const next = new Map(prev);
+              next.set(location.id, {
                 location,
                 currentWeather: cached.currentWeather,
                 forecast: cached.forecast,
               });
-              return newData;
+              return next;
             });
           }
         } catch (err) {
@@ -167,24 +197,21 @@ export function Render() {
     loadCachedData();
   }, [currentLocationIds, locations]);
 
-  // Fetch weather data for all locations
+  /**
+   * Fetch live weather data for all locations
+   * Refreshes periodically and updates cache
+   */
   useEffect(() => {
-    if (!locations || locations.length === 0) return;
+    if (locations.length === 0) return;
 
-    // Create a key that includes both location IDs and forecast type
     const fetchKey = `${currentLocationIds}_${config.forecastType || "daily"}`;
-
-    // Only fetch if location IDs or forecast type have changed
-    if (locationIdsRef.current === fetchKey) {
-      return;
-    }
+    if (locationIdsRef.current === fetchKey) return;
     locationIdsRef.current = fetchKey;
 
     const fetchWeatherForLocation = async (location: Location) => {
       try {
         console.log("🌤️ [Render] Fetching weather for:", location.city);
 
-        // Fetch current weather conditions
         const currentConditions = await weather().getConditions({
           city: location.city,
           units: "metric",
@@ -192,95 +219,85 @@ export function Render() {
 
         console.log("✅ [Render] Current weather:", currentConditions);
 
-        // Fetch forecast based on user preference and layout
-        let forecast: WeatherForecast[];
+        const forecast =
+          config.forecastType === "hourly"
+            ? await weather().getHourlyForecast({
+                city: location.city,
+                units: "metric",
+                hours: 24,
+              })
+            : await weather().getDailyForecast({
+                city: location.city,
+                units: "metric",
+                days: 7,
+              });
 
-        if (config.forecastType === "hourly") {
-          // Fetch hourly forecast for today
-          forecast = await weather().getHourlyForecast({
-            city: location.city,
-            units: "metric",
-            hours: 24,
-          });
-          console.log("✅ [Render] Hourly forecast:", forecast);
-        } else {
-          // Fetch daily forecast (default)
-          forecast = await weather().getDailyForecast({
-            city: location.city,
-            units: "metric",
-            days: 7,
-          });
-          console.log("✅ [Render] Daily forecast:", forecast);
-        }
+        console.log(
+          config.forecastType === "hourly"
+            ? "✅ [Render] Hourly forecast:"
+            : "✅ [Render] Daily forecast:",
+          forecast
+        );
 
-        // Update state with fresh data
         setWeatherData((prev) => {
-          const newData = new Map(prev);
-          newData.set(location.id, {
+          const next = new Map(prev);
+          next.set(location.id, {
             location,
             currentWeather: currentConditions,
-            forecast: forecast,
+            forecast,
           });
-          return newData;
+          return next;
         });
 
-        // Cache the data to device storage
-        const cacheData: CachedWeatherData = {
+        await store().device.set(`weather_${location.id}`, {
           currentWeather: currentConditions,
-          forecast: forecast,
+          forecast,
           cachedAt: Date.now(),
-        };
+        });
 
-        await store().device.set(`weather_${location.id}`, cacheData);
         console.log(`💾 [Render] Cached weather data for ${location.city}`);
 
         setError(null);
       } catch (err) {
         console.error("❌ [Render] Weather fetch error:", err);
-        // Don't update error state - keep showing cached data if available
         console.log("📦 [Render] Keeping cached data due to fetch failure");
+        // Keep cached data visible on failure
       }
     };
 
-    // Fetch weather for all locations
-    const fetchAllWeather = async () => {
+    const fetchAll = async () => {
       await Promise.all(locations.map(fetchWeatherForLocation));
     };
 
-    // Fetch immediately
-    fetchAllWeather();
-
-    // Refresh weather data every 10 minutes
-    const refreshInterval = setInterval(fetchAllWeather, 10 * 60 * 1000);
-
-    return () => clearInterval(refreshInterval);
+    fetchAll();
+    const interval = setInterval(fetchAll, 10 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [currentLocationIds, locations, config.forecastType]);
 
-  // Cycle through locations
+  /**
+   * Rotate between multiple locations with fade transition
+   */
   useEffect(() => {
-    if (!locations || locations.length <= 1 || !config.displayDuration) return;
+    if (locations.length <= 1 || !config.displayDuration) return;
 
-    const cycleDuration = config.displayDuration * 1000; // Convert to ms
-    const fadeDuration = 300; // Fade transition duration in ms
+    const cycleMs = config.displayDuration * 1000;
+    const fadeMs = 300;
 
-    const cycleTimer = setInterval(() => {
-      // Fade out
+    const timer = setInterval(() => {
       setFadeState("out");
-
-      // After fade out, change location and fade in
       setTimeout(() => {
-        setCurrentLocationIndex((prev) =>
-          prev >= locations.length - 1 ? 0 : prev + 1
-        );
+        setCurrentLocationIndex((i) => (i >= locations.length - 1 ? 0 : i + 1));
         setFadeState("in");
-      }, fadeDuration);
-    }, cycleDuration);
+      }, fadeMs);
+    }, cycleMs);
 
-    return () => clearInterval(cycleTimer);
+    return () => clearInterval(timer);
   }, [locations, config.displayDuration]);
 
-  // Get current location's weather data
-  const currentLocation = locations?.[currentLocationIndex];
+  /**
+   * Resolve currently active location data
+   */
+  const currentLocation = locations[currentLocationIndex];
   const currentData = currentLocation
     ? weatherData.get(currentLocation.id)
     : null;
@@ -288,7 +305,26 @@ export function Render() {
   const currentWeather = currentData?.currentWeather || null;
   const forecast = currentData?.forecast || [];
 
-  // Render the appropriate layout based on detected aspect ratio
+  /**
+   * HARD GUARD:
+   * Do not render any layout unless valid weather data exists.
+   * Layouts must NEVER handle null or fake data.
+   */
+  if (!currentWeather) {
+    return (
+      <div
+        className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState} ${
+          theme === "dark" ? "weather-app-container--dark" : ""
+        }`}
+      >
+        <div className="weather-widget__loading">Loading…</div>
+      </div>
+    );
+  }
+
+  /**
+   * Common props passed to all layouts
+   */
   const commonProps = {
     currentWeather,
     forecast,
@@ -297,6 +333,9 @@ export function Render() {
     forecastType: (config.forecastType || "daily") as "hourly" | "daily",
   };
 
+  /**
+   * Layout selection based on detected aspect ratio
+   */
   return (
     <div
       className={`weather-app-container weather-app--${aspectRatio} weather-app--fade-${fadeState} ${
@@ -331,8 +370,6 @@ export function Render() {
         <Layout10x1
           {...commonProps}
           variant={config.layout10x1Variant || "current-condition-only"}
-          timeFormat={config.timeFormat || "12h"}
-          forecastType={config.forecastType || "daily"}
         />
       )}
     </div>

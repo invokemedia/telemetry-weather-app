@@ -29,7 +29,6 @@
 .weather-widget--4x5 .weather-widget__location {
   font-size: calc(100vw / var(--layout-4x5-design-width) * 32);
   font-weight: 500;
-  line-height: 1;
   text-align: center;
 
   /* DEBUG */
@@ -48,8 +47,6 @@
 
 .weather-widget--4x5 .weather-widget__time {
   font-size: calc(100vw / var(--layout-4x5-design-width) * 124);
-  font-weight: 400;
-  line-height: 1;
   text-align: center;
 
   /* DEBUG */
@@ -67,8 +64,6 @@
 
 .weather-widget--4x5 .weather-widget__temperature {
   font-size: calc(100vw / var(--layout-4x5-design-width) * 110);
-  font-weight: 400;
-  line-height: 1;
   text-align: center;
 
   /* DEBUG */
@@ -77,8 +72,6 @@
 
 .weather-widget--4x5 .weather-widget__weather-text {
   font-size: calc(100vw / var(--layout-4x5-design-width) * 40);
-  font-weight: 400;
-  line-height: 1;
   text-align: center;
 
   /* DEBUG */

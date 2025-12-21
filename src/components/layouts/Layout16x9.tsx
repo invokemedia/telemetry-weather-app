@@ -47,7 +47,7 @@ export function Layout16x9({
             name={locationName}
             className="weather-widget__accent-text"
           />
-          <Clock />
+          {/* <Clock /> */}
         </div>
 
         {/* Right group: current condition */}
