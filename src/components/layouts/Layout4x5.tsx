@@ -18,30 +18,26 @@ interface Layout4x5Props {
 }
 
 export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
-  const temp = getRoundedTemp(currentWeather);
+  const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
   const weatherText = currentWeather?.WeatherText;
 
   return (
     <div className="weather-widget weather-widget--4x5">
-      {/* Top group: location + time */}
+      {/* Top section */}
       <div className="weather-widget__top-group">
-        <LocationName
-          name={locationName}
-          className="weather-widget__accent-text"
-        />
-        {/* Current time */}
+        <LocationName name={locationName} color="accent" />
         <Clock timezone={currentWeather.Timezone} />
       </div>
 
-      {/* Middle group: icon + temperature */}
+      {/* Middle section */}
       <div className="weather-widget__temp-icon-group">
         <WeatherIcon icon={weatherIcon} />
-        <Temperature value={temp} className="weather-widget__text-color" />
+        <Temperature value={temp} />
       </div>
 
-      {/* Bottom: condition label */}
-      <WeatherText text={weatherText} className="weather-widget__text-color" />
+      {/* Bottom section*/}
+      <WeatherText text={weatherText} />
     </div>
   );
 }

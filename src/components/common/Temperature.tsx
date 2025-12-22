@@ -1,11 +1,26 @@
 interface TemperatureProps {
   value?: number;
-  className?: string;
+  variant?: "current" | "forecast";
+  color?: "text" | "accent";
 }
 
-export function Temperature({ value, className }: TemperatureProps) {
+export function Temperature({
+  value,
+  variant = "current",
+  color = "text",
+}: TemperatureProps) {
+  const variantClass =
+    variant === "current"
+      ? "weather-widget__temp--current"
+      : "weather-widget__temp--forecast";
+
+  const colorClass =
+    color === "text"
+      ? "weather-widget__text-color"
+      : "weather-widget__accent-text";
+
   return (
-    <div className={`weather-widget__temperature ${className ?? ""}`}>
+    <div className={`${variantClass} ${colorClass}`}>
       {value !== undefined ? `${value}°` : "--°"}
     </div>
   );

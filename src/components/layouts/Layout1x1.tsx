@@ -23,31 +23,23 @@ export function Layout1x1({
   locationName,
   variant = "location",
 }: Layout1x1Props) {
-  const temp = getRoundedTemp(currentWeather);
+  const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
   const weatherText = currentWeather.WeatherText;
 
   // Layout variant: with current condition label
   if (variant === "current-condition-label") {
     return (
-      <div className="weather-widget weather-widget--1x1 weather-widget--1x1-with-weather-text">
-        {/* Current time */}
+      <div className="weather-widget weather-widget--1x1">
         <Clock timezone={currentWeather.Timezone} />
 
         <div className="weather-widget__bottom-group">
           <div className="weather-widget__temp-icon-group">
-            {/* Current temperature */}
-            <Temperature value={temp} className="weather-widget__text-color" />
-
-            {/* Current weather icon */}
+            <Temperature value={temp} />
             <WeatherIcon icon={weatherIcon} />
           </div>
 
-          {/* Current condition label */}
-          <WeatherText
-            text={weatherText}
-            className="weather-widget__accent-text"
-          />
+          <WeatherText text={weatherText} color="accent" />
         </div>
       </div>
     );
@@ -56,20 +48,11 @@ export function Layout1x1({
   // Layout variant: with location
   return (
     <div className="weather-widget weather-widget--1x1">
-      {/* Location name */}
-      <LocationName
-        name={locationName}
-        className="weather-widget__accent-text"
-      />
-
-      {/* Current time */}
+      <LocationName name={locationName} color="accent" />
       <Clock timezone={currentWeather.Timezone} />
 
       <div className="weather-widget__temp-icon-group">
-        {/* Current temperature */}
-        <Temperature value={temp} className="weather-widget__text-color" />
-
-        {/* Current weather icon */}
+        <Temperature value={temp} />
         <WeatherIcon icon={weatherIcon} />
       </div>
     </div>

@@ -3,9 +3,10 @@ import { formatTimeInTimezone } from "@/utils/formatTimeInTimezone";
 
 interface ClockProps {
   timezone: string;
+  color?: "text" | "accent";
 }
 
-export function Clock({ timezone }: ClockProps) {
+export function Clock({ timezone, color = "text" }: ClockProps) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -16,8 +17,13 @@ export function Clock({ timezone }: ClockProps) {
     return () => clearInterval(interval);
   }, []);
 
+  const colorClass =
+    color === "text"
+      ? "weather-widget__text-color"
+      : "weather-widget__accent-text";
+
   return (
-    <div className="weather-widget__time weather-widget__text-color">
+    <div className={`weather-widget__time ${colorClass}`}>
       {formatTimeInTimezone(now, timezone)}
     </div>
   );

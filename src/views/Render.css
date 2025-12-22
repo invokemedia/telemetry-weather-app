@@ -1,5 +1,7 @@
 @import "./layouts/layout-1x1.css";
 @import "./layouts/layout-4x5.css";
+@import "./layouts/layout-16x9.css";
+@import "./layouts/layout-9x16.css";
 
 /* Import fonts */
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap");
@@ -16,6 +18,7 @@ html {
   margin: 0;
   padding: 0;
   font-family: "Geist", system-ui, sans-serif;
+  font-weight: 400;
 }
 
 /* App container */
@@ -50,10 +53,11 @@ html {
   --layout-9x16-design-width: 720;
 
   /* Light theme (default) */
-  --color-blue-start: #4d8dcd;
-  --color-blue-end: #0055b3;
+  --color-bg-start: #4d8dcd;
+  --color-bg-end: #0055b3;
+  --color-forecast-bg: #0357b4;
   --color-text-primary: #ffffff;
-  --color-text-secondary: rgba(255, 255, 255, 0.9);
+  --color-text-secondary: rgba(255, 255, 255, 0.68);
   /* Custom colors (set dynamically from Settings) */
   --custom-text-color: rgba(255, 255, 255, 1);
   --custom-accent-color: rgba(255, 255, 255, 0.68);
@@ -61,159 +65,59 @@ html {
 
 /* Dark theme */
 .weather-app-container--dark {
-  --color-blue-start: #2d353e;
-  --color-blue-end: #040d19;
-}
-
-.text-clamp {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-all;
-}
-
-.text-clamp--1 {
-  -webkit-line-clamp: 1;
-}
-
-.text-clamp--2 {
-  -webkit-line-clamp: 2;
+  --color-bg-start: #2d353e;
+  --color-bg-end: #040d19;
+  --color-forecast-bg: #000;
 }
 
 /* --------------------------------------------------
    GLOBAL .weather-widget STYLES
 -------------------------------------------------- */
-
 .weather-widget {
   width: 100%;
   height: 100%;
   color: var(--custom-text-color, var(--color-text-primary));
   box-sizing: border-box;
   overflow: hidden;
-  font-weight: 400;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.weather-widget__icon {
+/* Color utility classes */
+.weather-widget__accent-text {
+  color: var(--custom-accent-color, rgba(255, 255, 255, 0.68)) !important;
+}
+
+.weather-widget__text-color {
+  color: var(--custom-text-color, #ffffff) !important;
+}
+
+/* Weather icons (current + forecast) */
+.weather-widget__icon--current,
+.weather-widget__icon--forecast {
   width: auto;
 }
 
-.weather-widget__icon-img {
+.weather-widget__icon--current .weather-widget__icon-img,
+.weather-widget__icon--forecast .weather-widget__icon-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
+/* Location text */
 .weather-widget__location {
   word-break: break-word;
 }
 
+/* Weather description text */
 .weather-widget__weather-text {
   word-break: break-word;
 }
 
-/* --------------------------------------------------
-   16:9 LAYOUT (1280 × 720)
--------------------------------------------------- */
-
-.weather-widget--16x9 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: calc(100vw / var(--layout-16x9-design-width) * 72);
-  border-radius: calc(100vw / var(--layout-16x9-design-width) * 24);
-}
-
-/* Top section wrapper */
-.weather-widget--16x9 .weather-widget__top-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 10);
-}
-
-/* Left group: Location + Time */
-.weather-widget--16x9 .weather-widget__left-group {
-  display: flex;
-  flex-direction: column;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 10);
-}
-
-.weather-widget--16x9 .weather-widget__location {
-  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont,
-    "SF Pro Display", system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 40);
-  font-weight: 500;
-  line-height: normal;
-}
-
-.weather-widget--16x9 .weather-widget__time {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 180);
-  font-weight: 400;
-  line-height: 1;
-}
-
-.weather-widget--16x9 .weather-widget__time-period {
-  font-size: calc(
-    100vw / var(--layout-16x9-design-width) * 90
-  ); /* Half the size of the clock */
-  font-weight: 400;
-}
-
-/* Right group: Icon + Temperature + Sunrise/Sunset */
-.weather-widget--16x9 .weather-widget__right-group {
-  display: flex;
-  flex-direction: column;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 26);
-  align-items: flex-end;
-}
-
-/* Icon + Temperature group */
-.weather-widget--16x9 .weather-widget__icon-temp-group {
-  display: flex;
-  align-items: center;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 20);
-}
-
-.weather-widget--16x9 .weather-widget__icon {
-  height: calc(100vw / var(--layout-16x9-design-width) * 126);
-  width: auto;
-}
-
-.weather-widget--16x9 .weather-widget__icon img {
-  width: auto;
-  height: 100%;
-  display: block;
-}
-
-.weather-widget--16x9 .weather-widget__temperature {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 102);
-  font-weight: 400;
-  line-height: normal;
-}
-
-/* Sunrise / Sunset group */
-.weather-widget--16x9 .weather-widget__sun-group {
-  display: flex;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 20);
-  align-items: center;
-}
-
-.weather-widget--16x9 .weather-widget__sun-item {
-  display: flex;
-  align-items: center;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 8);
-}
-
-.weather-widget--16x9 .weather-widget__sun-icon {
-  width: calc(100vw / var(--layout-16x9-design-width) * 40);
-  height: calc(100vw / var(--layout-16x9-design-width) * 40);
+/* Sunrise / sunset icon base */
+.weather-widget__sun-icon {
   display: inline-block;
   background-color: var(--custom-text-color, #ffffff);
   -webkit-mask-size: contain;
@@ -224,79 +128,21 @@ html {
   mask-position: center;
 }
 
-.weather-widget--16x9 .weather-widget__sun-icon--sunrise {
+/* Sunrise icon mask */
+.weather-widget__sun-icon--sunrise {
   -webkit-mask-image: url("../assets/icon-sunrise.svg");
   mask-image: url("../assets/icon-sunrise.svg");
 }
 
-.weather-widget--16x9 .weather-widget__sun-icon--sunset {
+/* Sunset icon mask */
+.weather-widget__sun-icon--sunset {
   -webkit-mask-image: url("../assets/icon-sunset.svg");
   mask-image: url("../assets/icon-sunset.svg");
 }
 
-.weather-widget--16x9 .weather-widget__sun-time {
-  color: var(--custom-text-color, #ffffff);
-  font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 32);
-  font-weight: 400;
-  letter-spacing: calc(100vw / var(--layout-16x9-design-width) * 1.28);
-}
-
-/* Forecast section wrapper */
-.weather-widget--16x9 .weather-widget__forecast-section {
-  display: flex;
-  padding: calc(100vw / var(--layout-16x9-design-width) * 42)
-    calc(100vw / var(--layout-16x9-design-width) * 48);
-  justify-content: space-between;
-  align-items: flex-start;
-  align-self: stretch;
-  border-radius: calc(100vw / var(--layout-16x9-design-width) * 36);
-  background: #0357b4;
-}
-
-.weather-widget--16x9 .weather-widget__forecast-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(100vw / var(--layout-16x9-design-width) * 8);
-}
-
-.weather-widget--16x9 .weather-widget__forecast-temp {
-  text-align: center;
-  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 40);
-  font-weight: 500;
-  line-height: normal;
-}
-
-.weather-widget--16x9 .weather-widget__forecast-icon {
-  height: calc(100vw / var(--layout-16x9-design-width) * 90);
-  width: auto;
-}
-
-.weather-widget--16x9 .weather-widget__forecast-icon img {
-  width: auto;
-  height: 100%;
-  display: block;
-}
-
-.weather-widget--16x9 .weather-widget__forecast-day {
-  text-align: center;
-  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-16x9-design-width) * 34);
-  font-weight: 400;
-  line-height: normal;
-}
-
-/* Color utility classes */
-.weather-widget__accent-text {
-  color: var(--custom-accent-color, rgba(255, 255, 255, 0.68)) !important;
-}
-
-.weather-widget__text-color {
-  color: var(--custom-text-color, #ffffff) !important;
+/* Forecast section */
+.weather-widget__forecast-section {
+  background: var(--color-forecast-bg);
 }
 
 /* --------------------------------------------------
@@ -319,7 +165,6 @@ html {
   color: var(--custom-text-color, #ffffff);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-10x1-design-width) * 60);
-  font-weight: 400;
   line-height: 100%;
 }
 
@@ -329,11 +174,10 @@ html {
   gap: calc(100vw / var(--layout-10x1-design-width) * 24);
 }
 
-.weather-widget--10x1 .weather-widget__temperature {
+.weather-widget--10x1 .weather-widget__temp {
   color: var(--custom-text-color, #ffffff);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-10x1-design-width) * 60);
-  font-weight: 400;
   line-height: 100%;
 }
 
@@ -347,7 +191,6 @@ html {
   color: var(--custom-text-color, #ffffff);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-10x1-design-width) * 40);
-  font-weight: 400;
   line-height: 100%;
 }
 
@@ -386,7 +229,7 @@ html {
   height: calc(100vw / var(--layout-10x1-design-width) * 42);
 }
 
-.weather-widget--10x1-forecast .weather-widget__temperature {
+.weather-widget--10x1-forecast .weather-widget__temp {
   color: var(--custom-text-color, #ffffff);
   font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
     system-ui, sans-serif;
@@ -485,7 +328,6 @@ html {
   color: var(--custom-text-color, #ffffff);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-1x3-design-width) * 80);
-  font-weight: 400;
   line-height: normal;
 }
 
@@ -501,7 +343,7 @@ html {
   height: calc(100vw / var(--layout-1x3-design-width) * 68);
 }
 
-.weather-widget--1x3 .weather-widget__temperature {
+.weather-widget--1x3 .weather-widget__temp {
   color: var(--custom-text-color, #ffffff);
   text-align: center;
   font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
@@ -516,7 +358,6 @@ html {
   text-align: center;
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-1x3-design-width) * 28);
-  font-weight: 400;
   line-height: normal;
 }
 
@@ -541,7 +382,6 @@ html {
   color: var(--custom-text-color, #ffffff);
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-1x3-design-width) * 32);
-  font-weight: 400;
   line-height: normal;
 }
 
@@ -608,12 +448,11 @@ html {
   height: auto;
 }
 
-.weather-widget--1x10 .weather-widget__temperature {
+.weather-widget--1x10 .weather-widget__temp {
   color: #fff;
   font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
     system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-1x10-design-width) * 66);
-  font-weight: 400;
   line-height: 100%;
 }
 
@@ -663,135 +502,5 @@ html {
   font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: calc(100vw / var(--layout-1x10-design-width) * 32);
   font-weight: var(--font-weight-normal, 400);
-  line-height: normal;
-}
-
-/* --------------------------------------------------
-   9:16 LAYOUT (720 × 1280)
--------------------------------------------------- */
-
-.weather-widget--9x16 {
-  display: flex;
-  padding: calc(100vw / var(--layout-9x16-design-width) * 48);
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: calc(100vw / var(--layout-9x16-design-width) * 10);
-  border-radius: calc(100vw / var(--layout-9x16-design-width) * 24);
-}
-
-.weather-widget--9x16 .weather-widget__location {
-  color: rgba(255, 255, 255, 0.68);
-  text-align: center;
-  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 40);
-  font-weight: 500;
-  line-height: normal;
-}
-
-.weather-widget--9x16 .weather-widget__clock {
-  color: #fff;
-  font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
-    system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 120);
-  font-weight: var(--font-weight-normal, 400);
-  line-height: 100%;
-}
-
-.weather-widget--9x16 .weather-widget__icon {
-  width: calc(100vw / var(--layout-9x16-design-width) * 154);
-  height: calc(100vw / var(--layout-9x16-design-width) * 104);
-}
-
-.weather-widget--9x16 .weather-widget__temperature {
-  color: #fff;
-  font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
-    system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 100);
-  font-weight: var(--font-weight-normal, 400);
-  line-height: 100%;
-}
-
-.weather-widget--9x16 .weather-widget__feels-like {
-  color: #fff;
-  font-family: var(--font-font-sans, "Geist"), -apple-system, BlinkMacSystemFont,
-    system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 32);
-  font-weight: var(--font-weight-normal, 400);
-  line-height: 100%;
-}
-
-.weather-widget--9x16 .weather-widget__sun-times {
-  display: flex;
-  gap: calc(100vw / var(--layout-9x16-design-width) * 32);
-  color: #fff;
-  font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 32);
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: calc(100vw / var(--layout-9x16-design-width) * 1.28);
-}
-
-.weather-widget--9x16 .weather-widget__forecast-box {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: calc(100vw / var(--layout-9x16-design-width) * 32);
-  justify-content: space-between;
-  align-items: center;
-  align-self: stretch;
-  border-radius: calc(100vw / var(--layout-9x16-design-width) * 36);
-  background: #0357b4;
-  gap: calc(100vw / var(--layout-9x16-design-width) * 16);
-}
-
-.weather-widget--9x16 .weather-widget__forecast-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(100vw / var(--layout-9x16-design-width) * 8);
-}
-
-.weather-widget--9x16 .weather-widget__forecast-day {
-  color: #fff;
-  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 33);
-  font-weight: 400;
-  line-height: normal;
-}
-
-.weather-widget--9x16 .weather-widget__forecast-icon {
-  width: calc(100vw / var(--layout-9x16-design-width) * 64);
-  height: calc(100vw / var(--layout-9x16-design-width) * 36);
-}
-
-.weather-widget--9x16 .weather-widget__forecast-icon-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.weather-widget--9x16 .weather-widget__forecast-temps {
-  display: flex;
-  gap: calc(100vw / var(--layout-9x16-design-width) * 8);
-  align-items: center;
-}
-
-.weather-widget--9x16 .weather-widget__forecast-temp-max {
-  color: #fff;
-  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 40);
-  font-weight: 500;
-  line-height: normal;
-}
-
-.weather-widget--9x16 .weather-widget__forecast-temp-min {
-  color: rgba(255, 255, 255, 0.68);
-  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui,
-    sans-serif;
-  font-size: calc(100vw / var(--layout-9x16-design-width) * 40);
-  font-weight: 500;
   line-height: normal;
 }

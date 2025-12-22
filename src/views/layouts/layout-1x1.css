@@ -11,8 +11,8 @@
   border-radius: calc(100vw / var(--layout-1x1-design-width) * 22);
   background: linear-gradient(
     180deg,
-    var(--color-blue-start) 0%,
-    var(--color-blue-end) 100%
+    var(--color-bg-start) 0%,
+    var(--color-bg-end) 100%
   );
 }
 
@@ -41,16 +41,16 @@
   border: 2px solid rgba(255, 165, 0, 0.85);
 }
 
-.weather-widget--1x1 .weather-widget__temperature {
+.weather-widget--1x1 .weather-widget__temp--current {
   font-size: calc(100vw / var(--layout-1x1-design-width) * 60);
 
   /* DEBUG */
   border: 2px solid rgba(138, 43, 226, 0.9);
 }
 
-.weather-widget--1x1 .weather-widget__icon {
+.weather-widget--1x1 .weather-widget__icon--current {
   width: auto;
-  max-width: calc(100vw / var(--layout-1x1-design-width) * 110);
+  max-width: calc(100vw / var(--layout-1x1-design-width) * 74);
   height: calc(100vw / var(--layout-1x1-design-width) * 74);
 
   /* DEBUG */

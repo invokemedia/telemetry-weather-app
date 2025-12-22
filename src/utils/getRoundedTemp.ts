@@ -1,8 +1,4 @@
-import type { WeatherConditions } from "@/types/weather";
-
-export function getRoundedTemp(
-  weather: WeatherConditions | null
-): number | undefined {
-  if (weather?.Temp == null) return undefined;
-  return Math.round(weather.Temp);
+export function getRoundedTemp(value?: number | null): number | undefined {
+  if (value == null) return undefined;
+  return Math.round(value);
 }
