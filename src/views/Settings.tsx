@@ -42,6 +42,7 @@ export function Settings() {
   const layout1x1Variant = config.layout1x1Variant || "location";
   const layout10x1Variant =
     config.layout10x1Variant || "current-condition-only";
+  const layout3x1Variant = config.layout3x1Variant || "weather-text";
 
   // Get current layout features (what settings are relevant)
   const currentAspectRatio = (config.currentAspectRatio ||
@@ -541,6 +542,48 @@ export function Settings() {
                 single location since it doesn't display the location name.
               </div>
             )}
+          </SettingsField>
+        )}
+
+        {currentAspectRatio === "3x1" && (
+          <SettingsField>
+            <SettingsLabel>3×1 Layout Variant</SettingsLabel>
+
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout3x1Variant"
+                value="weather-text"
+                checked={layout3x1Variant === "weather-text"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout3x1Variant: e.target.value as
+                      | "weather-text"
+                      | "temp-range",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>🌤️ Weather Text</SettingsRadioLabel>
+            </SettingsRadioFrame>
+
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="layout3x1Variant"
+                value="temp-range"
+                checked={layout3x1Variant === "temp-range"}
+                onChange={(e) =>
+                  updateConfig({
+                    layout3x1Variant: e.target.value as
+                      | "weather-text"
+                      | "temp-range",
+                  })
+                }
+                disabled={isLoadingConfig}
+              />
+              <SettingsRadioLabel>🌡️ Temp Range</SettingsRadioLabel>
+            </SettingsRadioFrame>
           </SettingsField>
         )}
 

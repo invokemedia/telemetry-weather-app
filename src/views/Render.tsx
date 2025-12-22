@@ -355,7 +355,10 @@ export function Render() {
         />
       )}
       {aspectRatio === ASPECT_RATIOS.SHORT_LONG_3x1 && (
-        <Layout3x1 {...commonProps} />
+        <Layout3x1
+          {...commonProps}
+          variant={config.layout3x1Variant || "weather-text"}
+        />
       )}
       {aspectRatio === ASPECT_RATIOS.TALL_SHORT_1x3 && (
         <Layout1x3 {...commonProps} />

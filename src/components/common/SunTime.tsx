@@ -1,6 +1,3 @@
-import SunriseIcon from "@/assets/icon-sunrise.svg";
-import SunsetIcon from "@/assets/icon-sunset.svg";
-
 interface SunTimeProps {
   type: "sunrise" | "sunset";
   time: string;

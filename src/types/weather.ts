@@ -60,6 +60,7 @@ export interface WeatherConfig {
     | "current-condition-only"
     | "current-condition-location"
     | "current-condition-forecast"; // Layout variant for 10x1 aspect ratio
+  layout3x1Variant?: "weather-text" | "temp-range";
 }
 
 // Cached weather data with timestamp
