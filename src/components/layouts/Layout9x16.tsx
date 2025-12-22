@@ -6,6 +6,7 @@ import { Clock } from "@/components/common/Clock";
 import { LocationName } from "@/components/common/LocationName";
 import { Temperature } from "@/components/common/Temperature";
 import { WeatherIcon } from "@/components/common/WeatherIcon";
+import { LastUpdated } from "@/components/common/LastUpdated";
 import { SunTime } from "@/components/common/SunTime";
 import { ForecastLabel } from "@/components/common/ForecastLabel";
 import { FeelsLike } from "@/components/common/FeelsLike";
@@ -42,34 +43,36 @@ export function Layout9x16({
     dailyCount: 6,
   });
 
-  // TEMP
-  const feelsLike = 16;
-  const sunrise = "06:30";
-  const sunset = "18:45";
+  // TEMP - Not supported by API yet
+  // const feelsLike = 16;
+  // const sunrise = "06:30";
+  // const sunset = "18:45";
 
   return (
     <div className="weather-widget weather-widget--9x16">
-      {/* Top */}
+      {/* Top section */}
       <div className="weather-widget__top-section">
         <LocationName name={locationName} color="accent" />
         <Clock timezone={currentWeather.Timezone} />
       </div>
 
-      {/* Current */}
+      {/* Current section */}
       <div className="weather-widget__current-section">
         <div className="weather-widget__current-conditions">
           <WeatherIcon icon={weatherIcon} />
           <Temperature value={temp} />
-          <FeelsLike value={feelsLike} color="text" />
+          <LastUpdated timestamp={currentWeather.Timestamp} />
+          {/* <FeelsLike value={feelsLike} color="text" /> */}
         </div>
 
-        <div className="weather-widget__sun-group">
+        {/* Sunrise / Sunset */}
+        {/* <div className="weather-widget__sun-group">
           <SunTime type="sunrise" time={sunrise} />
           <SunTime type="sunset" time={sunset} />
-        </div>
+        </div> */}
       </div>
 
-      {/* Forecast */}
+      {/* Forecast section */}
       <div className="weather-widget__forecast-section">
         {forecastItems.map((item, index) => (
           <div key={index} className="weather-widget__forecast-item">

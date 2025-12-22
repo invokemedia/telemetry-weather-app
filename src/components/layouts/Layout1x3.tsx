@@ -42,13 +42,13 @@ export function Layout1x3({
 
   return (
     <div className="weather-widget weather-widget--1x3">
-      {/* Top */}
+      {/* Top section */}
       <div className="weather-widget__top-section">
         <LocationName name={locationName} color="accent" />
         <Clock timezone={currentWeather.Timezone} />
       </div>
 
-      {/* Current */}
+      {/* Current section */}
       <div className="weather-widget__current-section">
         <WeatherIcon icon={weatherIcon} />
         <Temperature value={temp} />
@@ -57,7 +57,7 @@ export function Layout1x3({
         </div>
       </div>
 
-      {/* Forecast */}
+      {/* Forecast section */}
       <div className="weather-widget__forecast-section">
         {forecastItems.map((item) => (
           <div key={item.Datetime} className="weather-widget__forecast-item">

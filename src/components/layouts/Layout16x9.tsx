@@ -6,6 +6,7 @@ import { Clock } from "@/components/common/Clock";
 import { LocationName } from "@/components/common/LocationName";
 import { Temperature } from "@/components/common/Temperature";
 import { WeatherIcon } from "@/components/common/WeatherIcon";
+import { LastUpdated } from "@/components/common/LastUpdated";
 
 // Utils / selectors
 import { getRoundedTemp } from "@/utils/getRoundedTemp";
@@ -41,9 +42,9 @@ export function Layout16x9({
     dailyCount: 5,
   });
 
-  // TEMP
-  const sunrise = "06:30";
-  const sunset = "18:45";
+  // TEMP - Not supported by API yet
+  // const sunrise = "06:30";
+  // const sunset = "18:45";
 
   return (
     <div className="weather-widget weather-widget--16x9">
@@ -62,11 +63,13 @@ export function Layout16x9({
             <Temperature value={temp} />
           </div>
 
-          {/* Sunrise / sunset */}
-          <div className="weather-widget__sun-group">
+          <LastUpdated timestamp={currentWeather.Timestamp} />
+
+          {/* Sunrise / Sunset */}
+          {/* <div className="weather-widget__sun-group">
             <SunTime type="sunrise" time={sunrise} />
             <SunTime type="sunset" time={sunset} />
-          </div>
+          </div> */}
         </div>
       </div>
 

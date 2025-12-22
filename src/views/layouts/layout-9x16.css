@@ -75,6 +75,12 @@
   font-size: calc(100vw / var(--layout-9x16-design-width) * 32);
 }
 
+/*  Last updated time */
+.weather-widget--9x16 .weather-widget__last-updated {
+  font-size: calc(100vw / var(--layout-9x16-design-width) * 32);
+}
+
+/* Sunset/Sunrise */
 .weather-widget--9x16 .weather-widget__sun-group {
   display: flex;
   align-items: center;
