@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { store, weather } from "@telemetryos/sdk";
+import { useUiAspectRatio } from "@telemetryos/sdk/react";
 import "./Render.css";
 
 // Layouts
@@ -62,7 +63,12 @@ export function Render() {
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Detected screen aspect ratio
+   * Get aspect ratio from SDK hook (handles resize automatically)
+   */
+  const numericAspectRatio = useUiAspectRatio();
+
+  /**
+   * Detected screen aspect ratio (classified into layout types)
    */
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
     ASPECT_RATIOS.FULL_SCREEN_16x9
@@ -90,43 +96,35 @@ export function Render() {
   );
 
   /**
-   * Detect screen aspect ratio on mount and resize
+   * Classify numeric aspect ratio into layout type
    * This controls which layout component is rendered
    */
   useEffect(() => {
-    const detectAspectRatio = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const ratio = width / height;
+    let closestRatio: AspectRatioType = ASPECT_RATIOS.FULL_SCREEN_16x9;
+    let smallestDiff = Infinity;
 
-      let closestRatio: AspectRatioType = ASPECT_RATIOS.FULL_SCREEN_16x9;
-      let smallestDiff = Infinity;
-
-      Object.entries(ASPECT_RATIO_VALUES).forEach(([key, value]) => {
-        const diff = Math.abs(ratio - value);
-        if (diff < smallestDiff) {
-          smallestDiff = diff;
-          closestRatio = key as AspectRatioType;
-        }
-      });
-
-      console.log(
-        `📐 [Render] Aspect ratio: ${ratio.toFixed(2)} (${width}x${height})`
-      );
-      console.log(`📐 [Render] Selected layout: ${closestRatio}`);
-
-      setAspectRatio(closestRatio);
-
-      // Persist detected ratio so Settings UI can react to it
-      if (config.currentAspectRatio !== closestRatio) {
-        setConfig({ ...config, currentAspectRatio: closestRatio });
+    Object.entries(ASPECT_RATIO_VALUES).forEach(([key, value]) => {
+      const diff = Math.abs(numericAspectRatio - value);
+      if (diff < smallestDiff) {
+        smallestDiff = diff;
+        closestRatio = key as AspectRatioType;
       }
-    };
+    });
 
-    detectAspectRatio();
-    window.addEventListener("resize", detectAspectRatio);
-    return () => window.removeEventListener("resize", detectAspectRatio);
-  }, [config, setConfig]);
+    console.log(
+      `📐 [Render] Aspect ratio: ${numericAspectRatio.toFixed(2)} (${
+        window.innerWidth
+      }x${window.innerHeight})`
+    );
+    console.log(`📐 [Render] Selected layout: ${closestRatio}`);
+
+    setAspectRatio(closestRatio);
+
+    // Persist detected ratio so Settings UI can react to it
+    if (config.currentAspectRatio !== closestRatio) {
+      setConfig({ ...config, currentAspectRatio: closestRatio });
+    }
+  }, [numericAspectRatio, config, setConfig]);
 
   /**
    * Apply user-defined colors via CSS variables
