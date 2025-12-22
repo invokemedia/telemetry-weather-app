@@ -36,79 +36,44 @@ export const ASPECT_RATIO_VALUES: Record<AspectRatioType, number> = {
   "1x10": 1 / 10,
 };
 
-// Layout patterns available for each aspect ratio
-export const LAYOUT_PATTERNS = {
-  "16x9": ["full", "with-forecast"],
-  "9x16": ["centered", "with-forecast"],
-  "10x1": ["time-weather", "time-weather-forecast"],
-  "1x10": ["vertical-stack", "vertical-forecast"],
-  "1x1": ["with-location", "minimal"],
-  "3x1": ["time-left", "time-left-high-low"],
-  "1x3": ["vertical-list"],
-  "4x5": ["centered-large"],
-} as const;
-
-export type LayoutPattern<T extends AspectRatioType> =
-  T extends keyof typeof LAYOUT_PATTERNS
-    ? (typeof LAYOUT_PATTERNS)[T][number]
-    : string;
-
 // Layout feature flags - determines which settings are relevant for each layout
 export const LAYOUT_FEATURES: Record<
   AspectRatioType,
   {
     showsForecast: boolean;
-    showsMultipleLocations: boolean;
-    showsSunriseSunset: boolean;
     showsTimeFormat: boolean;
   }
 > = {
   "1x1": {
-    showsForecast: false, // Only shows current weather
-    showsMultipleLocations: true, // Can cycle locations
-    showsSunriseSunset: false,
-    showsTimeFormat: false, // Always uses 24h format
+    showsForecast: false,
+    showsTimeFormat: false,
   },
   "16x9": {
     showsForecast: true,
-    showsMultipleLocations: true,
-    showsSunriseSunset: true,
-    showsTimeFormat: true, // For forecast times
-  },
-  "9x16": {
-    showsForecast: true,
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
     showsTimeFormat: true,
   },
   "3x1": {
     showsForecast: false,
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
     showsTimeFormat: true,
-  },
-  "1x3": {
-    showsForecast: true,
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
-    showsTimeFormat: true,
-  },
-  "4x5": {
-    showsForecast: false, // Only shows current weather
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
-    showsTimeFormat: false, // Always uses 24h format
   },
   "10x1": {
     showsForecast: true,
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
-    showsTimeFormat: true, // Can switch between 12h/24h for forecast times
+    showsTimeFormat: true,
+  },
+  "9x16": {
+    showsForecast: true,
+    showsTimeFormat: true,
+  },
+  "4x5": {
+    showsForecast: false,
+    showsTimeFormat: false,
+  },
+  "1x3": {
+    showsForecast: true,
+    showsTimeFormat: true,
   },
   "1x10": {
     showsForecast: true,
-    showsMultipleLocations: true,
-    showsSunriseSunset: false,
     showsTimeFormat: true,
   },
 };
