@@ -1,12 +1,21 @@
 /* --------------------------------------------------
    3:1 LAYOUT
 -------------------------------------------------- */
+/* Design size: 840 × 287 (width-based scaling) */
+
 .weather-widget--3x1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: calc(100vw / var(--layout-3x1-design-width) * 10);
-  padding: calc(100vw / var(--layout-3x1-design-width) * 32);
+
+  /* gap: calc(100vw / var(--layout-3x1-design-width) * 10); */
+  /* 10px / 840 = 1.19rem */
+  gap: 1.19rem;
+
+  /* padding: calc(100vw / var(--layout-3x1-design-width) * 32); */
+  /* 32px / 840 = 3.81rem */
+  padding: 3.81rem;
+
   background: linear-gradient(
     0deg,
     var(--color-bg-start) 0%,
@@ -21,16 +30,23 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: calc(100vw / var(--layout-3x1-design-width) * 16);
+
+  /* gap: calc(100vw / var(--layout-3x1-design-width) * 16); */
+  /* 16px / 840 = 1.90rem */
+  gap: 1.9rem;
 }
 
 .weather-widget--3x1 .weather-widget__location {
-  font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
+  /* font-size: calc(100vw / var(--layout-3x1-design-width) * 40); */
+  /* 40px / 840 = 4.76rem */
+  font-size: 4.76rem;
   font-weight: 500;
 }
 
 .weather-widget--3x1 .weather-widget__time {
-  font-size: calc(100vw / var(--layout-3x1-design-width) * 120);
+  /* font-size: calc(100vw / var(--layout-3x1-design-width) * 120); */
+  /* 120px / 840 = 14.29rem */
+  font-size: 14.29rem;
 }
 
 /* ==================================================
@@ -41,7 +57,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  gap: calc(100vw / var(--layout-3x1-design-width) * 30);
+
+  /* gap: calc(100vw / var(--layout-3x1-design-width) * 30); */
+  /* 30px / 840 = 3.57rem */
+  gap: 3.57rem;
 }
 
 /* ==================================================
@@ -50,23 +69,33 @@
 .weather-widget--3x1 .weather-widget__current-row {
   display: flex;
   align-items: center;
-  gap: calc(100vw / var(--layout-3x1-design-width) * 16);
+
+  /* gap: calc(100vw / var(--layout-3x1-design-width) * 16); */
+  /* 16px / 840 = 1.90rem */
+  gap: 1.9rem;
 }
 
 .weather-widget--3x1 .weather-widget__icon--current {
-  max-width: calc(100vw / var(--layout-3x1-design-width) * 100);
-  height: calc(100vw / var(--layout-3x1-design-width) * 100);
+  /* max-width: calc(100vw / var(--layout-3x1-design-width) * 100); */
+  /* height: calc(100vw / var(--layout-3x1-design-width) * 100); */
+  /* 100px / 840 = 11.90rem */
+  max-width: 11.9rem;
+  height: 11.9rem;
 }
 
 .weather-widget--3x1 .weather-widget__temp--current {
-  font-size: calc(100vw / var(--layout-3x1-design-width) * 88);
+  /* font-size: calc(100vw / var(--layout-3x1-design-width) * 88); */
+  /* 88px / 840 = 10.48rem */
+  font-size: 10.48rem;
 }
 
 /* ==================================================
    WEATHER TEXT VARIANT
 ================================================== */
 .weather-widget--3x1 .weather-widget__weather-text {
-  font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
+  /* font-size: calc(100vw / var(--layout-3x1-design-width) * 40); */
+  /* 40px / 840 = 4.76rem */
+  font-size: 4.76rem;
 }
 
 /* ==================================================
@@ -75,11 +104,16 @@
 .weather-widget--3x1 .weather-widget__temp-range {
   display: flex;
   align-items: center;
-  gap: calc(100vw / var(--layout-3x1-design-width) * 4);
+
+  /* gap: calc(100vw / var(--layout-3x1-design-width) * 4); */
+  /* 4px / 840 = 0.48rem */
+  gap: 0.48rem;
 }
 
 .weather-widget--3x1 .weather-widget__temp--forecast {
-  font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
+  /* font-size: calc(100vw / var(--layout-3x1-design-width) * 40); */
+  /* 40px / 840 = 4.76rem */
+  font-size: 4.76rem;
 }
 
 .weather-widget--3x1 .weather-widget__temp-range-item {
@@ -89,6 +123,9 @@
 }
 
 .weather-widget--3x1 .weather-widget__arrow-icon {
-  width: calc(100vw / var(--layout-3x1-design-width) * 40);
-  height: calc(100vw / var(--layout-3x1-design-width) * 40);
+  /* width: calc(100vw / var(--layout-3x1-design-width) * 40); */
+  /* height: calc(100vw / var(--layout-3x1-design-width) * 40); */
+  /* 40px / 840 = 4.76rem */
+  width: 4.76rem;
+  height: 4.76rem;
 }

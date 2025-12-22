@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { store, weather } from "@telemetryos/sdk";
-import { useUiAspectRatio } from "@telemetryos/sdk/react";
+import { useUiAspectRatio, useUiScaleToSetRem } from "@telemetryos/sdk/react";
 import "./Render.css";
 
 // Layouts (ordered by CSS variable definition)
@@ -60,6 +60,12 @@ export function Render() {
    * Get aspect ratio from SDK hook (handles resize automatically)
    */
   const numericAspectRatio = useUiAspectRatio();
+
+  /**
+   * Set root font-size based on viewport (1rem = 1% of longest dimension)
+   * Using uiScale of 1.0 as baseline for testing
+   */
+  useUiScaleToSetRem(1.0);
 
   /**
    * Detected screen aspect ratio (classified into layout types)
