@@ -3,15 +3,15 @@ import { store, weather } from "@telemetryos/sdk";
 import { useUiAspectRatio } from "@telemetryos/sdk/react";
 import "./Render.css";
 
-// Layouts
-import { Layout16x9 } from "@/components/layouts/Layout16x9";
-import { Layout9x16 } from "@/components/layouts/Layout9x16";
+// Layouts (ordered by CSS variable definition)
 import { Layout1x1 } from "@/components/layouts/Layout1x1";
-import { Layout1x3 } from "@/components/layouts/Layout1x3";
+import { Layout16x9 } from "@/components/layouts/Layout16x9";
 import { Layout3x1 } from "@/components/layouts/Layout3x1";
-import { Layout4x5 } from "@/components/layouts/Layout4x5";
-import { Layout1x10 } from "@/components/layouts/Layout1x10";
 import { Layout10x1 } from "@/components/layouts/Layout10x1";
+import { Layout9x16 } from "@/components/layouts/Layout9x16";
+import { Layout4x5 } from "@/components/layouts/Layout4x5";
+import { Layout1x3 } from "@/components/layouts/Layout1x3";
+import { Layout1x10 } from "@/components/layouts/Layout1x10";
 
 // State / types
 import { useWeatherConfigState } from "@/hooks/store";
@@ -40,7 +40,7 @@ export function Render() {
   /**
    * App configuration shared with Settings
    */
-  const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
+  const [, config, setConfig] = useWeatherConfigState();
 
   /**
    * Weather data indexed by location ID
@@ -55,12 +55,6 @@ export function Render() {
    */
   const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
-
-  /**
-   * Global render state
-   */
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   /**
    * Get aspect ratio from SDK hook (handles resize automatically)
@@ -189,7 +183,6 @@ export function Render() {
           );
         }
       }
-      setLoading(false);
     };
 
     loadCachedData();
@@ -254,8 +247,6 @@ export function Render() {
         });
 
         console.log(`💾 [Render] Cached weather data for ${location.city}`);
-
-        setError(null);
       } catch (err) {
         console.error("❌ [Render] Weather fetch error:", err);
         console.log("📦 [Render] Keeping cached data due to fetch failure");
@@ -333,6 +324,7 @@ export function Render() {
 
   /**
    * Layout selection based on detected aspect ratio
+   * Ordered by CSS variable definition
    */
   return (
     <div
@@ -340,17 +332,14 @@ export function Render() {
         theme === "dark" ? "weather-app-container--dark" : ""
       }`}
     >
-      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
-        <Layout16x9 {...commonProps} />
-      )}
-      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_9x16 && (
-        <Layout9x16 {...commonProps} />
-      )}
       {aspectRatio === ASPECT_RATIOS.SQUARE_1x1 && (
         <Layout1x1
           {...commonProps}
           variant={config.layout1x1Variant || "location"}
         />
+      )}
+      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_16x9 && (
+        <Layout16x9 {...commonProps} />
       )}
       {aspectRatio === ASPECT_RATIOS.SHORT_LONG_3x1 && (
         <Layout3x1
@@ -358,20 +347,23 @@ export function Render() {
           variant={config.layout3x1Variant || "weather-text"}
         />
       )}
-      {aspectRatio === ASPECT_RATIOS.TALL_SHORT_1x3 && (
-        <Layout1x3 {...commonProps} />
-      )}
-      {aspectRatio === ASPECT_RATIOS.LARGE_4x5 && (
-        <Layout4x5 {...commonProps} />
-      )}
-      {aspectRatio === ASPECT_RATIOS.SUPER_TALL_1x10 && (
-        <Layout1x10 {...commonProps} />
-      )}
       {aspectRatio === ASPECT_RATIOS.SUPER_WIDE_10x1 && (
         <Layout10x1
           {...commonProps}
           variant={config.layout10x1Variant || "current-condition-only"}
         />
+      )}
+      {aspectRatio === ASPECT_RATIOS.FULL_SCREEN_9x16 && (
+        <Layout9x16 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.LARGE_4x5 && (
+        <Layout4x5 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.TALL_SHORT_1x3 && (
+        <Layout1x3 {...commonProps} />
+      )}
+      {aspectRatio === ASPECT_RATIOS.SUPER_TALL_1x10 && (
+        <Layout1x10 {...commonProps} />
       )}
     </div>
   );
