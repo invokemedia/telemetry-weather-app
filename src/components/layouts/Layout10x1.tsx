@@ -1,16 +1,30 @@
+// Types
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
+
+// Common components
 import { Clock } from "@/components/common/Clock";
+import { LocationName } from "@/components/common/LocationName";
+import { Temperature } from "@/components/common/Temperature";
+import { WeatherIcon } from "@/components/common/WeatherIcon";
+import { WeatherText } from "@/components/common/WeatherText";
+import { ForecastLabel } from "@/components/common/ForecastLabel";
+
+// Utils / selectors
+import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
+import { selectForecastItems } from "@/utils/selectForecastItems";
+
+// Store
+import { useWeatherConfigState } from "@/hooks/store";
 
 interface Layout10x1Props {
-  currentWeather: WeatherConditions | null;
+  currentWeather: WeatherConditions;
   forecast: WeatherForecast[];
   locationName?: string;
   variant?:
     | "current-condition-only"
     | "current-condition-location"
     | "current-condition-forecast";
-  timeFormat?: "12h" | "24h";
   forecastType?: "hourly" | "daily";
 }
 
@@ -18,128 +32,65 @@ export function Layout10x1({
   currentWeather,
   forecast,
   locationName,
-  variant = "current-condition-only",
-  timeFormat = "12h",
-  forecastType = "daily",
+  variant = "current-condition-location",
+  forecastType = "hourly",
 }: Layout10x1Props) {
-  const temperature = currentWeather?.Temp
-    ? Math.round(currentWeather.Temp)
-    : "--";
-  const weatherText = currentWeather?.WeatherText || "Loading...";
-  const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
+  const [, config] = useWeatherConfigState();
+  const timeFormat = config.timeFormat || "12h";
 
-  // Helper function to format forecast time
-  const formatForecastTime = (timestamp: number) => {
-    if (!timestamp) {
-      console.error("No timestamp provided to formatForecastTime");
-      return "--";
-    }
+  const temp = getRoundedTemp(currentWeather.Temp);
+  const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
+  const weatherText = currentWeather?.WeatherText;
 
-    // Convert Unix timestamp to Date object
-    const forecastTime = new Date(timestamp * 1000);
+  // Forecast items (used only by forecast variant)
+  const forecastItems = selectForecastItems(forecast, forecastType, {
+    hourlyStep: 2,
+    hourlyCount: 3,
+    dailyCount: 3,
+  });
 
-    if (isNaN(forecastTime.getTime())) {
-      console.error("Invalid timestamp:", timestamp);
-      return "--";
-    }
-
-    // Daily forecast: show day of week (Mon, Tue, Wed)
-    if (forecastType === "daily") {
-      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      return dayNames[forecastTime.getDay()];
-    }
-
-    // Hourly forecast: show time (always on the hour, ignore minutes)
-    const hours = forecastTime.getHours();
-
-    if (timeFormat === "24h") {
-      // 24h format: show "14:00" (always :00 minutes for hourly)
-      return `${hours.toString().padStart(2, "0")}:00`;
-    } else {
-      // 12h format: show "4 PM" (no minutes for hourly)
-      const period = hours >= 12 ? "PM" : "AM";
-      const displayHours = hours % 12 || 12;
-      return `${displayHours} ${period}`;
-    }
-  };
-
-  // Forecast variant - completely different layout
-  if (variant === "current-condition-forecast") {
-    // Get next 3 forecast entries
-    // For hourly: skip first entry (current hour), take next 3
-    // For daily: skip today (first entry), take next 3 days
-    const forecastItems = forecast.slice(1, 4);
-
-    console.log("Forecast items:", forecastItems);
-
-    return (
-      <div className="weather-widget weather-widget--10x1 weather-widget--10x1-forecast">
-        {/* Left group: Time + Icon + Temperature */}
-        <div className="weather-widget__left-group">
-          {/* <Clock /> */}
-          <div className="weather-widget__icon">
-            <img
-              src={weatherIcon}
-              alt={weatherText}
-              className="weather-widget__icon-img"
-            />
-          </div>
-          <div className="weather-widget__temperature">{temperature}°</div>
-        </div>
-
-        {/* Forecast group - hourly only */}
-        <div className="weather-widget__forecast-group">
-          {forecastItems.map((item, index) => {
-            const forecastIcon = getWeatherIcon(item.WeatherCode);
-            const forecastTemp = Math.round(item.Temp);
-
-            return (
-              <div key={index} className="weather-widget__forecast-item">
-                <div className="weather-widget__forecast-time">
-                  {formatForecastTime(item.Timestamp)}
-                </div>
-                <div className="weather-widget__forecast-icon">
-                  <img
-                    src={forecastIcon}
-                    alt="Forecast"
-                    className="weather-widget__forecast-icon-img"
-                  />
-                </div>
-                <div className="weather-widget__forecast-temp">
-                  {forecastTemp}°
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Current condition variants (with or without location)
   return (
-    <div className="weather-widget weather-widget--10x1">
-      {/* Time - Always use 24h format */}
-      {/* <Clock /> */}
+    <div
+      className={`weather-widget weather-widget--10x1 weather-widget--${variant}`}
+    >
+      {/* Time */}
+      <Clock timezone={currentWeather.Timezone} />
 
-      {/* Center group: Temperature + Icon + Weather Text */}
-      <div className="weather-widget__center-group">
-        <div className="weather-widget__temperature">{temperature}°</div>
-
-        <div className="weather-widget__icon">
-          <img
-            src={weatherIcon}
-            alt={weatherText}
-            className="weather-widget__icon-img"
-          />
-        </div>
-
-        <div className="weather-widget__weather-text">{weatherText}</div>
+      {/* Current conditions */}
+      <div className="weather-widget__current-conditions">
+        <Temperature value={temp} />
+        <WeatherIcon icon={weatherIcon} />
+        <WeatherText text={weatherText} />
       </div>
 
-      {/* Location - only show for "current-condition-location" variant */}
-      {variant === "current-condition-location" && locationName && (
-        <div className="weather-widget__location">{locationName}</div>
+      {/* Location (optional) */}
+      {variant === "current-condition-location" && (
+        <LocationName name={locationName} />
+      )}
+
+      {/* Forecast section */}
+      {variant === "current-condition-forecast" && (
+        <div className="weather-widget__forecast-section">
+          {forecastItems.map((item) => (
+            <div key={item.Datetime} className="weather-widget__forecast-item">
+              <ForecastLabel
+                item={item}
+                forecastType={forecastType}
+                timeFormat={timeFormat}
+              />
+
+              <WeatherIcon
+                icon={getWeatherIcon(item.WeatherCode)}
+                variant="forecast"
+              />
+
+              <Temperature
+                value={getRoundedTemp(item.Temp)}
+                variant="forecast"
+              />
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
