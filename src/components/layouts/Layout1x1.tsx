@@ -1,7 +1,7 @@
 // Types
 import type { WeatherConditions } from "@/types/weather";
 
-// Common UI components
+// Common components
 import { Clock } from "@/components/common/Clock";
 import { LocationName } from "@/components/common/LocationName";
 import { Temperature } from "@/components/common/Temperature";

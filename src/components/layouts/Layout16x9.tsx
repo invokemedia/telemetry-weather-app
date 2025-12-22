@@ -1,7 +1,7 @@
 // Types
 import type { WeatherConditions, WeatherForecast } from "@/types/weather";
 
-// Common UI components
+// Common components
 import { Clock } from "@/components/common/Clock";
 import { LocationName } from "@/components/common/LocationName";
 import { Temperature } from "@/components/common/Temperature";
@@ -14,7 +14,7 @@ import { SunTime } from "../common/SunTime";
 import { ForecastLabel } from "../common/ForecastLabel";
 import { selectForecastItems } from "@/utils/selectForecastItems";
 
-// Store hooks
+// Store
 import { useWeatherConfigState } from "@/hooks/store";
 
 interface Layout16x9Props {

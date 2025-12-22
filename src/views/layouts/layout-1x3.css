@@ -7,7 +7,8 @@
   justify-content: space-between;
   align-items: center;
   gap: calc(100vw / var(--layout-1x3-design-width) * 10);
-  padding: calc(100vw / var(--layout-1x3-design-width) * 32);
+  padding: calc(100vw / var(--layout-1x3-design-width) * 40)
+    calc(100vw / var(--layout-1x3-design-width) * 32);
   border-radius: calc(100vw / var(--layout-1x3-design-width) * 24);
   background: linear-gradient(
     270deg,
@@ -62,7 +63,7 @@
   border: 2px solid rgba(0, 255, 200, 0.8);
 }
 
-.weather-widget--1x3 .weather-widget__icon {
+.weather-widget--1x3 .weather-widget__icon--current {
   width: auto;
   max-width: calc(100vw / var(--layout-1x3-design-width) * 100);
   height: calc(100vw / var(--layout-1x3-design-width) * 100);
