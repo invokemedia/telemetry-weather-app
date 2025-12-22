@@ -143,6 +143,7 @@
   padding: calc(100vw / var(--layout-16x9-design-width) * 42)
     calc(100vw / var(--layout-16x9-design-width) * 48);
   border-radius: calc(100vw / var(--layout-16x9-design-width) * 36);
+  background: var(--color-forecast-bg);
 
   /* DEBUG */
   border: 2px solid rgba(255, 255, 255, 0.8);
@@ -176,7 +177,7 @@
   border: 2px solid rgba(0, 255, 255, 0.8);
 }
 
-.weather-widget--16x9 .weather-widget__forecast-day {
+.weather-widget--16x9 .weather-widget__forecast-label {
   text-align: center;
   font-size: calc(100vw / var(--layout-16x9-design-width) * 34);
 

@@ -20,7 +20,7 @@ export function ForecastLabel({
       : "weather-widget__accent-text";
 
   return (
-    <div className={`weather-widget__forecast-day ${colorClass}`}>
+    <div className={`weather-widget__forecast-label ${colorClass}`}>
       {forecastType === "hourly"
         ? formatForecastTime(item.Datetime, timeFormat)
         : formatDayLabel(item.Datetime)}
