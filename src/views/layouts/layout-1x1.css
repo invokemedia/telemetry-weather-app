@@ -19,16 +19,10 @@
 .weather-widget--1x1 .weather-widget__location {
   font-size: calc(100vw / var(--layout-1x1-design-width) * 32);
   text-align: center;
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 120, 255, 0.85);
 }
 
 .weather-widget--1x1 .weather-widget__time {
   font-size: calc(100vw / var(--layout-1x1-design-width) * 80);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 200, 100, 0.85);
 }
 
 .weather-widget--1x1 .weather-widget__temp-icon-group {
@@ -36,31 +30,19 @@
   align-items: center;
   justify-content: center;
   gap: calc(100vw / var(--layout-1x1-design-width) * 10);
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 165, 0, 0.85);
 }
 
 .weather-widget--1x1 .weather-widget__temp--current {
   font-size: calc(100vw / var(--layout-1x1-design-width) * 60);
-
-  /* DEBUG */
-  border: 2px solid rgba(138, 43, 226, 0.9);
 }
 
 .weather-widget--1x1 .weather-widget__icon--current {
   width: auto;
   max-width: calc(100vw / var(--layout-1x1-design-width) * 74);
   height: calc(100vw / var(--layout-1x1-design-width) * 74);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 0, 0, 0.8);
 }
 
 .weather-widget--1x1 .weather-widget__weather-text {
   font-size: calc(100vw / var(--layout-1x1-design-width) * 32);
   text-align: center;
-
-  /* DEBUG */
-  border: 2px solid rgba(220, 20, 60, 0.9);
 }

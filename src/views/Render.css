@@ -1,11 +1,11 @@
 @import "./layouts/layout-1x1.css";
-@import "./layouts/layout-1x3.css";
-@import "./layouts/layout-3x1.css";
-@import "./layouts/layout-4x5.css";
 @import "./layouts/layout-16x9.css";
-@import "./layouts/layout-9x16.css";
-@import "./layouts/layout-1x10.css";
+@import "./layouts/layout-3x1.css";
 @import "./layouts/layout-10x1.css";
+@import "./layouts/layout-9x16.css";
+@import "./layouts/layout-4x5.css";
+@import "./layouts/layout-1x3.css";
+@import "./layouts/layout-1x10.css";
 
 /* Import fonts */
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap");
@@ -14,9 +14,11 @@
 * {
   scrollbar-width: none;
 }
+
 *::-webkit-scrollbar {
   display: none;
 }
+
 body,
 html {
   margin: 0;
@@ -50,12 +52,12 @@ html {
   /* Design width */
   --layout-1x1-design-width: 287;
   --layout-16x9-design-width: 1280;
+  --layout-3x1-design-width: 840;
   --layout-10x1-design-width: 1280;
+  --layout-9x16-design-width: 720;
   --layout-4x5-design-width: 480;
   --layout-1x3-design-width: 287;
   --layout-1x10-design-width: 128;
-  --layout-9x16-design-width: 720;
-  --layout-3x1-design-width: 840;
 
   /* Light theme (default) */
   --color-bg-start: #4d8dcd;
@@ -63,6 +65,7 @@ html {
   --color-forecast-bg: #0357b4;
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.68);
+
   /* Custom colors (set dynamically from Settings) */
   --custom-text-color: rgba(255, 255, 255, 1);
   --custom-accent-color: rgba(255, 255, 255, 0.68);

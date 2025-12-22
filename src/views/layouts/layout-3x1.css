@@ -12,8 +12,6 @@
     var(--color-bg-start) 0%,
     var(--color-bg-end) 100%
   );
-  /* DEBUG */
-  border: 2px solid rgba(255, 0, 0, 0.6);
 }
 
 /* ==================================================
@@ -24,24 +22,15 @@
   flex-direction: column;
   justify-content: center;
   gap: calc(100vw / var(--layout-3x1-design-width) * 16);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 200, 255, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__location {
   font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
   font-weight: 500;
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 255, 120, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__time {
   font-size: calc(100vw / var(--layout-3x1-design-width) * 120);
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 200, 0, 0.6);
 }
 
 /* ==================================================
@@ -53,9 +42,6 @@
   justify-content: center;
   align-items: flex-end;
   gap: calc(100vw / var(--layout-3x1-design-width) * 30);
-
-  /* DEBUG */
-  border: 2px solid rgba(180, 0, 255, 0.6);
 }
 
 /* ==================================================
@@ -65,24 +51,15 @@
   display: flex;
   align-items: center;
   gap: calc(100vw / var(--layout-3x1-design-width) * 16);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 150, 255, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__icon--current {
   max-width: calc(100vw / var(--layout-3x1-design-width) * 100);
   height: calc(100vw / var(--layout-3x1-design-width) * 100);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 120, 255, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__temp--current {
   font-size: calc(100vw / var(--layout-3x1-design-width) * 88);
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 120, 0, 0.6);
 }
 
 /* ==================================================
@@ -90,9 +67,6 @@
 ================================================== */
 .weather-widget--3x1 .weather-widget__weather-text {
   font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
-
-  /* DEBUG */
-  border: 2px solid rgba(120, 255, 0, 0.6);
 }
 
 /* ==================================================
@@ -102,16 +76,10 @@
   display: flex;
   align-items: center;
   gap: calc(100vw / var(--layout-3x1-design-width) * 4);
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 0, 120, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__temp--forecast {
   font-size: calc(100vw / var(--layout-3x1-design-width) * 40);
-
-  /* DEBUG */
-  border: 2px solid rgba(75, 0, 130, 0.6);
 }
 
 .weather-widget--3x1 .weather-widget__temp-range-item {
@@ -123,7 +91,4 @@
 .weather-widget--3x1 .weather-widget__arrow-icon {
   width: calc(100vw / var(--layout-3x1-design-width) * 40);
   height: calc(100vw / var(--layout-3x1-design-width) * 40);
-
-  /* DEBUG */
-  border: 2px solid rgba(50, 205, 50, 0.8);
 }

@@ -13,9 +13,6 @@
     var(--color-bg-start) 0%,
     var(--color-bg-end) 100%
   );
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 0, 0, 0.6);
 }
 
 /* ==================================================
@@ -23,9 +20,6 @@
 ================================================== */
 .weather-widget--10x1 .weather-widget__time {
   font-size: calc(100vw / var(--layout-10x1-design-width) * 60);
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 200, 0, 0.6);
 }
 
 /* ==================================================
@@ -35,31 +29,19 @@
   display: flex;
   align-items: center;
   gap: calc(100vw / var(--layout-10x1-design-width) * 24);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 200, 255, 0.6);
 }
 
 .weather-widget--10x1 .weather-widget__temp--current {
   font-size: calc(100vw / var(--layout-10x1-design-width) * 60);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 150, 255, 0.6);
 }
 
 .weather-widget--10x1 .weather-widget__icon--current {
   max-width: calc(100vw / var(--layout-10x1-design-width) * 66);
   height: calc(100vw / var(--layout-10x1-design-width) * 66);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 120, 255, 0.6);
 }
 
 .weather-widget--10x1 .weather-widget__weather-text {
   font-size: calc(100vw / var(--layout-10x1-design-width) * 40);
-
-  /* DEBUG */
-  border: 2px solid rgba(180, 0, 255, 0.6);
 }
 
 /* ==================================================
@@ -70,9 +52,6 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 255, 120, 0.6);
 }
 
 /* ==================================================
@@ -84,9 +63,6 @@
   align-items: center;
   gap: calc(100vw / var(--layout-10x1-design-width) * 24);
   margin-left: auto;
-
-  /* DEBUG */
-  border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 /* Forecast item */
@@ -161,18 +137,12 @@
 .weather-widget--10x1.weather-widget--current-condition-forecast
   .weather-widget__temp--current {
   font-size: calc(100vw / var(--layout-10x1-design-width) * 48);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 150, 255, 0.6);
 }
 
 .weather-widget--10x1.weather-widget--current-condition-forecast
   .weather-widget__icon--current {
   max-width: calc(100vw / var(--layout-10x1-design-width) * 60);
   height: calc(100vw / var(--layout-10x1-design-width) * 60);
-
-  /* DEBUG */
-  border: 2px solid rgba(0, 120, 255, 0.6);
 }
 
 .weather-widget--10x1.weather-widget--current-condition-forecast
