@@ -39,7 +39,7 @@ export function Layout16x9({
   const forecastItems = selectForecastItems(forecast, forecastType ?? "daily", {
     hourlyStep: 2,
     hourlyCount: 6,
-    dailyCount: 5,
+    dailyCount: 6,
   });
 
   // TEMP - Not supported by API yet
