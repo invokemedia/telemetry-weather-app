@@ -66,15 +66,16 @@ export function Settings() {
     try {
       // Test if the city exists by fetching weather data
       const cityName = newCity.trim();
-      await weather().getConditions({
+      const weatherData = await weather().getConditions({
         city: cityName,
         units: "metric",
       });
 
-      // If successful, add the location
+      // If successful, add the location with API-returned city name
       const location: Location = {
         id: Date.now().toString(),
         city: cityName,
+        cityEnglish: weatherData.CityEnglish,
         displayName: cityName,
       };
 
@@ -304,7 +305,7 @@ export function Settings() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: "500", marginBottom: "0.5rem" }}>
-                {location.city}
+                {location.cityEnglish || location.city}
               </div>
               <SettingsInputFrame>
                 <input

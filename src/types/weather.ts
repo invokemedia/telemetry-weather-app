@@ -39,6 +39,7 @@ export interface WeatherForecast {
 export interface Location {
   id: string; // Unique identifier
   city: string; // City name for API query
+  cityEnglish?: string; // Official city name from API
   displayName?: string; // Optional custom display name
 }
 
