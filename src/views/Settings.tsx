@@ -667,7 +667,7 @@ export function Settings() {
         )}
 
         <SettingsField>
-          <SettingsLabel>Text Color</SettingsLabel>
+          <SettingsLabel>Primary Text Color</SettingsLabel>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <input
               type="color"
@@ -691,7 +691,9 @@ export function Settings() {
         </SettingsField>
 
         <SettingsField>
-          <SettingsLabel>Text Opacity: {textOpacity}%</SettingsLabel>
+          <SettingsLabel>
+            Primary Text Color Opacity: {textOpacity}%
+          </SettingsLabel>
           <SettingsSliderFrame>
             <input
               type="range"
@@ -709,7 +711,7 @@ export function Settings() {
         </SettingsField>
 
         <SettingsField>
-          <SettingsLabel>Accent Color</SettingsLabel>
+          <SettingsLabel>Secondary Text Color</SettingsLabel>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <input
               type="color"
@@ -733,7 +735,9 @@ export function Settings() {
         </SettingsField>
 
         <SettingsField>
-          <SettingsLabel>Accent Opacity: {accentOpacity}%</SettingsLabel>
+          <SettingsLabel>
+            Secondary Text Color Opacity: {accentOpacity}%
+          </SettingsLabel>
           <SettingsSliderFrame>
             <input
               type="range"
