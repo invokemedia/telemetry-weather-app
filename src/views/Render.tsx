@@ -96,31 +96,50 @@ export function Render() {
   );
 
   /**
-   * Classify numeric aspect ratio into layout type
-   * This controls which layout component is rendered
+   * Classify numeric aspect ratio into a layout type.
+   *
+   * - Portrait / very tall layouts are handled with explicit thresholds
+   *   to switch early to vertical-safe layouts.
+   * - Landscape and near-square layouts use a biased closest-match strategy
+   *   that prefers smaller layouts to avoid overflow.
    */
   useEffect(() => {
+    // Aspect ratio thresholds for early layout switching.
+    // These values are intentionally aggressive to prevent content overflow.
+    // Adjust these numbers to fine-tune when layouts downgrade.
+
+    const SUPER_TALL_THRESHOLD = 0.3; // switch to 1x10 very early (extremely narrow)
+    const TALL_THRESHOLD = 0.4; // switch to 1x3 when vertical space is tight
+    const LANDSCAPE_BIAS = 0.1; // lower = switch to smaller layouts sooner
+
+    // --- Portrait / tall layouts: explicit early switching ---
+    if (numericAspectRatio < SUPER_TALL_THRESHOLD) {
+      setAspectRatio(ASPECT_RATIOS.SUPER_TALL_1x10);
+      return;
+    }
+
+    if (numericAspectRatio < TALL_THRESHOLD) {
+      setAspectRatio(ASPECT_RATIOS.TALL_SHORT_1x3);
+      return;
+    }
+
+    // --- Landscape / near-square (non-tall) layouts: biased closest match ---
     let closestRatio: AspectRatioType = ASPECT_RATIOS.FULL_SCREEN_16x9;
-    let smallestDiff = Infinity;
+    let smallestScore = Infinity;
 
     Object.entries(ASPECT_RATIO_VALUES).forEach(([key, value]) => {
-      const diff = Math.abs(numericAspectRatio - value);
-      if (diff < smallestDiff) {
-        smallestDiff = diff;
+      const rawDiff = numericAspectRatio - value;
+      const score =
+        rawDiff < 0 ? Math.abs(rawDiff) * LANDSCAPE_BIAS : Math.abs(rawDiff);
+
+      if (score < smallestScore) {
+        smallestScore = score;
         closestRatio = key as AspectRatioType;
       }
     });
 
-    console.log(
-      `📐 [Render] Aspect ratio: ${numericAspectRatio.toFixed(2)} (${
-        window.innerWidth
-      }x${window.innerHeight})`
-    );
-    console.log(`📐 [Render] Selected layout: ${closestRatio}`);
-
     setAspectRatio(closestRatio);
 
-    // Persist detected ratio so Settings UI can react to it
     if (config.currentAspectRatio !== closestRatio) {
       setConfig({ ...config, currentAspectRatio: closestRatio });
     }
