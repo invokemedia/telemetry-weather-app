@@ -49,16 +49,6 @@ html {
 
 /* Theme variables */
 :root {
-  /* Design width */
-  --layout-1x1-design-width: 287;
-  --layout-16x9-design-width: 1280;
-  --layout-3x1-design-width: 840;
-  --layout-10x1-design-width: 1280;
-  --layout-9x16-design-width: 720;
-  --layout-4x5-design-width: 480;
-  --layout-1x3-design-width: 287;
-  --layout-1x10-design-width: 128;
-
   /* Light theme (default) */
   --color-bg-start: #4d8dcd;
   --color-bg-end: #0055b3;
