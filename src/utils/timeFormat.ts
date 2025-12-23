@@ -51,37 +51,38 @@ export function getCurrentTime(
 
 /**
  * Format time for forecast labels (e.g., "1 PM", "14:00")
+ * Uses Unix timestamp and displays in user's local timezone
  */
 export function formatForecastTime(
-  datetime: string,
+  timestamp: number,
   format: "12h" | "24h" = "12h"
 ): string {
-  // Handle TelemetryOS API format: "2025-12-19:06" -> extract hour
-  // Format is YYYY-MM-DD:HH
-  const colonMatch = datetime.match(/:(\d+)$/);
-  let hours: number;
+  // Convert Unix timestamp to Date
+  const date = new Date(timestamp * 1000);
 
-  if (colonMatch) {
-    // API format with colon separator
-    hours = parseInt(colonMatch[1], 10);
-  } else {
-    // Try standard date parsing
-    const date = new Date(datetime);
-    if (isNaN(date.getTime())) {
-      console.error(`Invalid datetime string: ${datetime}`);
-      return format === "24h" ? "00:00" : "12 AM";
-    }
-    hours = date.getHours();
+  if (isNaN(date.getTime())) {
+    console.error(`Invalid timestamp: ${timestamp}`);
+    return format === "24h" ? "00:00" : "12 AM";
   }
+
+  // Get user's timezone automatically
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Format in user's local timezone
+  const timeString = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    hour12: format === "12h",
+    timeZone: userTimeZone,
+  }).format(date);
 
   if (format === "24h") {
-    return hours.toString().padStart(2, "0") + ":00";
+    // Extract hour and pad with zero
+    const hour = parseInt(timeString, 10);
+    return hour.toString().padStart(2, "0") + ":00";
   }
 
-  // 12-hour format
-  const period = hours >= 12 ? "PM" : "AM";
-  const h12 = hours % 12 || 12;
-  return `${h12} ${period}`;
+  // 12-hour format - return as-is from Intl (e.g., "1 PM")
+  return timeString;
 }
 
 /**

@@ -22,7 +22,7 @@ export function ForecastLabel({
   return (
     <div className={`weather-widget__forecast-label ${colorClass}`}>
       {forecastType === "hourly"
-        ? formatForecastTime(item.Datetime, timeFormat)
+        ? formatForecastTime(item.Timestamp, timeFormat)
         : formatDayLabel(item.Datetime)}
     </div>
   );

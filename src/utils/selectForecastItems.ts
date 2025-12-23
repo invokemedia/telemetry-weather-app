@@ -18,7 +18,9 @@ export function selectForecastItems(
   }: ForecastSelectOptions
 ) {
   if (type === "hourly") {
+    // Skip index 0 (next hour) and start from index 1
     return forecast
+      .slice(1) // Skip first item
       .filter((_, index) => index % hourlyStep === 0)
       .slice(0, hourlyCount);
   }
