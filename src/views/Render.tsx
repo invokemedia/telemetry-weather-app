@@ -106,7 +106,7 @@ export function Render() {
     // These values are intentionally aggressive to prevent content overflow.
     // Adjust these numbers to fine-tune when layouts downgrade.
 
-    const SUPER_TALL_THRESHOLD = 0.3; // switch to 1x10 very early (extremely narrow)
+    const SUPER_TALL_THRESHOLD = 0.35; // switch to 1x10 very early (extremely narrow)
     const TALL_THRESHOLD = 0.5; // switch to 1x3 when vertical space is tight
     const LANDSCAPE_BIAS = 0.1; // lower = switch to smaller layouts sooner
 

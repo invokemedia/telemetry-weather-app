@@ -89,17 +89,17 @@
 
 .weather-widget--1x3 .weather-widget__forecast-label {
   white-space: nowrap;
-  font-size: 3.81rem;
+  font-size: 3.6rem;
 }
 
 .weather-widget--1x3 .weather-widget__icon--forecast {
   width: auto;
-  max-width: 6.67rem;
-  height: 6.67rem;
+  max-width: 6rem;
+  height: 6rem;
 }
 
 .weather-widget--1x3 .weather-widget__temp--forecast {
   font-weight: 500;
   text-align: right;
-  font-size: 4.76rem;
+  font-size: 4.4rem;
 }
