@@ -65,7 +65,9 @@ export function Layout10x1({
 
       {/* Location (optional) */}
       {variant === "current-condition-location" && (
-        <LocationName name={locationName} />
+        <div className="current-condition-location">
+          <LocationName name={locationName} />
+        </div>
       )}
 
       {/* Forecast section */}

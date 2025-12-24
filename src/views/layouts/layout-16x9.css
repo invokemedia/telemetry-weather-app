@@ -8,7 +8,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 0.78rem;
-  padding: 5.63rem;
+  padding: 5rem;
   border-radius: 1.88rem;
 
   background: linear-gradient(
@@ -42,7 +42,7 @@
 }
 
 .weather-widget--16x9 .weather-widget__time {
-  font-size: 14.06rem;
+  font-size: 13rem;
 }
 
 /* ==================================================

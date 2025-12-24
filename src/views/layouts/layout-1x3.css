@@ -32,12 +32,12 @@
 .weather-widget--1x3 .weather-widget__location {
   text-align: center;
   font-weight: 500;
-  font-size: 3.81rem;
+  font-size: 3.6rem;
 }
 
 .weather-widget--1x3 .weather-widget__time {
   text-align: center;
-  font-size: 9.52rem;
+  font-size: 9rem;
 }
 
 /* ==================================================
@@ -47,23 +47,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.38rem;
+  gap: 2.2rem;
 }
 
 .weather-widget--1x3 .weather-widget__icon--current {
   width: auto;
-  max-width: 11.9rem;
-  height: 11.9rem;
+  max-width: 11rem;
+  height: 11rem;
 }
 
 .weather-widget--1x3 .weather-widget__temp--current {
   text-align: center;
-  font-size: 9.52rem;
+  font-size: 9rem;
 }
 
 .weather-widget--1x3 .weather-widget__weather-text {
   text-align: center;
-  font-size: 3.81rem;
+  font-size: 3.6rem;
 }
 
 /* ==================================================

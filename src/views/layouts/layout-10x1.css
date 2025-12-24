@@ -49,11 +49,14 @@
 /* ==================================================
    LOCATION SECTION
 ================================================== */
-.weather-widget--10x1 .weather-widget__location {
-  font-size: 2.5rem;
+
+.weather-widget--10x1 .current-condition-location {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+.weather-widget--10x1 .weather-widget__location {
+  font-size: 2.5rem;
 }
 
 /* ==================================================

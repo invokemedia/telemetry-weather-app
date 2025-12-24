@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1.67rem;
-  padding: 5.33rem;
+  padding: 5rem;
   border-radius: 4rem;
 
   background: linear-gradient(
@@ -41,21 +41,21 @@
 
 .weather-widget--4x5 .weather-widget__time {
   text-align: center;
-  font-size: 20.67rem;
+  font-size: 18rem;
 }
 
 .weather-widget--4x5 .weather-widget__icon--current {
   width: auto;
-  max-width: 18.33rem;
-  height: 18.33rem;
+  max-width: 17rem;
+  height: 17rem;
 }
 
 .weather-widget--4x5 .weather-widget__temp--current {
   text-align: center;
-  font-size: 18.33rem;
+  font-size: 17rem;
 }
 
 .weather-widget--4x5 .weather-widget__weather-text {
   text-align: center;
-  font-size: 6.67rem;
+  font-size: 6rem;
 }
