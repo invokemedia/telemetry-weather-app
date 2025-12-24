@@ -25,6 +25,7 @@ export function Settings() {
 
   // Local state for form inputs and validation
   const [newCity, setNewCity] = useState("");
+  const [searchType, setSearchType] = useState<"city" | "postalCode">("city");
   const [displayNameErrors, setDisplayNameErrors] = useState<
     Record<string, string>
   >({});
@@ -65,14 +66,9 @@ export function Settings() {
     try {
       const input = newCity.trim();
 
-      // Detect if input is a postal code (basic pattern: digits/alphanumeric without spaces or with single space)
-      // Examples: "10001", "90210", "M5H 2N2", "SW1A 1AA"
-      const postalCodePattern = /^[A-Z0-9]{3,10}(\s?[A-Z0-9]{3,4})?$/i;
-      const isPostalCode = postalCodePattern.test(input);
-
-      // Fetch weather data using either postal code or city name
+      // Fetch weather data using the explicitly selected search type
       const weatherData = await weather().getConditions(
-        isPostalCode
+        searchType === "postalCode"
           ? { postalCode: input, units: config.units || "imperial" }
           : { city: input, units: config.units || "imperial" }
       );
@@ -80,7 +76,9 @@ export function Settings() {
       // If successful, add the location with API-returned city name
       const location: Location = {
         id: Date.now().toString(),
-        ...(isPostalCode ? { postalCode: input } : { city: input }),
+        ...(searchType === "postalCode"
+          ? { postalCode: input }
+          : { city: input }),
         cityEnglish: weatherData.CityEnglish,
         state: weatherData.State,
         displayName: weatherData.CityEnglish || input,
@@ -206,27 +204,55 @@ export function Settings() {
         {/* Add new location */}
         <SettingsField>
           <SettingsLabel>Add location (up to 5)</SettingsLabel>
-          <div
-            style={{
-              color: "#666",
-              fontSize: "0.875rem",
-              marginBottom: "0.5rem",
-              fontStyle: "italic",
-            }}
-          >
-            Note: Specify the state name after a city name if needed. e.g.
-            Springfield, IL
+
+          {/* Search type selection */}
+          <div style={{ marginBottom: "0.75rem" }}>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="searchType"
+                value="city"
+                checked={searchType === "city"}
+                onChange={(e) =>
+                  setSearchType(e.target.value as "city" | "postalCode")
+                }
+                disabled={isLoadingConfig || addingLocation}
+              />
+              <SettingsRadioLabel>
+                🏙️ City Name (e.g., London, UK)
+              </SettingsRadioLabel>
+            </SettingsRadioFrame>
+            <SettingsRadioFrame>
+              <input
+                type="radio"
+                name="searchType"
+                value="postalCode"
+                checked={searchType === "postalCode"}
+                onChange={(e) =>
+                  setSearchType(e.target.value as "city" | "postalCode")
+                }
+                disabled={isLoadingConfig || addingLocation}
+              />
+              <SettingsRadioLabel>
+                📮 Postal Code (e.g., 10001, M5H 2N2)
+              </SettingsRadioLabel>
+            </SettingsRadioFrame>
           </div>
-          <div
-            style={{
-              color: "#666",
-              fontSize: "0.875rem",
-              marginBottom: "0.5rem",
-              fontStyle: "italic",
-            }}
-          >
-            Note: You can also search by postal code (e.g., 10001, M5H 2N2).
-          </div>
+
+          {searchType === "city" && (
+            <div
+              style={{
+                color: "#666",
+                fontSize: "0.875rem",
+                marginBottom: "0.5rem",
+                fontStyle: "italic",
+              }}
+            >
+              Note: Specify the state name after a city name if needed. e.g.
+              Springfield, IL
+            </div>
+          )}
+
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <div style={{ flex: 1 }}>
               <SettingsInputFrame>
@@ -238,7 +264,11 @@ export function Settings() {
                     setAddLocationError(""); // Clear error when user types
                   }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
-                  placeholder="Enter city name or postal code"
+                  placeholder={
+                    searchType === "city"
+                      ? "Enter city name (e.g., Vancouver, BC)"
+                      : "Enter postal code (e.g., V6B 1A1)"
+                  }
                   disabled={
                     isLoadingConfig || locations.length >= 5 || addingLocation
                   }
