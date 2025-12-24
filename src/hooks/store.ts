@@ -12,7 +12,8 @@ export const useWeatherConfigState = createUseInstanceStoreState<WeatherConfig>(
       {
         id: Date.now().toString(),
         city: "New York",
-        displayName: "New York, NY",
+        state: "NY",
+        displayName: "New York",
       },
     ],
     displayDuration: 10,

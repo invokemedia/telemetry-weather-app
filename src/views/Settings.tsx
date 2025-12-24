@@ -75,6 +75,7 @@ export function Settings() {
         id: Date.now().toString(),
         city: cityName,
         cityEnglish: weatherData.CityEnglish,
+        state: weatherData.State,
         displayName: cityName,
       };
 
@@ -305,6 +306,7 @@ export function Settings() {
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: "500", marginBottom: "0.5rem" }}>
                 {location.cityEnglish || location.city}
+                {location.state && `, ${location.state}`}
               </div>
               <SettingsInputFrame>
                 <input

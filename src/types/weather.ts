@@ -40,6 +40,7 @@ export interface Location {
   id: string; // Unique identifier
   city: string; // City name for API query
   cityEnglish?: string; // Official city name from API
+  state?: string; // State/Province from API
   displayName?: string; // Optional custom display name
 }
 
