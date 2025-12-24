@@ -570,7 +570,7 @@ export function Settings() {
         {/* Layout variant for 1×1 aspect ratio */}
         {currentAspectRatio === "1x1" && (
           <SettingsField>
-            <SettingsLabel>1×1 Layout Style</SettingsLabel>
+            <SettingsLabel>1×1 Layout Variant</SettingsLabel>
             <SettingsRadioFrame>
               <input
                 type="radio"
