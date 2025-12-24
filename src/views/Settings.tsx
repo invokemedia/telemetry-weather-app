@@ -199,6 +199,17 @@ export function Settings() {
         {/* Add new location */}
         <SettingsField>
           <SettingsLabel>Add location (up to 5)</SettingsLabel>
+          <div
+            style={{
+              color: "#666",
+              fontSize: "0.875rem",
+              marginBottom: "0.5rem",
+              fontStyle: "italic",
+            }}
+          >
+            Note: Specify the state name after a city name if needed. e.g.
+            Springfield, IL
+          </div>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <div style={{ flex: 1 }}>
               <SettingsInputFrame>
