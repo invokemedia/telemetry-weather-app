@@ -20,8 +20,7 @@ import {
 } from "@telemetryos/sdk/react";
 
 // Local components
-import SettingsNote from "@/components/settings/SettingsNote";
-import SettingsError from "@/components/settings/SettingsError";
+import SettingsMessage from "@/components/settings/SettingsMessage";
 import SettingsTitle from "@/components/settings/SettingsTitle";
 
 // Store
@@ -253,10 +252,10 @@ export function Settings() {
           </div>
 
           {searchType === "city" && (
-            <SettingsNote>
-              Note: Specify the state name after a city name if needed. e.g.
+            <SettingsMessage variant="info">
+              Specify the state name after a city name if needed. e.g.
               Springfield, IL
-            </SettingsNote>
+            </SettingsMessage>
           )}
 
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -304,10 +303,14 @@ export function Settings() {
             </SettingsButtonFrame>
           </div>
           {addLocationError && (
-            <SettingsError>{addLocationError}</SettingsError>
+            <SettingsMessage variant="error">
+              {addLocationError}
+            </SettingsMessage>
           )}
           {locations.length >= 5 && (
-            <SettingsNote>Maximum of 5 locations reached</SettingsNote>
+            <SettingsMessage variant="warning">
+              Maximum of 5 locations reached
+            </SettingsMessage>
           )}
         </SettingsField>
 
@@ -375,7 +378,9 @@ export function Settings() {
                 />
               </SettingsInputFrame>
               {displayNameErrors[location.id] && (
-                <SettingsError>{displayNameErrors[location.id]}</SettingsError>
+                <SettingsMessage variant="error">
+                  {displayNameErrors[location.id]}
+                </SettingsMessage>
               )}
             </div>
 
@@ -422,10 +427,10 @@ export function Settings() {
             <span>{displayDuration}s</span>
           </SettingsSliderFrame>
           {locations.length <= 1 && (
-            <SettingsNote>
-              Note: Display duration only applies when multiple locations are
+            <SettingsMessage variant="info">
+              Display duration only applies when multiple locations are
               configured.
-            </SettingsNote>
+            </SettingsMessage>
           )}
         </SettingsField>
 
@@ -606,10 +611,10 @@ export function Settings() {
               </SettingsRadioLabel>
             </SettingsRadioFrame>
             {locations.length > 1 && (
-              <SettingsNote>
-                Note: Current Condition Label style is only available with a
-                single location since it doesn't display the location name.
-              </SettingsNote>
+              <SettingsMessage variant="info">
+                Current Condition Label style is only available with a single
+                location since it doesn't display the location name.
+              </SettingsMessage>
             )}
           </SettingsField>
         )}
@@ -720,11 +725,11 @@ export function Settings() {
               </SettingsRadioLabel>
             </SettingsRadioFrame>
             {locations.length > 1 && (
-              <SettingsNote>
-                Note: Only the Current Condition + Location variant is available
-                with multiple locations since it's the only one that displays
+              <SettingsMessage variant="info">
+                Only the Current Condition + Location variant is available with
+                multiple locations since it's the only one that displays
                 location names.
-              </SettingsNote>
+              </SettingsMessage>
             )}
           </SettingsField>
         )}
