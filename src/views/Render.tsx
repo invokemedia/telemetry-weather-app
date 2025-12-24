@@ -3,7 +3,6 @@ import { store, weather } from "@telemetryos/sdk";
 import { useUiAspectRatio, useUiScaleToSetRem } from "@telemetryos/sdk/react";
 import "./Render.css";
 
-// Layouts (ordered by CSS variable definition)
 import { Layout1x1 } from "@/components/layouts/Layout1x1";
 import { Layout16x9 } from "@/components/layouts/Layout16x9";
 import { Layout3x1 } from "@/components/layouts/Layout3x1";
@@ -53,7 +52,7 @@ export function Render() {
   /**
    * Rotation / transition state
    */
-  const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
+  const [currentLocationIndex, setCurrentLocationIndex] = useState<number>(0);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
 
   /**
@@ -63,7 +62,6 @@ export function Render() {
 
   /**
    * Set root font-size based on viewport (1rem = 1% of longest dimension)
-   * Using uiScale of 1.0 as baseline for testing
    */
   useUiScaleToSetRem(1.0);
 
@@ -149,10 +147,10 @@ export function Render() {
    * Apply user-defined colors via CSS variables
    */
   useEffect(() => {
-    const hexToRgba = (hex: string, opacity: number) => {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
+    const hexToRgba = (hex: string, opacity: number): string => {
+      const r: number = parseInt(hex.slice(1, 3), 16);
+      const g: number = parseInt(hex.slice(3, 5), 16);
+      const b: number = parseInt(hex.slice(5, 7), 16);
       return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
     };
 
@@ -182,7 +180,7 @@ export function Render() {
 
     cacheLoadedForIdsRef.current = currentLocationIds;
 
-    const loadCachedData = async () => {
+    const loadCachedData = async (): Promise<void> => {
       for (const location of locations) {
         try {
           const cached = await store().device.get<CachedWeatherData>(
@@ -191,7 +189,7 @@ export function Render() {
 
           if (cached) {
             console.log(`📦 [Render] Loaded cached data for ${location.city}`);
-            setWeatherData((prev) => {
+            setWeatherData((prev: Map<string, LocationWeatherData>) => {
               const next = new Map(prev);
               next.set(location.id, {
                 location,
@@ -226,7 +224,9 @@ export function Render() {
     if (locationIdsRef.current === fetchKey) return;
     locationIdsRef.current = fetchKey;
 
-    const fetchWeatherForLocation = async (location: Location) => {
+    const fetchWeatherForLocation = async (
+      location: Location
+    ): Promise<void> => {
       try {
         console.log(
           "🌤️ [Render] Fetching weather for:",
@@ -242,11 +242,12 @@ export function Render() {
             }
           : { city: location.city!, units: units };
 
-        const currentConditions = await weather().getConditions(weatherParams);
+        const currentConditions: WeatherConditions =
+          await weather().getConditions(weatherParams);
 
         console.log("✅ [Render] Current weather:", currentConditions);
 
-        const forecast =
+        const forecast: WeatherForecast[] =
           config.forecastType === "hourly"
             ? await weather().getHourlyForecast({
                 ...weatherParams,
@@ -264,7 +265,7 @@ export function Render() {
           forecast
         );
 
-        setWeatherData((prev) => {
+        setWeatherData((prev: Map<string, LocationWeatherData>) => {
           const next = new Map(prev);
           next.set(location.id, {
             location,
@@ -288,7 +289,7 @@ export function Render() {
       }
     };
 
-    const fetchAll = async () => {
+    const fetchAll = async (): Promise<void> => {
       await Promise.all(locations.map(fetchWeatherForLocation));
     };
 
@@ -309,7 +310,9 @@ export function Render() {
     const timer = setInterval(() => {
       setFadeState("out");
       setTimeout(() => {
-        setCurrentLocationIndex((i) => (i >= locations.length - 1 ? 0 : i + 1));
+        setCurrentLocationIndex((i: number) =>
+          i >= locations.length - 1 ? 0 : i + 1
+        );
         setFadeState("in");
       }, fadeMs);
     }, cycleMs);

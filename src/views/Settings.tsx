@@ -31,13 +31,13 @@ export function Settings() {
   const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
 
   // Local state for form inputs and validation
-  const [newCity, setNewCity] = useState("");
+  const [newCity, setNewCity] = useState<string>("");
   const [searchType, setSearchType] = useState<"city" | "postalCode">("city");
   const [displayNameErrors, setDisplayNameErrors] = useState<
     Record<string, string>
   >({});
-  const [addingLocation, setAddingLocation] = useState(false);
-  const [addLocationError, setAddLocationError] = useState("");
+  const [addingLocation, setAddingLocation] = useState<boolean>(false);
+  const [addLocationError, setAddLocationError] = useState<string>("");
 
   const locations = config.locations || [];
   const displayDuration = config.displayDuration || 10;
@@ -64,14 +64,14 @@ export function Settings() {
   };
 
   // Add a new location to the list (max 5) - validate city/postal code exists first
-  const handleAddLocation = async () => {
+  const handleAddLocation = async (): Promise<void> => {
     if (!newCity.trim()) return;
 
     setAddingLocation(true);
     setAddLocationError("");
 
     try {
-      const input = newCity.trim();
+      const input: string = newCity.trim();
 
       // Fetch weather data using the explicitly selected search type
       const weatherData = await weather().getConditions(
@@ -126,15 +126,15 @@ export function Settings() {
   };
 
   // Remove a location from the list (min 1)
-  const handleRemoveLocation = (id: string) => {
+  const handleRemoveLocation = (id: string): void => {
     const updatedLocations = locations.filter((loc: Location) => loc.id !== id);
     updateConfig({ locations: updatedLocations });
   };
 
   // Validate display name
   const validateDisplayName = (name: string): string => {
-    const trimmedName = name.trim();
-    const MAX_LENGTH = 50;
+    const trimmedName: string = name.trim();
+    const MAX_LENGTH: number = 50;
 
     if (trimmedName.length === 0) {
       return "Display name cannot be empty";
@@ -146,12 +146,15 @@ export function Settings() {
   };
 
   // Update the custom display name for a location
-  const handleUpdateDisplayName = (id: string, newDisplayName: string) => {
+  const handleUpdateDisplayName = (
+    id: string,
+    newDisplayName: string
+  ): void => {
     // Validate the display name
-    const error = validateDisplayName(newDisplayName);
+    const error: string = validateDisplayName(newDisplayName);
 
     // Update error state
-    setDisplayNameErrors((prev) => {
+    setDisplayNameErrors((prev: Record<string, string>) => {
       if (error) {
         return { ...prev, [id]: error };
       } else {
@@ -175,23 +178,23 @@ export function Settings() {
   };
 
   // Toggle between light and dark theme
-  const handleThemeChange = (newTheme: "light" | "dark") => {
+  const handleThemeChange = (newTheme: "light" | "dark"): void => {
     updateConfig({ theme: newTheme });
   };
 
   // Update text color
-  const handleTextColorChange = (newColor: string) => {
+  const handleTextColorChange = (newColor: string): void => {
     updateConfig({ textColor: newColor });
   };
 
   // Update accent color
-  const handleAccentColorChange = (newColor: string) => {
+  const handleAccentColorChange = (newColor: string): void => {
     updateConfig({ accentColor: newColor });
   };
 
   // Reorder locations (controls rotation sequence on device)
-  const moveLocation = (index: number, direction: "up" | "down") => {
-    const newIndex = direction === "up" ? index - 1 : index + 1;
+  const moveLocation = (index: number, direction: "up" | "down"): void => {
+    const newIndex: number = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= locations.length) return;
 
     const updatedLocations = [...locations];
