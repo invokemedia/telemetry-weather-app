@@ -73,7 +73,7 @@ export function Settings() {
           : { city: input, units: config.units || "imperial" }
       );
 
-      // If successful, add the location with API-returned city name
+      // If successful, add the location with original input as display name
       const location: Location = {
         id: Date.now().toString(),
         ...(searchType === "postalCode"
@@ -81,7 +81,7 @@ export function Settings() {
           : { city: input }),
         cityEnglish: weatherData.CityEnglish,
         state: weatherData.State,
-        displayName: weatherData.CityEnglish || input,
+        displayName: input, // Keep the original input as the display name
       };
 
       const updatedLocations = [...locations, location];
