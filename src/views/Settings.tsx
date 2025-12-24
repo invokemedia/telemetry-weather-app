@@ -122,7 +122,7 @@ export function Settings() {
   // Validate display name
   const validateDisplayName = (name: string): string => {
     const trimmedName = name.trim();
-    const MAX_LENGTH = 25;
+    const MAX_LENGTH = 50;
 
     if (trimmedName.length === 0) {
       return "Display name cannot be empty";
