@@ -617,8 +617,10 @@ export function Settings() {
           </SettingsField>
         )}
 
+        {/* TODO: 3×1 Layout Variant setting hidden - currently only "weather-text" variant is functional (displays by default) */}
+        {/* Uncomment this code block when maxTemp and minTemp are available from currentWeather (WeatherConditions) to enable "temp-range" variant */}
         {/* Layout variant for 3×1 aspect ratio */}
-        {currentAspectRatio === "3x1" && (
+        {/* {currentAspectRatio === "3x1" && (
           <SettingsField>
             <SettingsLabel>3×1 Layout Variant</SettingsLabel>
 
@@ -658,7 +660,7 @@ export function Settings() {
               <SettingsRadioLabel>Temp Range</SettingsRadioLabel>
             </SettingsRadioFrame>
           </SettingsField>
-        )}
+        )} */}
 
         {/* Layout variant for 10×1 aspect ratio */}
         {currentAspectRatio === "10x1" && (

@@ -33,9 +33,9 @@ export function Layout3x1({
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
 
-  // TEMP
-  const maxTemp = 21;
-  const minTemp = 13;
+  // TODO: temp-range variant requires max/min temps from currentWeather (WeatherConditions)
+  // const maxTemp = 21;
+  // const minTemp = 13;
 
   return (
     <div className="weather-widget weather-widget--3x1">
@@ -57,7 +57,8 @@ export function Layout3x1({
           <WeatherText text={currentWeather.WeatherText} />
         )}
 
-        {variant === "temp-range" && (
+        {/* TODO: Uncomment when maxTemp and minTemp are available from currentWeather (WeatherConditions) */}
+        {/* {variant === "temp-range" && (
           <div className="weather-widget__temp-range">
             <div className="weather-widget__temp-range-item">
               <div className="weather-widget__arrow-icon weather-widget__arrow-icon-max" />
@@ -68,7 +69,7 @@ export function Layout3x1({
               <Temperature value={minTemp} variant="forecast" units={units} />
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
