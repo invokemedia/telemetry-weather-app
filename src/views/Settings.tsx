@@ -241,9 +241,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig || addingLocation}
               />
-              <SettingsRadioLabel>
-                Postal Code (e.g., 10001, M5H 2N2)
-              </SettingsRadioLabel>
+              <SettingsRadioLabel>Postal Code (e.g., 10001)</SettingsRadioLabel>
             </SettingsRadioFrame>
           </div>
 
