@@ -1,4 +1,7 @@
+// React
 import { useState } from "react";
+
+// SDK
 import { weather } from "@telemetryos/sdk";
 import {
   SettingsContainer,
@@ -15,7 +18,16 @@ import {
   SettingsCheckboxLabel,
   SettingsSelectFrame,
 } from "@telemetryos/sdk/react";
+
+// Local components
+import SettingsNote from "@/components/settings/SettingsNote";
+import SettingsError from "@/components/settings/SettingsError";
+import SettingsTitle from "@/components/settings/SettingsTitle";
+
+// Store
 import { useWeatherConfigState } from "@/hooks/store";
+
+// Types
 import type { Location } from "@/types/weather";
 import { LAYOUT_FEATURES, type AspectRatioType } from "@/types/layout";
 
@@ -199,7 +211,7 @@ export function Settings() {
   return (
     <SettingsContainer>
       <SettingsBox>
-        <h3 style={{ margin: "0 0 1rem 0" }}>Locations</h3>
+        <SettingsTitle>Locations</SettingsTitle>
 
         {/* Add new location */}
         <SettingsField>
@@ -222,6 +234,7 @@ export function Settings() {
                 🏙️ City Name (e.g., London, UK)
               </SettingsRadioLabel>
             </SettingsRadioFrame>
+
             <SettingsRadioFrame>
               <input
                 type="radio"
@@ -240,17 +253,10 @@ export function Settings() {
           </div>
 
           {searchType === "city" && (
-            <div
-              style={{
-                color: "#666",
-                fontSize: "0.875rem",
-                marginBottom: "0.5rem",
-                fontStyle: "italic",
-              }}
-            >
+            <SettingsNote>
               Note: Specify the state name after a city name if needed. e.g.
               Springfield, IL
-            </div>
+            </SettingsNote>
           )}
 
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -266,8 +272,8 @@ export function Settings() {
                   onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
                   placeholder={
                     searchType === "city"
-                      ? "Enter city name (e.g., Vancouver, BC)"
-                      : "Enter postal code (e.g., V6B 1A1)"
+                      ? "Enter city name (e.g., Toronto, ON)"
+                      : "Enter postal code (e.g., M5V 3L9)"
                   }
                   disabled={
                     isLoadingConfig || locations.length >= 5 || addingLocation
@@ -298,30 +304,14 @@ export function Settings() {
             </SettingsButtonFrame>
           </div>
           {addLocationError && (
-            <div
-              style={{
-                color: "#ff4444",
-                fontSize: "0.875rem",
-                marginTop: "0.25rem",
-              }}
-            >
-              {addLocationError}
-            </div>
+            <SettingsError>{addLocationError}</SettingsError>
           )}
           {locations.length >= 5 && (
-            <div
-              style={{
-                color: "#666",
-                fontSize: "0.875rem",
-                marginTop: "0.25rem",
-              }}
-            >
-              Maximum of 5 locations reached
-            </div>
+            <SettingsNote>Maximum of 5 locations reached</SettingsNote>
           )}
         </SettingsField>
 
-        {/* Location list */}
+        {/* Location list - each location with reorder buttons and custom display name */}
         {locations.map((location: Location, index: number) => (
           <div
             key={location.id}
@@ -335,6 +325,7 @@ export function Settings() {
               marginBottom: "0.5rem",
             }}
           >
+            {/* Reorder buttons */}
             <div
               style={{
                 display: "flex",
@@ -361,6 +352,8 @@ export function Settings() {
                 </button>
               </SettingsButtonFrame>
             </div>
+
+            {/* Location info and display name input */}
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: "500", marginBottom: "0.5rem" }}>
                 {location.cityEnglish || location.city}
@@ -382,17 +375,11 @@ export function Settings() {
                 />
               </SettingsInputFrame>
               {displayNameErrors[location.id] && (
-                <div
-                  style={{
-                    color: "#ff4444",
-                    fontSize: "0.75rem",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  {displayNameErrors[location.id]}
-                </div>
+                <SettingsError>{displayNameErrors[location.id]}</SettingsError>
               )}
             </div>
+
+            {/* Remove location button */}
             <SettingsButtonFrame>
               <button
                 onClick={() => handleRemoveLocation(location.id)}
@@ -410,8 +397,9 @@ export function Settings() {
       <SettingsDivider />
 
       <SettingsBox>
-        <h3 style={{ margin: "0 0 1rem 0" }}>Display Options</h3>
+        <SettingsTitle>Display Options</SettingsTitle>
 
+        {/* Display duration - controls rotation speed for multiple locations */}
         <SettingsField>
           <SettingsLabel>
             Display Duration: {displayDuration} seconds
@@ -436,20 +424,14 @@ export function Settings() {
             <span>{displayDuration}s</span>
           </SettingsSliderFrame>
           {locations.length <= 1 && (
-            <div
-              style={{
-                color: "#666",
-                fontSize: "0.875rem",
-                marginTop: "0.5rem",
-                fontStyle: "italic",
-              }}
-            >
+            <SettingsNote>
               Note: Display duration only applies when multiple locations are
               configured.
-            </div>
+            </SettingsNote>
           )}
         </SettingsField>
 
+        {/* Forecast type - daily or hourly (only shown when layout includes forecast) */}
         {(showsForecast ||
           (currentAspectRatio === "10x1" &&
             layout10x1Variant === "current-condition-forecast")) && (
@@ -488,6 +470,7 @@ export function Settings() {
           </SettingsField>
         )}
 
+        {/* Time format - 12-hour or 24-hour */}
         <SettingsField>
           <SettingsLabel>Time Format</SettingsLabel>
           <SettingsRadioFrame>
@@ -518,6 +501,7 @@ export function Settings() {
           </SettingsRadioFrame>
         </SettingsField>
 
+        {/* Temperature units - Fahrenheit or Celsius */}
         <SettingsField>
           <SettingsLabel>Temperature Units</SettingsLabel>
           <SettingsRadioFrame>
@@ -552,6 +536,7 @@ export function Settings() {
           </SettingsRadioFrame>
         </SettingsField>
 
+        {/* Theme - light or dark mode */}
         <SettingsField>
           <SettingsLabel>Theme</SettingsLabel>
           <SettingsRadioFrame>
@@ -582,6 +567,7 @@ export function Settings() {
           </SettingsRadioFrame>
         </SettingsField>
 
+        {/* Layout variant for 1×1 aspect ratio */}
         {currentAspectRatio === "1x1" && (
           <SettingsField>
             <SettingsLabel>1×1 Layout Style</SettingsLabel>
@@ -622,21 +608,15 @@ export function Settings() {
               </SettingsRadioLabel>
             </SettingsRadioFrame>
             {locations.length > 1 && (
-              <div
-                style={{
-                  color: "#666",
-                  fontSize: "0.875rem",
-                  marginTop: "0.5rem",
-                  fontStyle: "italic",
-                }}
-              >
+              <SettingsNote>
                 Note: Current Condition Label style is only available with a
                 single location since it doesn't display the location name.
-              </div>
+              </SettingsNote>
             )}
           </SettingsField>
         )}
 
+        {/* Layout variant for 3×1 aspect ratio */}
         {currentAspectRatio === "3x1" && (
           <SettingsField>
             <SettingsLabel>3×1 Layout Variant</SettingsLabel>
@@ -679,6 +659,7 @@ export function Settings() {
           </SettingsField>
         )}
 
+        {/* Layout variant for 10×1 aspect ratio */}
         {currentAspectRatio === "10x1" && (
           <SettingsField>
             <SettingsLabel>10×1 Layout Variant</SettingsLabel>
@@ -741,22 +722,16 @@ export function Settings() {
               </SettingsRadioLabel>
             </SettingsRadioFrame>
             {locations.length > 1 && (
-              <div
-                style={{
-                  color: "#666",
-                  fontSize: "0.875rem",
-                  marginTop: "0.5rem",
-                  fontStyle: "italic",
-                }}
-              >
+              <SettingsNote>
                 Note: Only the Current Condition + Location variant is available
                 with multiple locations since it's the only one that displays
                 location names.
-              </div>
+              </SettingsNote>
             )}
           </SettingsField>
         )}
 
+        {/* Primary text color picker */}
         <SettingsField>
           <SettingsLabel>Primary Text Color</SettingsLabel>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -781,6 +756,7 @@ export function Settings() {
           </div>
         </SettingsField>
 
+        {/* Primary text color opacity slider */}
         <SettingsField>
           <SettingsLabel>
             Primary Text Color Opacity: {textOpacity}%
@@ -801,6 +777,7 @@ export function Settings() {
           </SettingsSliderFrame>
         </SettingsField>
 
+        {/* Secondary text color picker */}
         <SettingsField>
           <SettingsLabel>Secondary Text Color</SettingsLabel>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -825,6 +802,7 @@ export function Settings() {
           </div>
         </SettingsField>
 
+        {/* Secondary text color opacity slider */}
         <SettingsField>
           <SettingsLabel>
             Secondary Text Color Opacity: {accentOpacity}%
