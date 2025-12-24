@@ -220,7 +220,9 @@ export function Render() {
   useEffect(() => {
     if (locations.length === 0) return;
 
-    const fetchKey = `${currentLocationIds}_${config.forecastType || "daily"}`;
+    const fetchKey = `${currentLocationIds}_${config.forecastType || "daily"}_${
+      config.units || "imperial"
+    }`;
     if (locationIdsRef.current === fetchKey) return;
     locationIdsRef.current = fetchKey;
 
@@ -232,9 +234,13 @@ export function Render() {
         );
 
         // Build weather request params based on what's available
+        const units = config.units || "imperial";
         const weatherParams = location.postalCode
-          ? { postalCode: location.postalCode, units: "metric" as const }
-          : { city: location.city!, units: "metric" as const };
+          ? {
+              postalCode: location.postalCode,
+              units: units,
+            }
+          : { city: location.city!, units: units };
 
         const currentConditions = await weather().getConditions(weatherParams);
 

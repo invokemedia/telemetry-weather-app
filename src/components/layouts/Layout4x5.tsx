@@ -23,6 +23,7 @@ interface Layout4x5Props {
 export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
@@ -39,7 +40,7 @@ export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
       {/* Middle section */}
       <div className="weather-widget__temp-icon-group">
         <WeatherIcon icon={weatherIcon} />
-        <Temperature value={temp} />
+        <Temperature value={temp} units={units} />
       </div>
 
       {/* Bottom section*/}

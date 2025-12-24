@@ -28,6 +28,7 @@ export function Layout1x1({
 }: Layout1x1Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
@@ -41,7 +42,7 @@ export function Layout1x1({
 
         <div className="weather-widget__bottom-group">
           <div className="weather-widget__temp-icon-group">
-            <Temperature value={temp} />
+            <Temperature value={temp} units={units} />
             <WeatherIcon icon={weatherIcon} />
           </div>
 
@@ -58,7 +59,7 @@ export function Layout1x1({
       <Clock timezone={currentWeather.Timezone} timeFormat={timeFormat} />
 
       <div className="weather-widget__temp-icon-group">
-        <Temperature value={temp} />
+        <Temperature value={temp} units={units} />
         <WeatherIcon icon={weatherIcon} />
       </div>
     </div>

@@ -73,8 +73,8 @@ export function Settings() {
       // Fetch weather data using either postal code or city name
       const weatherData = await weather().getConditions(
         isPostalCode
-          ? { postalCode: input, units: "metric" }
-          : { city: input, units: "metric" }
+          ? { postalCode: input, units: config.units || "imperial" }
+          : { city: input, units: config.units || "imperial" }
       );
 
       // If successful, add the location with API-returned city name
@@ -485,6 +485,40 @@ export function Settings() {
               disabled={isLoadingConfig}
             />
             <SettingsRadioLabel>24-hour</SettingsRadioLabel>
+          </SettingsRadioFrame>
+        </SettingsField>
+
+        <SettingsField>
+          <SettingsLabel>Temperature Units</SettingsLabel>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="units"
+              value="imperial"
+              checked={(config.units || "imperial") === "imperial"}
+              onChange={(e) =>
+                updateConfig({
+                  units: e.target.value as "imperial" | "metric",
+                })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>°F Fahrenheit</SettingsRadioLabel>
+          </SettingsRadioFrame>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="units"
+              value="metric"
+              checked={config.units === "metric"}
+              onChange={(e) =>
+                updateConfig({
+                  units: e.target.value as "imperial" | "metric",
+                })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>°C Celsius</SettingsRadioLabel>
           </SettingsRadioFrame>
         </SettingsField>
 

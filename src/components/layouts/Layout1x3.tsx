@@ -31,6 +31,7 @@ export function Layout1x3({
 }: Layout1x3Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
@@ -51,7 +52,7 @@ export function Layout1x3({
       {/* Current section */}
       <div className="weather-widget__current-section">
         <WeatherIcon icon={weatherIcon} />
-        <Temperature value={temp} />
+        <Temperature value={temp} units={units} />
         <div className="weather-widget__weather-text">
           {currentWeather.WeatherText}
         </div>
@@ -70,7 +71,11 @@ export function Layout1x3({
               icon={getWeatherIcon(item.WeatherCode)}
               variant="forecast"
             />
-            <Temperature value={getRoundedTemp(item.Temp)} variant="forecast" />
+            <Temperature
+              value={getRoundedTemp(item.Temp)}
+              variant="forecast"
+              units={units}
+            />
           </div>
         ))}
       </div>

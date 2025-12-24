@@ -34,6 +34,7 @@ export function Layout9x16({
 }: Layout9x16Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
@@ -60,7 +61,7 @@ export function Layout9x16({
       <div className="weather-widget__current-section">
         <div className="weather-widget__current-conditions">
           <WeatherIcon icon={weatherIcon} />
-          <Temperature value={temp} />
+          <Temperature value={temp} units={units} />
           <LastUpdated
             timestamp={currentWeather.Timestamp}
             timeFormat={timeFormat}
@@ -92,10 +93,12 @@ export function Layout9x16({
               <Temperature
                 value={getRoundedTemp(item.MaxTemp)}
                 variant="forecast"
+                units={units}
               />
               <Temperature
                 value={getRoundedTemp(item.MinTemp)}
                 variant="forecast"
+                units={units}
                 color="accent"
               />
             </div>

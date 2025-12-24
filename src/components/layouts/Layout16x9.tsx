@@ -33,6 +33,7 @@ export function Layout16x9({
 }: Layout16x9Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
@@ -60,7 +61,7 @@ export function Layout16x9({
         <div className="weather-widget__right-group">
           <div className="weather-widget__icon-temp-group">
             <WeatherIcon icon={weatherIcon} />
-            <Temperature value={temp} />
+            <Temperature value={temp} units={units} />
           </div>
 
           <LastUpdated
@@ -80,7 +81,11 @@ export function Layout16x9({
       <div className="weather-widget__forecast-section">
         {forecastItems.map((item, index) => (
           <div key={index} className="weather-widget__forecast-item">
-            <Temperature value={Math.round(item.Temp)} variant="forecast" />
+            <Temperature
+              value={Math.round(item.Temp)}
+              variant="forecast"
+              units={units}
+            />
             <WeatherIcon
               icon={getWeatherIcon(item.WeatherCode)}
               variant="forecast"

@@ -19,6 +19,7 @@ export const useWeatherConfigState = createUseInstanceStoreState<WeatherConfig>(
     displayDuration: 10,
     showForecast: true,
     forecastType: "daily",
+    units: "imperial",
     timeFormat: "12h",
     theme: "light",
     textColor: "#ffffff",

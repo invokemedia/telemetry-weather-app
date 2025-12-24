@@ -28,6 +28,7 @@ export function Layout3x1({
 }: Layout3x1Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
@@ -48,7 +49,7 @@ export function Layout3x1({
       <div className="weather-widget__right-column">
         <div className="weather-widget__current-row">
           <WeatherIcon icon={weatherIcon} />
-          <Temperature value={temp} />
+          <Temperature value={temp} units={units} />
         </div>
 
         {/* Variant content */}
@@ -60,11 +61,11 @@ export function Layout3x1({
           <div className="weather-widget__temp-range">
             <div className="weather-widget__temp-range-item">
               <div className="weather-widget__arrow-icon weather-widget__arrow-icon-max" />
-              <Temperature value={maxTemp} variant="forecast" />
+              <Temperature value={maxTemp} variant="forecast" units={units} />
             </div>
             <div className="weather-widget__temp-range-item">
               <div className="weather-widget__arrow-icon weather-widget__arrow-icon-min" />
-              <Temperature value={minTemp} variant="forecast" />
+              <Temperature value={minTemp} variant="forecast" units={units} />
             </div>
           </div>
         )}

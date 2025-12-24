@@ -50,6 +50,7 @@ export interface WeatherConfig {
   displayDuration: number; // Seconds per location
   showForecast: boolean; // Whether to show forecast
   forecastType?: "hourly" | "daily"; // Type of forecast to display
+  units?: "imperial" | "metric"; // Temperature units (imperial = Fahrenheit, metric = Celsius)
   theme: "light" | "dark"; // Color theme for widget
   textColor?: string; // Primary text color (hex format, e.g., "#ffffff")
   textOpacity?: number; // Primary text opacity (0-100)

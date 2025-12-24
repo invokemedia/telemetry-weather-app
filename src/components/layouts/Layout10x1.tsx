@@ -37,6 +37,7 @@ export function Layout10x1({
 }: Layout10x1Props) {
   const [, config] = useWeatherConfigState();
   const timeFormat = config.timeFormat || "12h";
+  const units = config.units || "imperial";
 
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather.WeatherCode);
@@ -58,7 +59,7 @@ export function Layout10x1({
 
       {/* Current conditions */}
       <div className="weather-widget__current-conditions">
-        <Temperature value={temp} />
+        <Temperature value={temp} units={units} />
         <WeatherIcon icon={weatherIcon} />
         <WeatherText text={weatherText} />
       </div>
@@ -89,6 +90,7 @@ export function Layout10x1({
               <Temperature
                 value={getRoundedTemp(item.Temp)}
                 variant="forecast"
+                units={units}
               />
             </div>
           ))}
