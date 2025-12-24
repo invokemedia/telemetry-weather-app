@@ -57,6 +57,7 @@
 }
 
 .weather-widget--3x1 .weather-widget__icon--current {
+  width: auto;
   max-width: 11.9rem;
   height: 11.9rem;
 }

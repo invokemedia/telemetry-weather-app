@@ -49,8 +49,8 @@
 
 .weather-widget--1x10 .weather-widget__icon--current {
   width: auto;
-  max-width: 100%;
-  height: auto;
+  max-width: 7rem;
+  height: 7rem;
 }
 
 .weather-widget--1x10 .weather-widget__temp--current {
@@ -89,7 +89,7 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 60%;
+  width: 4.5rem;
   height: 0.08rem;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.3);
