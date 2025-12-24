@@ -230,7 +230,7 @@ export function Settings() {
                 disabled={isLoadingConfig || addingLocation}
               />
               <SettingsRadioLabel>
-                🏙️ City Name (e.g., London, UK)
+                City Name (e.g., London, UK)
               </SettingsRadioLabel>
             </SettingsRadioFrame>
 
@@ -246,7 +246,7 @@ export function Settings() {
                 disabled={isLoadingConfig || addingLocation}
               />
               <SettingsRadioLabel>
-                📮 Postal Code (e.g., 10001, M5H 2N2)
+                Postal Code (e.g., 10001, M5H 2N2)
               </SettingsRadioLabel>
             </SettingsRadioFrame>
           </div>
@@ -453,7 +453,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>📅 Daily</SettingsRadioLabel>
+              <SettingsRadioLabel>Daily</SettingsRadioLabel>
             </SettingsRadioFrame>
             <SettingsRadioFrame>
               <input
@@ -468,7 +468,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>🕐 Hourly</SettingsRadioLabel>
+              <SettingsRadioLabel>Hourly</SettingsRadioLabel>
             </SettingsRadioFrame>
           </SettingsField>
         )}
@@ -553,7 +553,7 @@ export function Settings() {
               }
               disabled={isLoadingConfig}
             />
-            <SettingsRadioLabel>☀️ Light</SettingsRadioLabel>
+            <SettingsRadioLabel>Light</SettingsRadioLabel>
           </SettingsRadioFrame>
           <SettingsRadioFrame>
             <input
@@ -566,7 +566,7 @@ export function Settings() {
               }
               disabled={isLoadingConfig}
             />
-            <SettingsRadioLabel>🌙 Dark</SettingsRadioLabel>
+            <SettingsRadioLabel>Dark</SettingsRadioLabel>
           </SettingsRadioFrame>
         </SettingsField>
 
@@ -589,7 +589,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>📍 Location</SettingsRadioLabel>
+              <SettingsRadioLabel>Location</SettingsRadioLabel>
             </SettingsRadioFrame>
             <SettingsRadioFrame>
               <input
@@ -606,9 +606,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig || locations.length > 1}
               />
-              <SettingsRadioLabel>
-                🌤️ Current Condition Label
-              </SettingsRadioLabel>
+              <SettingsRadioLabel>Current Condition Label</SettingsRadioLabel>
             </SettingsRadioFrame>
             {locations.length > 1 && (
               <SettingsMessage variant="info">
@@ -639,7 +637,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>🌤️ Weather Text</SettingsRadioLabel>
+              <SettingsRadioLabel>Weather Text</SettingsRadioLabel>
             </SettingsRadioFrame>
 
             <SettingsRadioFrame>
@@ -657,7 +655,7 @@ export function Settings() {
                 }
                 disabled={isLoadingConfig}
               />
-              <SettingsRadioLabel>🌡️ Temp Range</SettingsRadioLabel>
+              <SettingsRadioLabel>Temp Range</SettingsRadioLabel>
             </SettingsRadioFrame>
           </SettingsField>
         )}
