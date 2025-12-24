@@ -27,6 +27,7 @@ import sleetIcon from "@/assets/weather/sleet-icon.svg";
 import thunderIcon from "@/assets/weather/thunder-icon.svg";
 import tstormsIcon from "@/assets/weather/tstorms-icon.svg";
 
+// Converts AccuWeather numeric code (1-44) to corresponding icon path
 export function getWeatherIcon(weatherCode: string): string {
   if (!weatherCode) return partlySunnyIcon;
 

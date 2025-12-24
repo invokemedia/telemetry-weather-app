@@ -1,3 +1,4 @@
+// Converts a Date to HH:MM time string in a specific timezone (e.g., "14:30" or "2:30 PM")
 export function formatTimeInTimezone(
   date: Date,
   timezone: string,

@@ -7,6 +7,7 @@ interface ForecastSelectOptions {
   skipToday?: boolean; // exclude today's forecast
 }
 
+// Filters forecast array to show specific number of hourly/daily items with optional sampling
 export function selectForecastItems(
   forecast: any[],
   type: ForecastType,
