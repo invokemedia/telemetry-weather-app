@@ -394,8 +394,6 @@ export function Settings() {
         ))}
       </SettingsBox>
 
-      <SettingsDivider />
-
       <SettingsBox>
         <SettingsTitle>Display Options</SettingsTitle>
 
