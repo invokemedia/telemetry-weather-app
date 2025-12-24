@@ -63,7 +63,10 @@ export function Layout16x9({
             <Temperature value={temp} />
           </div>
 
-          <LastUpdated timestamp={currentWeather.Timestamp} />
+          <LastUpdated
+            timestamp={currentWeather.Timestamp}
+            timeFormat={timeFormat}
+          />
 
           {/* Sunrise / Sunset */}
           {/* <div className="weather-widget__sun-group">

@@ -61,7 +61,10 @@ export function Layout9x16({
         <div className="weather-widget__current-conditions">
           <WeatherIcon icon={weatherIcon} />
           <Temperature value={temp} />
-          <LastUpdated timestamp={currentWeather.Timestamp} />
+          <LastUpdated
+            timestamp={currentWeather.Timestamp}
+            timeFormat={timeFormat}
+          />
           {/* <FeelsLike value={feelsLike} color="text" /> */}
         </div>
 
