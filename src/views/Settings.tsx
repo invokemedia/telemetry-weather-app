@@ -6,7 +6,6 @@ import { weather } from "@telemetryos/sdk";
 import {
   SettingsContainer,
   SettingsBox,
-  SettingsDivider,
   SettingsField,
   SettingsLabel,
   SettingsInputFrame,
@@ -14,9 +13,6 @@ import {
   SettingsSliderFrame,
   SettingsRadioFrame,
   SettingsRadioLabel,
-  SettingsCheckboxFrame,
-  SettingsCheckboxLabel,
-  SettingsSelectFrame,
 } from "@telemetryos/sdk/react";
 
 // Local components
