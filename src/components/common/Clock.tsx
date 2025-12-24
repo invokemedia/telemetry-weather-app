@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatTimeInTimezone } from "@/utils/formatTimeInTimezone";
+import { formatTimeInTimezone } from "@/utils/timeFormat";
 
 interface ClockProps {
   timezone: string;

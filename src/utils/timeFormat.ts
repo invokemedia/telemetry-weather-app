@@ -1,7 +1,18 @@
-/**
- * Time formatting utilities for displaying times in 12h or 24h format
- */
+// Converts a Date to HH:MM time string in a specific timezone (e.g., "14:30" or "2:30 PM")
+export function formatTimeInTimezone(
+  date: Date,
+  timezone: string,
+  timeFormat: "12h" | "24h" = "24h"
+): string {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: timeFormat === "12h",
+    timeZone: timezone,
+  }).format(date);
+}
 
+// Converts Unix timestamp to HH:MM time string (e.g., "14:30" or "2:30 PM")
 export function formatTimeFromTimestamp(
   timestamp: number,
   format: "12h" | "24h" = "12h"
@@ -23,10 +34,7 @@ export function formatTimeFromTimestamp(
   return `${h12}:${m} ${period}`;
 }
 
-/**
- * Format time for forecast labels (e.g., "1 PM", "14:00")
- * Uses Unix timestamp and displays in user's local timezone
- */
+// Formats Unix timestamp for forecast labels in user's local timezone (e.g., "1 PM", "14:00")
 export function formatForecastTime(
   timestamp: number,
   format: "12h" | "24h" = "12h"
@@ -59,9 +67,7 @@ export function formatForecastTime(
   return timeString;
 }
 
-/**
- * Format day label for daily forecast (e.g., "Mon", "Tue")
- */
+// Formats date string to abbreviated day name for daily forecast (e.g., "Mon", "Tue")
 export function formatDayLabel(datetime: string): string {
   // Handle TelemetryOS API format: "2025-12-19:06" or "2025-12-19"
   // Extract the date part before any colon
