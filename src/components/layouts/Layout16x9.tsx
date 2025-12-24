@@ -53,7 +53,7 @@ export function Layout16x9({
         {/* Left group: location + time */}
         <div className="weather-widget__left-group">
           <LocationName name={locationName} color="accent" />
-          <Clock timezone={currentWeather.Timezone} />
+          <Clock timezone={currentWeather.Timezone} timeFormat={timeFormat} />
         </div>
 
         {/* Right group: current condition */}

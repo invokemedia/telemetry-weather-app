@@ -37,6 +37,10 @@
   text-align: center;
 }
 
+.weather-widget--1x10 .weather-widget__time--12h {
+  white-space: pre-line !important;
+}
+
 /* ==================================================
    CURRENT SECTION
 ================================================== */

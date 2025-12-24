@@ -54,7 +54,7 @@ export function Layout10x1({
       className={`weather-widget weather-widget--10x1 weather-widget--${variant}`}
     >
       {/* Time */}
-      <Clock timezone={currentWeather.Timezone} />
+      <Clock timezone={currentWeather.Timezone} timeFormat={timeFormat} />
 
       {/* Current conditions */}
       <div className="weather-widget__current-conditions">

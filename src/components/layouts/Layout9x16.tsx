@@ -53,7 +53,7 @@ export function Layout9x16({
       {/* Top section */}
       <div className="weather-widget__top-section">
         <LocationName name={locationName} color="accent" />
-        <Clock timezone={currentWeather.Timezone} />
+        <Clock timezone={currentWeather.Timezone} timeFormat={timeFormat} />
       </div>
 
       {/* Current section */}

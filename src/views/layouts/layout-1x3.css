@@ -40,6 +40,10 @@
   font-size: 9rem;
 }
 
+.weather-widget--1x3 .weather-widget__time--12h {
+  font-size: 5.2rem;
+}
+
 /* ==================================================
    CURRENT SECTION
 ================================================== */

@@ -6,7 +6,7 @@
 .weather-widget--1x1 {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 3rem;
   padding: 8rem;
@@ -26,6 +26,10 @@
 
 .weather-widget--1x1 .weather-widget__time {
   font-size: 26rem;
+}
+
+.weather-widget--1x1 .weather-widget__time--12h {
+  font-size: 16rem;
 }
 
 .weather-widget--1x1 .weather-widget__temp-icon-group {

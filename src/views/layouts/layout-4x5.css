@@ -44,6 +44,10 @@
   font-size: 18rem;
 }
 
+.weather-widget--4x5 .weather-widget__time--12h {
+  font-size: 11rem;
+}
+
 .weather-widget--4x5 .weather-widget__icon--current {
   width: auto;
   max-width: 17rem;

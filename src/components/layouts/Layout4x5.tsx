@@ -12,12 +12,18 @@ import { WeatherText } from "@/components/common/WeatherText";
 import { getRoundedTemp } from "@/utils/getRoundedTemp";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 
+// Store
+import { useWeatherConfigState } from "@/hooks/store";
+
 interface Layout4x5Props {
   currentWeather: WeatherConditions;
   locationName?: string;
 }
 
 export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
+  const [, config] = useWeatherConfigState();
+  const timeFormat = config.timeFormat || "12h";
+
   const temp = getRoundedTemp(currentWeather.Temp);
   const weatherIcon = getWeatherIcon(currentWeather?.WeatherCode || "");
   const weatherText = currentWeather?.WeatherText;
@@ -27,7 +33,7 @@ export function Layout4x5({ currentWeather, locationName }: Layout4x5Props) {
       {/* Top section */}
       <div className="weather-widget__top-group">
         <LocationName name={locationName} color="accent" />
-        <Clock timezone={currentWeather.Timezone} />
+        <Clock timezone={currentWeather.Timezone} timeFormat={timeFormat} />
       </div>
 
       {/* Middle section */}

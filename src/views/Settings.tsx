@@ -49,7 +49,6 @@ export function Settings() {
     "16x9") as AspectRatioType;
   const layoutFeatures = LAYOUT_FEATURES[currentAspectRatio];
   const showsForecast = layoutFeatures?.showsForecast ?? true;
-  const showsTimeFormat = layoutFeatures?.showsTimeFormat ?? true;
 
   // Update config helper
   const updateConfig = (updates: Partial<typeof config>) => {
@@ -429,37 +428,35 @@ export function Settings() {
           </SettingsField>
         )}
 
-        {showsTimeFormat && (
-          <SettingsField>
-            <SettingsLabel>Forecast Time Format</SettingsLabel>
-            <SettingsRadioFrame>
-              <input
-                type="radio"
-                name="timeFormat"
-                value="12h"
-                checked={(config.timeFormat || "12h") === "12h"}
-                onChange={(e) =>
-                  updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
-                }
-                disabled={isLoadingConfig}
-              />
-              <SettingsRadioLabel>12-hour (AM/PM)</SettingsRadioLabel>
-            </SettingsRadioFrame>
-            <SettingsRadioFrame>
-              <input
-                type="radio"
-                name="timeFormat"
-                value="24h"
-                checked={config.timeFormat === "24h"}
-                onChange={(e) =>
-                  updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
-                }
-                disabled={isLoadingConfig}
-              />
-              <SettingsRadioLabel>24-hour</SettingsRadioLabel>
-            </SettingsRadioFrame>
-          </SettingsField>
-        )}
+        <SettingsField>
+          <SettingsLabel>Time Format</SettingsLabel>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="timeFormat"
+              value="12h"
+              checked={(config.timeFormat || "12h") === "12h"}
+              onChange={(e) =>
+                updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>12-hour (AM/PM)</SettingsRadioLabel>
+          </SettingsRadioFrame>
+          <SettingsRadioFrame>
+            <input
+              type="radio"
+              name="timeFormat"
+              value="24h"
+              checked={config.timeFormat === "24h"}
+              onChange={(e) =>
+                updateConfig({ timeFormat: e.target.value as "12h" | "24h" })
+              }
+              disabled={isLoadingConfig}
+            />
+            <SettingsRadioLabel>24-hour</SettingsRadioLabel>
+          </SettingsRadioFrame>
+        </SettingsField>
 
         <SettingsField>
           <SettingsLabel>Theme</SettingsLabel>

@@ -41,39 +41,30 @@ export const LAYOUT_FEATURES: Record<
   AspectRatioType,
   {
     showsForecast: boolean;
-    showsTimeFormat: boolean;
   }
 > = {
   "1x1": {
     showsForecast: false,
-    showsTimeFormat: false,
   },
   "16x9": {
     showsForecast: true,
-    showsTimeFormat: true,
   },
   "3x1": {
     showsForecast: false,
-    showsTimeFormat: true,
   },
   "10x1": {
     showsForecast: true,
-    showsTimeFormat: true,
   },
   "9x16": {
     showsForecast: true,
-    showsTimeFormat: true,
   },
   "4x5": {
     showsForecast: false,
-    showsTimeFormat: false,
   },
   "1x3": {
     showsForecast: true,
-    showsTimeFormat: true,
   },
   "1x10": {
     showsForecast: true,
-    showsTimeFormat: true,
   },
 };

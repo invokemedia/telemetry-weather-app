@@ -91,6 +91,11 @@ html {
   color: var(--custom-text-color, #ffffff) !important;
 }
 
+/* Current time display */
+.weather-widget__time {
+  white-space: nowrap;
+}
+
 /* Weather icons (current + forecast) */
 .weather-widget__icon--current,
 .weather-widget__icon--forecast {

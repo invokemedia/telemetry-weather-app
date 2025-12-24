@@ -3,10 +3,15 @@ import { formatTimeInTimezone } from "@/utils/formatTimeInTimezone";
 
 interface ClockProps {
   timezone: string;
+  timeFormat?: "12h" | "24h";
   color?: "text" | "accent";
 }
 
-export function Clock({ timezone, color = "text" }: ClockProps) {
+export function Clock({
+  timezone,
+  timeFormat = "24h",
+  color = "text",
+}: ClockProps) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -22,9 +27,11 @@ export function Clock({ timezone, color = "text" }: ClockProps) {
       ? "weather-widget__text-color"
       : "weather-widget__accent-text";
 
+  const formatClass = timeFormat === "12h" ? "weather-widget__time--12h" : "";
+
   return (
-    <div className={`weather-widget__time ${colorClass}`}>
-      {formatTimeInTimezone(now, timezone)}
+    <div className={`weather-widget__time ${colorClass} ${formatClass}`}>
+      {formatTimeInTimezone(now, timezone, timeFormat)}
     </div>
   );
 }
