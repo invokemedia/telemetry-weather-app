@@ -226,25 +226,28 @@ export function Render() {
 
     const fetchWeatherForLocation = async (location: Location) => {
       try {
-        console.log("🌤️ [Render] Fetching weather for:", location.city);
+        console.log(
+          "🌤️ [Render] Fetching weather for:",
+          location.city || location.postalCode
+        );
 
-        const currentConditions = await weather().getConditions({
-          city: location.city,
-          units: "metric",
-        });
+        // Build weather request params based on what's available
+        const weatherParams = location.postalCode
+          ? { postalCode: location.postalCode, units: "metric" as const }
+          : { city: location.city!, units: "metric" as const };
+
+        const currentConditions = await weather().getConditions(weatherParams);
 
         console.log("✅ [Render] Current weather:", currentConditions);
 
         const forecast =
           config.forecastType === "hourly"
             ? await weather().getHourlyForecast({
-                city: location.city,
-                units: "metric",
+                ...weatherParams,
                 hours: 24,
               })
             : await weather().getDailyForecast({
-                city: location.city,
-                units: "metric",
+                ...weatherParams,
                 days: 7,
               });
 

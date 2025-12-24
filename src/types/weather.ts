@@ -38,7 +38,8 @@ export interface WeatherForecast {
 // Custom app types
 export interface Location {
   id: string; // Unique identifier
-  city: string; // City name for API query
+  city?: string; // City name for API query
+  postalCode?: string; // Postal code for API query (alternative to city)
   cityEnglish?: string; // Official city name from API
   state?: string; // State/Province from API
   displayName?: string; // Optional custom display name

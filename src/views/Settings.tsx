@@ -55,7 +55,7 @@ export function Settings() {
     setConfig({ ...config, ...updates });
   };
 
-  // Add a new location to the list (max 5) - validate city exists first
+  // Add a new location to the list (max 5) - validate city/postal code exists first
   const handleAddLocation = async () => {
     if (!newCity.trim()) return;
 
@@ -63,20 +63,27 @@ export function Settings() {
     setAddLocationError("");
 
     try {
-      // Test if the city exists by fetching weather data
-      const cityName = newCity.trim();
-      const weatherData = await weather().getConditions({
-        city: cityName,
-        units: "metric",
-      });
+      const input = newCity.trim();
+
+      // Detect if input is a postal code (basic pattern: digits/alphanumeric without spaces or with single space)
+      // Examples: "10001", "90210", "M5H 2N2", "SW1A 1AA"
+      const postalCodePattern = /^[A-Z0-9]{3,10}(\s?[A-Z0-9]{3,4})?$/i;
+      const isPostalCode = postalCodePattern.test(input);
+
+      // Fetch weather data using either postal code or city name
+      const weatherData = await weather().getConditions(
+        isPostalCode
+          ? { postalCode: input, units: "metric" }
+          : { city: input, units: "metric" }
+      );
 
       // If successful, add the location with API-returned city name
       const location: Location = {
         id: Date.now().toString(),
-        city: cityName,
+        ...(isPostalCode ? { postalCode: input } : { city: input }),
         cityEnglish: weatherData.CityEnglish,
         state: weatherData.State,
-        displayName: cityName,
+        displayName: weatherData.CityEnglish || input,
       };
 
       const updatedLocations = [...locations, location];
@@ -104,9 +111,9 @@ export function Settings() {
       updateConfig(updates);
       setNewCity("");
     } catch (error) {
-      // City not found or API error
+      // City/postal code not found or API error
       setAddLocationError(
-        `Could not find weather data for "${newCity.trim()}". Please check the city name.`
+        `Could not find weather data for "${newCity.trim()}". Please check the location.`
       );
     } finally {
       setAddingLocation(false);
@@ -210,6 +217,16 @@ export function Settings() {
             Note: Specify the state name after a city name if needed. e.g.
             Springfield, IL
           </div>
+          <div
+            style={{
+              color: "#666",
+              fontSize: "0.875rem",
+              marginBottom: "0.5rem",
+              fontStyle: "italic",
+            }}
+          >
+            Note: You can also search by postal code (e.g., 10001, M5H 2N2).
+          </div>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <div style={{ flex: 1 }}>
               <SettingsInputFrame>
@@ -221,7 +238,7 @@ export function Settings() {
                     setAddLocationError(""); // Clear error when user types
                   }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
-                  placeholder="Enter city name (e.g., Vancouver)"
+                  placeholder="Enter city name or postal code"
                   disabled={
                     isLoadingConfig || locations.length >= 5 || addingLocation
                   }
