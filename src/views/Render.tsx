@@ -39,7 +39,7 @@ export function Render() {
   /**
    * App configuration shared with Settings
    */
-  const [, config, setConfig] = useWeatherConfigState();
+  const [isLoadingConfig, config, setConfig] = useWeatherConfigState();
 
   /**
    * Weather data indexed by location ID
@@ -69,7 +69,7 @@ export function Render() {
    * Detected screen aspect ratio (classified into layout types)
    */
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>(
-    ASPECT_RATIOS.FULL_SCREEN_16x9
+    ASPECT_RATIOS.FULL_SCREEN_16x9,
   );
 
   const theme = config.theme || "light";
@@ -90,7 +90,7 @@ export function Render() {
    */
   const currentLocationIds = useMemo(
     () => locations.map((loc: Location) => loc.id).join(","),
-    [locations]
+    [locations],
   );
 
   /**
@@ -102,6 +102,9 @@ export function Render() {
    *   that prefers smaller layouts to avoid overflow.
    */
   useEffect(() => {
+    // Wait for store subscription to load before updating config
+    if (isLoadingConfig) return;
+
     // Aspect ratio thresholds for early layout switching.
     // These values are intentionally aggressive to prevent content overflow.
     // Adjust these numbers to fine-tune when layouts downgrade.
@@ -141,7 +144,7 @@ export function Render() {
     if (config.currentAspectRatio !== closestRatio) {
       setConfig({ ...config, currentAspectRatio: closestRatio });
     }
-  }, [numericAspectRatio, config, setConfig]);
+  }, [isLoadingConfig, numericAspectRatio, config, setConfig]);
 
   /**
    * Apply user-defined colors via CSS variables
@@ -156,12 +159,12 @@ export function Render() {
 
     document.documentElement.style.setProperty(
       "--custom-text-color",
-      hexToRgba(config.textColor || "#ffffff", config.textOpacity ?? 100)
+      hexToRgba(config.textColor || "#ffffff", config.textOpacity ?? 100),
     );
 
     document.documentElement.style.setProperty(
       "--custom-accent-color",
-      hexToRgba(config.accentColor || "#ffffff", config.accentOpacity ?? 68)
+      hexToRgba(config.accentColor || "#ffffff", config.accentOpacity ?? 68),
     );
   }, [
     config.textColor,
@@ -184,7 +187,7 @@ export function Render() {
       for (const location of locations) {
         try {
           const cached = await store().device.get<CachedWeatherData>(
-            `weather_${location.id}`
+            `weather_${location.id}`,
           );
 
           if (cached) {
@@ -202,7 +205,7 @@ export function Render() {
         } catch (err) {
           console.error(
             `❌ [Render] Failed to load cache for ${location.city}:`,
-            err
+            err,
           );
         }
       }
@@ -225,12 +228,12 @@ export function Render() {
     locationIdsRef.current = fetchKey;
 
     const fetchWeatherForLocation = async (
-      location: Location
+      location: Location,
     ): Promise<void> => {
       try {
         console.log(
           "🌤️ [Render] Fetching weather for:",
-          location.city || location.postalCode
+          location.city || location.postalCode,
         );
 
         // Build weather request params based on what's available
@@ -262,7 +265,7 @@ export function Render() {
           config.forecastType === "hourly"
             ? "✅ [Render] Hourly forecast:"
             : "✅ [Render] Daily forecast:",
-          forecast
+          forecast,
         );
 
         setWeatherData((prev: Map<string, LocationWeatherData>) => {
@@ -311,7 +314,7 @@ export function Render() {
       setFadeState("out");
       setTimeout(() => {
         setCurrentLocationIndex((i: number) =>
-          i >= locations.length - 1 ? 0 : i + 1
+          i >= locations.length - 1 ? 0 : i + 1,
         );
         setFadeState("in");
       }, fadeMs);
